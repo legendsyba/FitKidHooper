@@ -28,8 +28,6 @@
 #                                  Without it pg_dump stops at an interactive
 #                                  prompt, which in a scheduled job looks exactly
 #                                  like a backup that is running fine.
-#   SUPABASE_CLI_ACCESS_TOKEN=...  only while FKH is still in the rcarrier32 org;
-#                                  after the move the plain CLI login reaches it.
 #
 # The project must also be linked:
 #   supabase link --project-ref jjwaspyuldkwasfyrqbw
@@ -65,11 +63,8 @@ if [[ -z "$SUPABASE_DB_PASSWORD" ]]; then
 fi
 export SUPABASE_DB_PASSWORD
 
-# Prefer the token wrapper while the project still lives in the rcarrier32 org.
+# FKH lives in the Legends org now, which the machine-wide supabase login reaches.
 SUPA="supabase"
-if [[ -x "$ROOT/scripts/supabase-fkh.sh" ]] && [[ -n "$(read_env SUPABASE_CLI_ACCESS_TOKEN)" ]]; then
-  SUPA="$ROOT/scripts/supabase-fkh.sh"
-fi
 
 mkdir -p "$OUT/storage"
 echo "→ backing up to $OUT"
@@ -90,14 +85,23 @@ echo "  auth + storage metadata"
 $SUPA db dump --linked --data-only --schema auth,storage -f "$OUT/auth.sql"
 
 echo "  storage objects"
-BUCKETS="$($SUPA storage ls --linked 2>/dev/null | sed 's#^ss:///##; s#/$##' | grep -v '^$' || true)"
+# `storage ls` answers with JSON: {"paths":["fkh-videos/","fkh-avatars/"], ...}
+BUCKETS="$($SUPA storage ls --linked --experimental 2>/dev/null | python3 -c '
+import sys, json
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    sys.exit(0)
+for p in d.get("paths", []):
+    print(p.strip("/"))
+' || true)"
 if [[ -z "$BUCKETS" ]]; then
   echo "    (no buckets listed — check the CLI can reach the project)" >&2
 else
   while IFS= read -r bucket; do
     echo "    $bucket"
     mkdir -p "$OUT/storage/$bucket"
-    $SUPA storage cp -r "ss:///$bucket" "$OUT/storage/$bucket" --linked >/dev/null
+    $SUPA storage cp -r "ss:///$bucket" "$OUT/storage/$bucket" --linked --experimental >/dev/null
   done <<< "$BUCKETS"
 fi
 
