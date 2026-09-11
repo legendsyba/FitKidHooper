@@ -1,0 +1,56 @@
+# Keeps the Supabase project awake.
+#
+# Free-plan projects are paused after a week of low activity, and Supabase's own
+# guidance is that "a few user requests to the database each day" is enough to
+# avoid it. FKH has one sign-in in the last thirty days, so it cannot rely on
+# real traffic — and a paused project means the app is down for everyone until
+# somebody notices and restores it by hand.
+#
+# So: two cheap reads a day against a table that is meant to be world-readable.
+# No writes, no personal data, nothing that shows up in analytics.
+#
+# This is a Free-plan workaround. Once the project is on a paid plan it never
+# pauses and this file should be deleted.
+name: Keep Supabase awake
+
+on:
+  schedule:
+    # 06:00 and 18:00 UTC. GitHub's scheduler is best-effort and can run late;
+    # twice a day leaves plenty of margin against a 7-day window.
+    - cron: "0 6,18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read a public row
+        env:
+          URL: ${{ secrets.VITE_SUPABASE_URL }}
+          KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$URL" ] || [ -z "$KEY" ]; then
+            echo "::error::VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are not set on this repo."
+            exit 1
+          fi
+          code=$(curl -sS -o /tmp/body -w '%{http_code}' \
+            "$URL/rest/v1/challenges?select=id&limit=1" \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" --max-time 30)
+          echo "challenges read → HTTP $code"
+          if [ "$code" = "200" ]; then
+            echo "Project is awake."
+          elif [ "$code" = "540" ] || [ "$code" = "544" ]; then
+            echo "::error::Project appears to be PAUSED (HTTP $code). Restore it from the Supabase dashboard."
+            exit 1
+          else
+            echo "::error::Unexpected response $code"
+            cat /tmp/body
+            exit 1
+          fi

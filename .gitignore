@@ -36,3 +36,6 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+
+# Database snapshots — contain personal data about children. Never commit.
+backups/
