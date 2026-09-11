@@ -6,6 +6,7 @@ import PlayerPicker from "./PlayerPicker.jsx";
 import { normalizeJerseyNumber, POSITIONS } from "../lib/identity.js";
 import { calcAge } from "../lib/periodStats.js";
 import { pri, chipStyle } from "../lib/themeColors.js";
+import DateOfBirthField from "./DateOfBirthField.jsx";
 
 function isBirthday(dob) {
   if (!dob) return false;
@@ -193,9 +194,9 @@ export default function IdentityEditor({ settings, setSettings, avatarUrl, onAva
         {/* Birthday */}
         <div style={{ marginBottom: 8 }}>
           <div style={fieldLabel}>Birthday</div>
-          <input type="date" value={settings.dateOfBirth || ""} min={minDOB} max={maxDOB}
-            onChange={e => setSettings(p => ({ ...p, dateOfBirth: e.target.value || null }))}
-            style={{ ...input, colorScheme: "dark" }} />
+          <DateOfBirthField value={settings.dateOfBirth || ""} min={minDOB} max={maxDOB} P={P}
+            onChange={v => setSettings(p => ({ ...p, dateOfBirth: v || null }))}
+            selectStyle={{ ...input, marginBottom: 0, colorScheme: "dark" }} />
           <div style={{ marginTop: 7 }}>
             {age !== null
               ? <span style={{ fontSize: 12, color: "var(--fkh-text-muted)" }}>

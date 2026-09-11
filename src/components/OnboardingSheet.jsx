@@ -16,6 +16,7 @@ import { calcAge } from "../lib/periodStats.js";
 import { needsParentConsent } from "../lib/parentConsent.js";
 import { POSITIONS } from "../lib/identity.js";
 import PlayerPicker from "./PlayerPicker.jsx";
+import DateOfBirthField from "./DateOfBirthField.jsx";
 
 const EXPERIENCE_OPTIONS = [
   ["beginner", "🌱 Beginner"],
@@ -452,9 +453,9 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
       </p>
 
       <label style={labelStyle}>Birthday *</label>
-      <input type="date" value={dateOfBirth} min={minDob} max={maxDob}
-        onChange={e => setDateOfBirth(e.target.value)}
-        style={{ ...inputStyle, colorScheme: "dark" }} />
+      <DateOfBirthField value={dateOfBirth} onChange={setDateOfBirth}
+        min={minDob} max={maxDob} P={P}
+        selectStyle={{ ...inputStyle, marginBottom: 0, colorScheme: "dark" }} />
       {dateOfBirth && (
         <div style={{ fontSize: 11, color: "#94a3b8", margin: "-4px 0 10px" }}>
           Age {calcAge(dateOfBirth)} — for the right training level & leaderboards
