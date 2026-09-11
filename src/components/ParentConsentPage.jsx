@@ -230,8 +230,8 @@ export default function ParentConsentPage() {
       }}>
         <strong style={{ color: INK }}>What we save:</strong> a nickname, a passcode, your email, and their
         training progress. <strong style={{ color: INK }}>What we never do:</strong> show your child&apos;s real
-        name publicly, sell their information, or show them ads. You can withdraw permission and delete the
-        account at any time.
+        name publicly, sell their information, or use it to target advertising at them. You can withdraw
+        permission and delete the account at any time.
       </div>
 
       <form onSubmit={submit} style={{ display: "grid", gap: 16 }}>

@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
            choice — declining doesn't affect the account. If you'd rather the account was deleted,
            there's a one-tap option on that same page.</p>
         <p style="font-size:13px;color:#64748b">Fit Kid Hooper is free. We never show your child's real
-           name publicly, sell their information, or show them ads.</p>
+           name publicly, sell their information, or use it to target advertising at them.</p>
       </div>`;
 
     try {
