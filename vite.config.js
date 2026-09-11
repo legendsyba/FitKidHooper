@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/FitKidHooper/',
+  base: '/',
   plugins: [
     react(),
     VitePWA({
@@ -17,9 +17,9 @@ export default defineConfig({
         background_color: '#060b14',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/FitKidHooper/',
-        id: '/FitKidHooper/',
-        start_url: '/FitKidHooper/',
+        scope: '/',
+        id: '/',
+        start_url: '/',
         icons: [
           {
             src: 'pwa-192.png',

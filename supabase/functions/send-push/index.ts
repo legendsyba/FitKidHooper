@@ -11,16 +11,16 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 const VAPID_PUBLIC = "BC63C8Q7EhvzNVenK402rXcfq1EbgZq5v5fTPl5Mf7bKzGpzVhuCJt87qGMLjLeY6kUL0_RDMyTNHtFNSxuYCn0";
 const VAPID_PRIVATE = Deno.env.get("VAPID_PRIVATE")!;
 const PUSH_SECRET = Deno.env.get("PUSH_SECRET")!;
-const APP_ORIGIN = "https://rcarrier32.github.io";
+const APP_ORIGIN = "https://app.legendsyba.com";
 
 function toAbsoluteAppUrl(url?: string | null): string {
-  const fallback = `${APP_ORIGIN}/FitKidHooper/?mission=1`;
+  const fallback = `${APP_ORIGIN}/?mission=1`;
   if (!url) return fallback;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return APP_ORIGIN + (url.startsWith("/") ? url : `/FitKidHooper/${url.replace(/^\//, "")}`);
+  return APP_ORIGIN + (url.startsWith("/") ? url : `/${url.replace(/^\//, "")}`);
 }
 
-webpush.setVapidDetails("mailto:rcarrier32@gmail.com", VAPID_PUBLIC, VAPID_PRIVATE);
+webpush.setVapidDetails("mailto:info@legendsyba.com", VAPID_PUBLIC, VAPID_PRIVATE);
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
     targets = targets.filter((s: any) => !activeSet.has(s.user_id));
   }
 
-  const iconUrl = "https://rcarrier32.github.io/FitKidHooper/pwa-192.png";
+  const iconUrl = "https://app.legendsyba.com/pwa-192.png";
   const msg = JSON.stringify({
     title: title || "🏀 Time to train",
     body: body || "Your daily mission is waiting — go get a rep in!",

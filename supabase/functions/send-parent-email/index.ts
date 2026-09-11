@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
   const { data: rows, error } = await supabase.from("parent_reengagement_queue").select("*").limit(200);
   if (error) return json({ ok: false, error: error.message }, 500);
 
-  const appUrl = "https://rcarrier32.github.io/FitKidHooper/";
+  const appUrl = "https://app.legendsyba.com/";
   let sent = 0, failed = 0;
   for (const r of rows ?? []) {
     const name = r.athlete_name || "your athlete";

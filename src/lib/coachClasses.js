@@ -135,7 +135,7 @@ export async function getClass(classId) {
 /** The link a coach can paste anywhere. Not a capability — see class_share.sql. */
 export function classShareUrl(classId) {
   const base = typeof window === "undefined"
-    ? "https://rcarrier32.github.io/FitKidHooper/"
+    ? "https://app.legendsyba.com/"
     : `${window.location.origin}${import.meta.env.BASE_URL}`;
   return `${base}?class=${classId}`;
 }

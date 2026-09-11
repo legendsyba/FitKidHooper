@@ -6,7 +6,7 @@ function resolveNotificationUrl(raw) {
   try {
     return new URL(raw || ".", self.registration.scope).href;
   } catch {
-    try { return self.registration.scope; } catch { return "/FitKidHooper/"; }
+    try { return self.registration.scope; } catch { return "/"; }
   }
 }
 

@@ -25,7 +25,7 @@ const CORS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const APP_URL = "https://rcarrier32.github.io/FitKidHooper/";
+const APP_URL = "https://app.legendsyba.com/";
 const LOGO = `${APP_URL}legends-crest.png`;
 
 const esc = (s: string) =>

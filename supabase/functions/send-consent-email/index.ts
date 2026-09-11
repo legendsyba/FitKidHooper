@@ -19,7 +19,7 @@ const CORS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const APP_URL = "https://rcarrier32.github.io/FitKidHooper/";
+const APP_URL = "https://app.legendsyba.com/";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });

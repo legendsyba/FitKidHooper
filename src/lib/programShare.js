@@ -14,7 +14,7 @@
 export function programShareUrl(programId) {
   if (!programId) return "";
   if (typeof window === "undefined") return "";
-  /* BASE_URL is the Vite `base` ("/FitKidHooper/" in production, "/" under some dev
+  /* BASE_URL is the Vite `base` ("/" in production on app.legendsyba.com, and under some dev
      setups), so this stays correct on Pages and on localhost without a hardcoded path. */
   const base = import.meta.env.BASE_URL || "/";
   const path = base.endsWith("/") ? base : `${base}/`;

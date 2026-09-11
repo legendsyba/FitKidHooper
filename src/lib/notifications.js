@@ -238,7 +238,7 @@ export function buildAppUrl(query = "") {
   const q = query ? (query.startsWith("?") ? query : `?${query}`) : "";
   const base = typeof window !== "undefined"
     ? (window.location.origin + import.meta.env.BASE_URL)
-    : "https://rcarrier32.github.io/FitKidHooper/";
+    : "https://app.legendsyba.com/";
   try {
     return new URL(q || ".", base).href;
   } catch {
@@ -252,7 +252,7 @@ function searchParamsFromInput(input) {
   const s = String(input);
   try {
     if (s.includes("://") || s.startsWith("/")) {
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://rcarrier32.github.io";
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://app.legendsyba.com";
       return new URL(s, origin).searchParams;
     }
   } catch { /* fall through */ }
