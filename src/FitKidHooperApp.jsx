@@ -10,6 +10,7 @@ import SharedClassSheet from "./components/SharedClassSheet.jsx";
 // inside CoachPanel, which is itself a sheet. Lazy: it pulls the LiveKit SDK.
 const CoachClassRoom = lazy(() => import("./components/ClassLiveSheet.jsx"));
 import { amICoach } from "./lib/coachClasses.js";
+import { ownThumbnail, thumbBackdrop } from "./lib/videoThumb.js";
 import OnboardingSheet from "./components/OnboardingSheet.jsx";
 import PlayLikePickerSheet from "./components/PlayLikePickerSheet.jsx";
 import FeedbackCenter from "./components/FeedbackCenter.jsx";
@@ -1532,8 +1533,9 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
       style={{ background:`${color}08`,border:`1px solid ${isDone?color:metaBrd}`,borderRadius:16,overflow:"hidden",marginBottom:14,display:"flex",transition:"border-color 0.2s",cursor:onViewDetail?"pointer":"default" }}>
       <div onClick={onViewDetail}
         style={{ flexShrink:0,width:128,position:"relative",display:"block",background:"#0f172a",cursor:"pointer" }}>
-        <img src={w.videoSource==="fkh"&&w.thumbnailUrl ? w.thumbnailUrl : `https://img.youtube.com/vi/${w.videoId}/mqdefault.jpg`}
-          alt="" style={{ width:128,height:90,objectFit:"cover",display:"block" }}/>
+        {ownThumbnail(w)
+          ? <img src={ownThumbnail(w)} alt="" style={{ width:128,height:90,objectFit:"cover",display:"block" }}/>
+          : <div aria-hidden="true" style={{ width:128,height:90,display:"block",background:thumbBackdrop(w.videoId||w.name,color) }}/>}
         <div style={{ position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-55%)",width:26,height:26,borderRadius:"50%",background:`${color}cc`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"#000",fontWeight:700,border:`1px solid ${color}` }}>▶</div>
         {w.videoSource==="fkh"&&<div style={{ position:"absolute",top:4,right:4,background:"#15803d",color:"#fff",fontSize:7,fontWeight:800,padding:"2px 5px",borderRadius:4,letterSpacing:"0.06em" }}>{w.trainer?"✦ ORIGINAL":"✦ FKH"}</div>}
       </div>

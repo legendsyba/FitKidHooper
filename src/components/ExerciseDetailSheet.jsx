@@ -11,6 +11,7 @@ import { BENEFIT_MAP, ALL_EXERCISES } from "../data/trainingCatalog.js";
 import { getChainForExercise, getChainStatus } from "../lib/progressionChains.js";
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
+import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
 
 function ExerciseSetTracker({
@@ -665,9 +666,11 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               role="button" tabIndex={0} aria-label={`Play ${exercise.videoTitle || exercise.name}`}
               onKeyDown={e => { if (e.key === "Enter" || e.key === " ") setVideoPlaying(true); }}
               style={{ display:"block",position:"relative",background:"#000",aspectRatio:"16/9",overflow:"hidden",cursor:"pointer" }}>
-              <img src={`https://img.youtube.com/vi/${exercise.videoId}/hqdefault.jpg`}
-                alt={exercise.videoTitle}
-                style={{ width:"100%",height:"100%",objectFit:"cover",display:"block",pointerEvents:"none" }}/>
+              {ownThumbnail(exercise)
+                ? <img src={ownThumbnail(exercise)} alt={exercise.videoTitle}
+                    style={{ width:"100%",height:"100%",objectFit:"cover",display:"block",pointerEvents:"none" }}/>
+                : <div aria-hidden="true" style={{ width:"100%",height:"100%",display:"block",pointerEvents:"none",
+                    background:thumbBackdrop(exercise.videoId||exercise.name,color) }}/>}
               <div style={{ position:"absolute",inset:0,background:"linear-gradient(to top,rgba(0,0,0,0.55) 0%,transparent 55%)",pointerEvents:"none" }}/>
               <div style={{ position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",
                 width:64,height:64,borderRadius:"50%",background:"rgba(0,0,0,0.72)",border:`2.5px solid ${color}`,
