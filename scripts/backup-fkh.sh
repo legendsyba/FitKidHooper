@@ -118,9 +118,10 @@ fi
   echo "auth.sql is not optional; password hashes live there and nowhere else."
 } > "$OUT/MANIFEST.txt"
 
-# Keep the last few and drop the rest. A snapshot is ~47MB, almost all of it the
-# training videos, so unbounded weekly runs quietly eat a couple of GB a year.
-KEEP="${FKH_BACKUP_KEEP:-6}"
+# Keep the newest plus three prior and drop the rest — about a month of weekly
+# cover, ~190MB. A snapshot is ~47MB, almost all of it training videos that
+# rarely change, so unbounded weekly runs quietly eat a couple of GB a year.
+KEEP="${FKH_BACKUP_KEEP:-4}"
 PRUNED=0
 while IFS= read -r old; do
   rm -rf "$old"
