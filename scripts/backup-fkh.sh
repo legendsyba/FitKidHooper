@@ -118,6 +118,16 @@ fi
   echo "auth.sql is not optional; password hashes live there and nowhere else."
 } > "$OUT/MANIFEST.txt"
 
+# Keep the last few and drop the rest. A snapshot is ~47MB, almost all of it the
+# training videos, so unbounded weekly runs quietly eat a couple of GB a year.
+KEEP="${FKH_BACKUP_KEEP:-6}"
+PRUNED=0
+while IFS= read -r old; do
+  rm -rf "$old"
+  PRUNED=$((PRUNED + 1))
+done < <(ls -1d "$OUT_ROOT"/*/ 2>/dev/null | sort -r | tail -n +$((KEEP + 1)))
+
 echo
 echo "✓ done — $(du -sh "$OUT" | cut -f1) in $OUT"
+[[ "$PRUNED" -gt 0 ]] && echo "  pruned $PRUNED older snapshot(s), keeping $KEEP"
 echo "  Keep it encrypted. It contains personal data about children."
