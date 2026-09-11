@@ -1,10 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import {
-  NBA_PLAY_LIKE_ACTIVE,
-  NBA_PLAY_LIKE_LEGENDS,
-  PLAY_LIKE_QUICK_PICKS,
-  filterPlayers,
-} from "../lib/nbaPlayers.js";
+import { filterPlayers } from "../lib/nbaPlayers.js";
 
 function PlayerListSheet({ open, onClose, query, onQueryChange, results, value, onPick, accent }) {
   const inputRef = useRef(null);
@@ -94,7 +89,18 @@ function PlayerListSheet({ open, onClose, query, onQueryChange, results, value, 
 }
 
 /**
- * Searchable player field with live typeahead + magnifying-glass list browser.
+ * Searchable player field: live typeahead, with the magnifying glass opening the
+ * full list for anyone who would rather browse than type.
+ *
+ * A row of suggested names used to sit under the empty field. It read as the menu
+ * rather than as examples — and on the settings screen, where three of these stack
+ * up, it was forty-eight names before you had typed anything. Typing a name is the
+ * faster path for someone who knows the answer, and the browse sheet is a better
+ * answer for someone who does not.
+ *
+ * Free text is preserved on purpose: plenty of kids play like someone who is not
+ * in the NBA.
+ *
  * pool: "active" | "legends" | "both"
  */
 export default function PlayerPicker({
@@ -103,7 +109,6 @@ export default function PlayerPicker({
   onPick,
   pool = "both",
   placeholder = "Search players…",
-  quickPicks = PLAY_LIKE_QUICK_PICKS,
   accent = "#f97316",
   maxInlineResults = 8,
 }) {
@@ -116,23 +121,6 @@ export default function PlayerPicker({
      frame before correcting itself. */
   const [draftFor, setDraftFor] = useState(value);
   if (draftFor !== value) { setDraftFor(value); setDraft(value || ""); }
-
-  const chip = (active) => ({
-    padding: "6px 11px",
-    borderRadius: 20,
-    fontSize: 11,
-    fontWeight: 600,
-    cursor: "pointer",
-    background: active ? `${accent}20` : "rgba(255,255,255,0.04)",
-    border: `1.5px solid ${active ? accent : "rgba(255,255,255,0.1)"}`,
-    color: active ? accent : "#64748b",
-  });
-
-  const quick = quickPicks.filter(n => {
-    if (pool === "active") return NBA_PLAY_LIKE_ACTIVE.includes(n);
-    if (pool === "legends") return NBA_PLAY_LIKE_LEGENDS.includes(n);
-    return true;
-  });
 
   const inlineResults = useMemo(() => {
     const q = draft.trim();
@@ -247,16 +235,6 @@ export default function PlayerPicker({
           </ul>
         )}
       </div>
-
-      {!draft.trim() && quick.length > 0 && (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
-          {quick.map(name => (
-            <button key={name} type="button" onClick={() => pick(name)} style={chip(value === name)}>
-              {name}
-            </button>
-          ))}
-        </div>
-      )}
 
       <PlayerListSheet
         open={listOpen}

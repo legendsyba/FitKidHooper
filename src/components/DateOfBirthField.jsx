@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 /**
  * Birthday entry as three lists instead of a date picker.
@@ -47,14 +47,15 @@ export default function DateOfBirthField({
 }) {
   const [parts, setParts] = useState(() => partsOf(value));
 
-  // Follow the value when it changes from outside (a cloud restore, a reset),
-  // but never fight the half-filled state the person is in the middle of typing.
-  useEffect(() => {
-    if (!value) return;
-    const next = partsOf(value);
-    setParts((cur) =>
-      cur.y === next.y && cur.m === next.m && cur.d === next.d ? cur : next);
-  }, [value]);
+  /* Follow the value when it changes from outside — a cloud restore, a reset —
+     but never fight the half-filled state someone is in the middle of. Adjusted
+     during render rather than in an effect, matching PlayerPicker: an effect
+     shows the stale birthday for a frame before correcting itself. */
+  const [syncedTo, setSyncedTo] = useState(value);
+  if (syncedTo !== value) {
+    setSyncedTo(value);
+    if (value) setParts(partsOf(value));
+  }
 
   const { minYear, maxYear } = useMemo(() => ({
     minYear: min ? Number(min.slice(0, 4)) : new Date().getFullYear() - 100,
