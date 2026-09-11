@@ -17,6 +17,7 @@ import { needsParentConsent } from "../lib/parentConsent.js";
 import { POSITIONS } from "../lib/identity.js";
 import PlayerPicker from "./PlayerPicker.jsx";
 import DateOfBirthField from "./DateOfBirthField.jsx";
+import { getHandoff } from "../lib/legendsHandoff.js";
 
 const EXPERIENCE_OPTIONS = [
   ["beginner", "🌱 Beginner"],
@@ -66,6 +67,9 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
   const [passcode, setPasscode] = useState("");
   const [passcode2, setPasscode2] = useState("");
   const [recoveryEmail, setRecoveryEmail] = useState("");
+  /* Set when the athlete arrived from the Legends parent portal with a signed
+     token: their parent's address, and whether the household is registered. */
+  const [handoff, setHandoff] = useState(null);
   const [usernameStatus, setUsernameStatus] = useState(null);
 
   const [verifyMode, setVerifyMode] = useState(false);
@@ -78,6 +82,19 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+
+  /* The token was already spent at boot; this just picks up the answer. Failure
+     is silent on purpose: a handoff that does not work must leave an ordinary
+     signup behind it, never a blocked one. */
+  useEffect(() => {
+    let cancelled = false;
+    getHandoff().then(result => {
+      if (cancelled || !result) return;
+      setHandoff(result);
+      setRecoveryEmail(prev => (prev.trim() ? prev : result.email));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   const { min: minDob, max: maxDob } = useMemo(() => dobBounds(), []);
   const normUser = normalizeUsername(username);
@@ -228,7 +245,15 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     try {
       // Same Legends gate the sign-in sheet uses. Onboarding is the FRONT DOOR for
       // a new athlete, so leaving it ungated made the gate decorative.
-      const gate = await checkLegendsAccess({ email: recoveryEmail });
+      // A portal handoff already answered this question, server-side, for this
+      // exact address — but only for THAT address. If the parent typed a different
+      // one into the field, the token says nothing about it and the gate runs.
+      const handoffCovers =
+        handoff?.eligible &&
+        handoff.email === recoveryEmail.trim().toLowerCase();
+      const gate = handoffCovers
+        ? { allow: true, reason: "eligible", via: "family", videoEligible: true }
+        : await checkLegendsAccess({ email: recoveryEmail });
       // The gate never runs again after signup — write its answer down.
       rememberLegendsAccess(gate);
       if (!gate.allow) {
@@ -515,6 +540,20 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
             </div>
           )}
           <label style={labelStyle}>{needsConsent ? "Parent's email" : "Your email"}</label>
+          {/* Say where the address came from. A field that fills itself in is
+              unnerving unless you are told why — and this one came from the
+              parent being signed in at Legends a moment ago. */}
+          {handoff && (
+            <div style={{ display: "flex", alignItems: "center", gap: 7, margin: "-2px 0 8px",
+              fontSize: 11.5, lineHeight: 1.4, color: handoff.eligible ? "#4ade80" : "#94a3b8" }}>
+              <span aria-hidden>{handoff.eligible ? "✓" : "•"}</span>
+              <span>
+                {handoff.eligible
+                  ? <>Signed in with Legends{handoff.firstName ? <> as {handoff.firstName}</> : null} — nothing else to check.</>
+                  : <>From your Legends account. Register a season to unlock everything.</>}
+              </span>
+            </div>
+          )}
           <input type="email" value={recoveryEmail} onChange={e => setRecoveryEmail(e.target.value)}
             placeholder={needsConsent ? "grown-up@email.com" : "you@email.com"} style={inputStyle} />
           {needsConsent ? (
