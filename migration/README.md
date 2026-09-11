@@ -1,41 +1,64 @@
 # Cutover assets — old origin → Legends
 
-Drafts for phase 2 (cutover) of the Legends handover. Nothing here is wired into the build; these
-files are deployed by hand to the **old** origin as its final release.
+Phase 2 (cutover) of the Legends handover. Nothing here is wired into the build.
 
-| File | Where it goes | Job |
+| File | Status | Job |
 |---|---|---|
-| `index.html` | `/FitKidHooper/index.html` on the old origin | The "we've moved" page, with install steps and a local-data escape hatch |
-| `sw.js` | `/FitKidHooper/sw.js` on the old origin | Replaces the Workbox service worker: clears caches, stops serving the stale app, keeps push alive |
-| `email-we-moved.md` | Resend | One-off send to the 9 known addresses, after the new address is live |
+| `email-we-moved.md` | **the live plan** | One-off send to the 9 known addresses |
+| `index.html` | shelved | "We've moved" page for the old origin, with install steps and a local-data escape hatch |
+| `sw.js` | shelved | Kill-switch service worker: clears caches, stops serving the stale app, keeps push alive |
 
-Set the new address in **three** places before deploying: `NEW_APP_URL` in `sw.js`, and
-`NEW_APP_URL` plus the `<a class="cta">` href in `index.html`.
+The two shelved files are kept because they remain the right answer if the old origin is
+ever serveable again, and as the pattern for any future origin move. Both already name
+`https://app.legendsyba.com/`.
 
-## Why this exists
+## Status: the kill-switch door is closed
 
-FKH is a PWA. An installed copy serves its own precached shell and only talks to the
-network for data — and the data lives in Supabase, which is *not* moving. So after the
-repo transfer the old app does not break loudly; it keeps working against the same
-database, forever, on an unmaintained build. Worse, a service worker script cannot be
-updated across a cross-origin redirect, so once the old origin 301s to the new domain the
-old SW can never be replaced.
+**These two files can no longer be deployed, and the reason is worth recording.**
 
-That is the window this closes: ship the kill-switch while the old origin still serves
-its own SW same-origin.
+Setting the custom domain on the Pages site made GitHub 301 *everything* under the old
+origin — including `sw.js`:
+
+```
+GET https://rcarrier32.github.io/FitKidHooper/sw.js
+  → 301 https://app.legendsyba.com/sw.js
+```
+
+A service worker script cannot be updated across a redirect; the spec rejects it. So the
+old service worker can never be replaced, and nothing new can be served at the old origin
+while the custom domain is set. The window this was written for closed the moment the
+domain went live, one step earlier than the plan assumed.
+
+## What that actually costs
+
+Less than it sounds. The old installs are frozen, not broken:
+
+- They serve their precached shell and keep talking to the same Supabase project, which
+  is not moving. Everything still works; it just never updates again.
+- They still call the Legends eligibility endpoint from the old origin, which is why
+  `https://rcarrier32.github.io` stays in the allow-list in that repo's
+  `app/api/fkh/verify/route.ts`.
+- Push still reaches them. The subscription is tied to the origin and the VAPID keypair,
+  both unchanged, and `send-push` now sends absolute `app.legendsyba.com` links.
+
+So the way to move someone off a frozen install is to ask them to: open the new address,
+re-add it, delete the old icon. That is exactly what the email says.
+
+## If you ever need the kill-switch anyway
+
+Remove the custom domain from Pages, deploy these two files, wait for each device to open
+the app once, then re-add the domain and let the certificate reissue. Only worth it if a
+meaningful number of people are stuck on old installs and not reachable by email — which
+is not the case today.
 
 ## Order of operations
 
-1. **New address live and verified.** Don't announce anything that isn't working.
-2. **Push first, if you're using it.** The kill-switch SW rewrites the push handler to
-   the "we moved" notification, so any migration push must go out *before or after* this
-   deploy — decide which, and note that a later `unregister()` release would kill the
-   subscription for good. (Reach today: 1 device.)
-3. **Deploy these two files** to the old origin, replacing the built app. Everyone who
-   opens the old icon now lands on the moved page instead of the zombie app.
-4. **Send the email** to the 9 addresses.
-5. **Then** transfer the repo and the Supabase project. Neither is user-visible once the
-   address has moved.
+1. ~~New address live and verified.~~ Done — `app.legendsyba.com`, 11 Sep 2026.
+2. ~~Deploy the kill-switch.~~ No longer possible; see above.
+3. **Send the email** to the 9 addresses. This is now the whole of the cutover.
+4. Optionally fire one push to the single old-origin subscriber, as a test of the channel
+   rather than as outreach.
+5. **Then** transfer the repo and the Supabase project. Neither is user-visible.
 
 ## Verifying the kill-switch
 
