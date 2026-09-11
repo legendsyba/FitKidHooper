@@ -11,7 +11,7 @@
 Sends one approval email per athlete to a parent/guardian inbox. Each email contains a signing link:
 
 ```
-https://rcarrier32.github.io/FitKidHooper/?consent={token}
+https://app.legendsyba.com/?consent={token}
 ```
 
 The parent signs on their own device. Account consent is required; live video workouts are a separate optional checkbox. Declining video does not affect the account.

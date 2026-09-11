@@ -1,6 +1,6 @@
 # FKH Fit Kid Hooper — Observation Log
 
-**App:** https://rcarrier32.github.io/FitKidHooper/  
+**App:** https://app.legendsyba.com/  
 **Backend:** [supabase.com](https://supabase.com) (one project for leaderboard + analytics + video hosting)  
 **Goal:** Learn from real athlete behavior to drive product decisions for the first ~100 users.
 
@@ -33,8 +33,8 @@ Infrastructure is connected. The app sends events when athletes use it.
 
 | Resource | URL |
 |----------|-----|
-| Production app | https://rcarrier32.github.io/FitKidHooper/ |
-| Admin dashboard | https://rcarrier32.github.io/FitKidHooper/?admin=KEY *(key in your password manager / `.env.local`)* |
+| Production app | https://app.legendsyba.com/ |
+| Admin dashboard | https://app.legendsyba.com/?admin=KEY *(key in your password manager / `.env.local`)* |
 | Verify locally | `npm run verify:supabase` |
 
 ### Setup checklist (completed)
@@ -223,7 +223,7 @@ select message, created_at from feedback_bugs limit 20;
 ```
 
 **Or** open the admin dashboard (use your key from `.env.local`):  
-https://rcarrier32.github.io/FitKidHooper/?admin=YOUR_KEY
+https://app.legendsyba.com/?admin=YOUR_KEY
 
 ---
 
@@ -309,7 +309,7 @@ https://rcarrier32.github.io/FitKidHooper/?admin=YOUR_KEY
 | Tracked event types | 16 |
 | Analytics SQL views | 17 |
 | In-app feedback | Settings → Feedback Center |
-| Admin dashboard | `https://rcarrier32.github.io/FitKidHooper/?admin=YOUR_KEY` |
+| Admin dashboard | `https://app.legendsyba.com/?admin=YOUR_KEY` |
 
 ---
 

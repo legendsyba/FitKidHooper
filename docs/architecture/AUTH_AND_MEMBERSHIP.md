@@ -8,7 +8,7 @@
 
 ## 1. Where we are today (verified against code)
 
-**FKH** — Supabase project `jjwaspyuldkwasfyrqbw`, GitHub Pages SPA (`base: /FitKidHooper/`).
+**FKH** — Supabase project `jjwaspyuldkwasfyrqbw`, GitHub Pages SPA at `app.legendsyba.com` (`base: /`).
 
 ### Auth & identity
 
@@ -204,7 +204,7 @@ Server-to-server with a shared secret. Opaque one-time grant exchanged at redeem
 When a registration becomes `registered`, Legends mints an opaque `grant_id` and delivers:
 
 ```
-https://rcarrier32.github.io/FitKidHooper/?claim=<grant_id>
+https://app.legendsyba.com/?claim=<grant_id>
 ```
 
 Surfaces: registration confirmation email, guardian portal "Get the FKH app" button, admin bulk invite.

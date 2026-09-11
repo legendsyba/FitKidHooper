@@ -176,7 +176,7 @@ select * from analytics_onboarding_daily limit 14;
 ## In-app surfaces
 
 - **Feedback Center** — Me → Send feedback, Help → Send feedback, or Settings → Open Feedback Center (thumbs, 1–5 stars, category, message).
-- **Admin dashboard** — `https://rcarrier32.github.io/FitKidHooper/?admin=YOUR_KEY` (key in GitHub secrets / `.env.local`). Click any stat card or table row to drill down; nested drill opens athlete event timelines. **Live event feed** in the header shows the latest 100 events.
+- **Admin dashboard** — `https://app.legendsyba.com/?admin=YOUR_KEY` (key in GitHub secrets / `.env.local`). Click any stat card or table row to drill down; nested drill opens athlete event timelines. **Live event feed** in the header shows the latest 100 events.
 
 ## Telegram alerts (founder)
 
