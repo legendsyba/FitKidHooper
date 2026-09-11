@@ -100,8 +100,9 @@ if [[ -z "$BUCKETS" ]]; then
 else
   while IFS= read -r bucket; do
     echo "    $bucket"
-    mkdir -p "$OUT/storage/$bucket"
-    $SUPA storage cp -r "ss:///$bucket" "$OUT/storage/$bucket" --linked --experimental >/dev/null
+    # cp recreates the bucket folder itself, so copy into storage/ — passing
+    # storage/$bucket lands everything at storage/<bucket>/<bucket>/…
+    $SUPA storage cp -r "ss:///$bucket" "$OUT/storage" --linked --experimental >/dev/null
   done <<< "$BUCKETS"
 fi
 
