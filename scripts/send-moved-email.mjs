@@ -3,6 +3,7 @@
  * The one-off "Fit Kid Hooper has moved" send.
  *
  *   node scripts/send-moved-email.mjs                  # dry run — who, and what they'd get
+ *   node scripts/send-moved-email.mjs --preview        # write the rendered email to a file
  *   node scripts/send-moved-email.mjs --to you@ex.com  # one real send, to yourself
  *   node scripts/send-moved-email.mjs --send           # the real thing
  *
@@ -19,7 +20,7 @@
  * Copy lives in migration/email-we-moved.md — edit there, not here.
  */
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -30,6 +31,7 @@ const has = (f) => args.includes(f);
 const valueOf = (f) => { const i = args.indexOf(f); return i >= 0 ? args[i + 1] : null; };
 
 const SEND = has("--send");
+const PREVIEW = has("--preview");
 const ONE = valueOf("--to");
 const SHOW = has("--show-addresses");
 
@@ -91,6 +93,23 @@ const html = `
   <p style="font-size:13px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:14px;margin-top:22px">
      Legends Youth Basketball Association · <a href="mailto:info@legendsyba.com" style="color:#64748b">info@legendsyba.com</a></p>
 </div>`;
+
+/* Read it before nine families do. Same html as the send, so the preview cannot
+   drift from what actually goes out. */
+if (PREVIEW) {
+  const out = valueOf("--preview") || join(ROOT, "migration", "preview.html");
+  writeFileSync(out, `<!doctype html><meta charset="utf-8"><title>${subject}</title>
+<div style="background:#f1f5f9;padding:24px;font-family:system-ui,sans-serif">
+  <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:26px">
+    <p style="margin:0 0 4px;font-size:12px;color:#64748b">From: ${FROM}</p>
+    <p style="margin:0 0 18px;font-size:12px;color:#64748b">Subject: <strong>${subject}</strong></p>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:0 0 18px">
+    ${html}
+  </div>
+</div>`);
+  console.log(`\nWrote the rendered email to ${out}\n`);
+  process.exit(0);
+}
 
 const list = recipients();
 
