@@ -32,7 +32,7 @@ const btnGhost = (P) => ({
   fontSize: 12, fontWeight: 700, cursor: "pointer",
 });
 
-export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent: consentFromProfile = true, firstName = "", lastName = "", askBirthday = false, onBirthday }) {
+export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent: consentFromProfile = true, firstName = "", lastName = "", askBirthday = false, onBirthday, admin = false }) {
   const [mode, setMode] = useState(initialMode);
   /* Onboarding no longer asks for a birthday, so a kid saving their player
      may not have one yet. It decides who signs off on the account, so it is
@@ -57,9 +57,11 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
   const dobMin = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toLocaleDateString("en-CA");
 
   // In the athlete app, creating an account means a kid saving their player —
-  // so it collects a PARENT's email + consent (COPPA). Admin sign-in passes
-  // parentConsent={false} to keep the plain form.
-  const nameLabel = parentConsent ? "Jersey Name" : "username";
+  // so it collects a PARENT's email + consent (COPPA) under 13. A 13+ athlete
+  // skips the grown-up step but is still saving a player, not "creating an
+  // account" — only the admin sign-in (admin) gets the plain form.
+  const kid = !admin;
+  const nameLabel = kid ? "Jersey Name" : "username";
   const consentOk = !parentConsent || (isParent && readPrivacy);
 
   const isError = status && !status.includes("sent") && !status.includes("Check") && !status.includes("created");
@@ -205,7 +207,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
 
   const title = {
     signin: "Sign In",
-    signup: parentConsent ? "Save My Player" : "Create Account",
+    signup: kid ? "Save My Player" : "Create Account",
     forgot: "Forgot Passcode",
     verify: parentConsent ? "One step for a grown-up" : "Verify Email",
     reset: "New Passcode",
@@ -228,7 +230,9 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
           {mode === "signin" && "Back up progress, sync across devices, and add friends on Challenges."}
           {mode === "signup" && (parentConsent
             ? "Save your player so you never lose your streak, badges, or XP. Pick a Jersey Name and passcode — then a parent finishes one quick step."
-            : "Pick a username and 6-digit passcode. Add a recovery email in case you forget.")}
+            : kid
+              ? "Save your player so you never lose your streak, badges, or XP. Pick a Jersey Name, a 6-digit passcode, and add your email in case you forget."
+              : "Pick a username and 6-digit passcode. Add a recovery email in case you forget.")}
           {mode === "forgot" && "Enter your Jersey Name or parent email. We'll send a 6-digit code."}
           {mode === "verify" && (parentConsent
             ? "We sent a 6-digit code to the parent's email. Enter it to save this player."
@@ -262,7 +266,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
               {busy ? "Signing in…" : "Sign in"}
             </button>
             <button type="button" onClick={() => { setMode("signup"); setStatus(null); }} style={btnGhost(P)}>
-              {parentConsent ? "New here? Save your player" : "Create account"}
+              {kid ? "New here? Save your player" : "Create account"}
             </button>
             <button type="button" onClick={() => { setMode("forgot"); setStatus(null); }} style={btnGhost(P)}>
               Forgot passcode?
@@ -307,7 +311,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
               type="email"
               value={recoveryEmail}
               onChange={e => setRecoveryEmail(e.target.value)}
-              placeholder={parentConsent ? "Parent / guardian email" : "recovery email"}
+              placeholder={parentConsent ? "Parent / guardian email" : kid ? "Your email" : "recovery email"}
               style={inputStyle(P)}
             />
             <input
@@ -318,6 +322,12 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
               autoCorrect="off"
               style={inputStyle(P)}
             />
+            {kid && !parentConsent && (
+              <p style={{ fontSize: 12, color: "var(--fkh-text-muted)", lineHeight: 1.45, margin: "2px 0 14px" }}>
+                We&apos;ll email you a code to confirm it&apos;s you. Read the{" "}
+                <a href={`${import.meta.env.BASE_URL}privacy.html`} target="_blank" rel="noopener noreferrer" style={{ color: P, fontWeight: 700 }}>privacy notice</a>.
+              </p>
+            )}
             {parentConsent && (
               <div style={{ display: "grid", gap: 10, margin: "2px 0 14px" }}>
                 <label style={{ display: "flex", gap: 10, alignItems: "flex-start", cursor: "pointer", fontSize: 12.5, color: "var(--fkh-text-muted)", lineHeight: 1.45 }}>
@@ -333,10 +343,10 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
               </div>
             )}
             <button type="submit" disabled={busy || !consentOk} style={btnPrimary(P, busy || !consentOk)}>
-              {busy ? "Saving…" : parentConsent ? "Save My Player" : "Create account"}
+              {busy ? "Saving…" : kid ? "Save My Player" : "Create account"}
             </button>
             <button type="button" onClick={() => { setMode("signin"); setStatus(null); }} style={btnGhost(P)}>
-              {parentConsent ? "Already have a player? Log in" : "Already have an account? Sign in"}
+              {kid ? "Already have a player? Log in" : "Already have an account? Sign in"}
             </button>
           </form>
         ) : mode === "forgot" ? (

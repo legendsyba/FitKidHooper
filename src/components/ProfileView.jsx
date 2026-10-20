@@ -37,7 +37,7 @@ export default function ProfileView({
               : `Age ${calcAge(settings.dateOfBirth)}`}
           </div>
         ) : (
-          <div style={{ fontSize:11,color:"#334155",textAlign:"center",marginTop:10 }}>Set your birthday below in My Player</div>
+          <div style={{ fontSize:11,color:"#334155",textAlign:"center",marginTop:10 }}>Tap Edit to add your birthday</div>
         )}
       </div>
       )}

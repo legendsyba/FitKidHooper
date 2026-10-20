@@ -802,21 +802,29 @@ export default function ProgramsView({
               <div style={{ fontFamily:"'DM Mono',monospace",fontSize:9,letterSpacing:"0.14em",color:`${P}70`,textTransform:"uppercase",marginBottom:8,marginTop:searchResults.programs.length?12:0 }}>Exercises</div>
               {searchResults.exercises.map(ex => {
                 const catInfo = cats[ex._cat] || { emoji:"🏀", label:ex._cat };
+                /* Row, not a button: the favorite star is its own button, and a
+                   button inside a button is invalid — some phones send the
+                   star's tap to the row and open the drill instead. */
                 return (
-                  <button key={ex.id} type="button" onClick={() => openExercise(ex)} style={{
-                    width:"100%",padding:"10px 12px",marginBottom:6,borderRadius:10,border:`1px solid ${bd}`,
-                    background:SF,cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:10,
+                  <div key={ex.id} style={{
+                    display:"flex",alignItems:"center",marginBottom:6,borderRadius:10,border:`1px solid ${bd}`,background:SF,
                   }}>
-                    <span>{catInfo.emoji}</span>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:12,fontWeight:700,color:isDone(ex.id)?"#22c55e":"var(--fkh-text)" }}>{ex.name}</div>
-                      <div style={{ fontSize:10,color:"#64748b" }}>{catInfo.label}</div>
-                    </div>
-                    <button type="button" onClick={e => { e.stopPropagation(); toggleFav("exercises", ex.id); }}
-                      style={{ background:"none",border:"none",fontSize:14,cursor:"pointer",color:isFav("exercises",ex.id)?"#fbbf24":"#475569" }}>
+                    <button type="button" onClick={() => openExercise(ex)} style={{
+                      flex:1,minWidth:0,padding:"10px 12px",border:"none",background:"none",
+                      cursor:"pointer",textAlign:"left",display:"flex",alignItems:"center",gap:10,
+                    }}>
+                      <span>{catInfo.emoji}</span>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:12,fontWeight:700,color:isDone(ex.id)?"#22c55e":"var(--fkh-text)" }}>{ex.name}</div>
+                        <div style={{ fontSize:10,color:"#64748b" }}>{catInfo.label}</div>
+                      </div>
+                    </button>
+                    <button type="button" onClick={() => toggleFav("exercises", ex.id)}
+                      aria-label={isFav("exercises",ex.id) ? "Remove from favorites" : "Add to favorites"}
+                      style={{ background:"none",border:"none",fontSize:14,cursor:"pointer",padding:"10px 12px",color:isFav("exercises",ex.id)?"#fbbf24":"#475569" }}>
                       {isFav("exercises",ex.id)?"⭐":"☆"}
                     </button>
-                  </button>
+                  </div>
                 );
               })}
             </>

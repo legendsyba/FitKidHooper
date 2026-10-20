@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { athleteHasPriorUsage, FIRST_EXERCISE_EVENT } from './lib/athleteExperience.js'
 
 const DISMISSED_KEY = 'fkh-install-dismissed'
 
@@ -19,7 +20,19 @@ export default function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(() => window._installPrompt || null)
   const [show, setShow] = useState(false)
 
+  /* Not before the first drill. A brand-new kid lands on Home with one job —
+     start today's practice — and this was the first thing covering it. Once a
+     drill is done, asking to keep the app is earned. */
+  const [hasTrained, setHasTrained] = useState(() => athleteHasPriorUsage())
   useEffect(() => {
+    if (hasTrained) return
+    const onFirst = () => setHasTrained(true)
+    window.addEventListener(FIRST_EXERCISE_EVENT, onFirst)
+    return () => window.removeEventListener(FIRST_EXERCISE_EVENT, onFirst)
+  }, [hasTrained])
+
+  useEffect(() => {
+    if (!hasTrained) return
     if (isStandalone() || localStorage.getItem(DISMISSED_KEY)) return
 
     // If prompt was already captured before React mounted, show immediately
@@ -50,7 +63,7 @@ export default function InstallBanner() {
       window.removeEventListener('installpromptready', onPromptReady)
       clearTimeout(fallback)
     }
-  }, [])
+  }, [hasTrained])
 
   useEffect(() => {
     const handler = () => setShow(false)

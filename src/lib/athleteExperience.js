@@ -4,6 +4,8 @@
  */
 
 export const FIRST_EXERCISE_KEY = "fkh-analytics-first-exercise";
+/** Fired on window the moment a device records its first finished drill. */
+export const FIRST_EXERCISE_EVENT = "fkh-first-exercise";
 
 /** True when the athlete has never completed a drill on this device. */
 export function isNewAthlete() {

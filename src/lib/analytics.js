@@ -1,5 +1,5 @@
 import { getDeviceAthleteId as getAthleteId, readStoredAuthSession } from "./auth.js";
-import { FIRST_EXERCISE_KEY } from "./athleteExperience.js";
+import { FIRST_EXERCISE_KEY, FIRST_EXERCISE_EVENT } from "./athleteExperience.js";
 import { getSupabaseClient, isSupabaseConfigured, getSupabaseRest } from "./supabaseClient.js";
 import { ANALYTICS_EVENTS } from "./analyticsTypes.js";
 
@@ -323,6 +323,7 @@ export function trackExerciseComplete(exerciseId, source = "unknown", extra = {}
   if (isFirst) {
     localStorage.setItem(FIRST_EXERCISE_KEY, new Date().toISOString());
     track(ANALYTICS_EVENTS.FIRST_EXERCISE_COMPLETE, { exercise_id: exerciseId, source });
+    try { window.dispatchEvent(new Event(FIRST_EXERCISE_EVENT)); } catch { /* non-browser */ }
   }
 }
 
