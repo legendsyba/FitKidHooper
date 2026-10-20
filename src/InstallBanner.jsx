@@ -97,7 +97,7 @@ export default function InstallBanner() {
       <span style={{ fontSize: 28, flexShrink: 0 }}>🏀</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#f97316', marginBottom: 4 }}>
-          Install FTH Fit Kid Hooper
+          Install FKH
         </div>
 
         {ios && (
