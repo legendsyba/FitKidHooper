@@ -81,6 +81,11 @@ export default function TodayView({
   workoutTemplates,
   searchExercises,
   onOpenProgramsSection,
+  finishedProgram,
+  nextProgram,
+  onStartProgram,
+  onDismissNextStep,
+  onBrowsePrograms,
   onPickCategory,
   onOpenPath,
   onSetFavorite,
@@ -275,6 +280,56 @@ export default function TodayView({
 
   return (
     <>
+      {/* Just finished a program: the finished one is history now, so Home's job is the
+          next choice — one tap to start the recommended step, or go pick something else.
+          Stays until they start a program or wave it off. */}
+      {finishedProgram && (
+        <div style={{ margin:"0 20px 12px", padding:"15px", borderRadius:18,
+          border:`1px solid ${finishedProgram.color}55`,
+          background:`linear-gradient(160deg, ${finishedProgram.color}1f, ${BG} 75%)`, position:"relative" }}>
+          <button type="button" aria-label="Dismiss" onClick={onDismissNextStep}
+            style={{ position:"absolute", top:8, right:8, width:28, height:28, borderRadius:8, border:"none",
+              background:"transparent", color:"#64748b", fontSize:15, cursor:"pointer" }}>✕</button>
+          <div style={{ fontSize:22, lineHeight:1 }}>🎉</div>
+          <div style={{ fontSize:16, fontWeight:800, color:"var(--fkh-text)", marginTop:6, paddingRight:24, lineHeight:1.25 }}>
+            You finished {finishedProgram.name}!
+          </div>
+          {nextProgram ? (
+            <>
+              <div style={{ fontSize:12, color:"#94a3b8", marginTop:3 }}>
+                {nextProgram.advancedOf === finishedProgram.id ? "You unlocked the next level:" : "Ready for your next program?"}
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:11, padding:"10px 11px",
+                borderRadius:12, background:"rgba(255,255,255,0.04)", border:`1px solid ${nextProgram.color}33` }}>
+                <span style={{ fontSize:26, lineHeight:1 }}>{nextProgram.emoji}</span>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13.5, fontWeight:800, color:"var(--fkh-text)" }}>{nextProgram.name}</div>
+                  <div style={{ fontSize:11, color:"#64748b", marginTop:1 }}>
+                    {nextProgram.level ? `Level ${nextProgram.level} · ` : ""}{nextProgram.duration} weeks · {nextProgram.daysPerWeek}×/week
+                  </div>
+                </div>
+              </div>
+              <button type="button" onClick={() => { trackCtaClicked("start_next_program", { program_id: nextProgram.id }); onStartProgram(nextProgram); }}
+                style={{ width:"100%", marginTop:11, padding:14, borderRadius:14, border:"none", cursor:"pointer",
+                  background:nextProgram.color, color:"#fff", fontSize:15, fontWeight:800 }}>
+                Start {nextProgram.name} →
+              </button>
+              <button type="button" onClick={onBrowsePrograms}
+                style={{ width:"100%", marginTop:6, padding:9, border:"none", background:"transparent",
+                  color:"#94a3b8", fontSize:12, fontWeight:700, cursor:"pointer" }}>
+                Pick something else
+              </button>
+            </>
+          ) : (
+            <button type="button" onClick={onBrowsePrograms}
+              style={{ width:"100%", marginTop:12, padding:14, borderRadius:14, border:"none", cursor:"pointer",
+                background:finishedProgram.color, color:"#fff", fontSize:15, fontWeight:800 }}>
+              Pick your next program →
+            </button>
+          )}
+        </div>
+      )}
+
       {/* The hero, per the study: where you are, what's next, one action. It
           sits above Today's Mission rather than inside it, so collapsing the
           section can never hide the primary action — and the task list below
@@ -636,7 +691,7 @@ export default function TodayView({
       {/* My Programs moved to the Programs tab, which left a kid with no plan
           no route to one from home. One dashed row, only when nothing is
           enrolled. */}
-      {enrolledList.length === 0 && (() => {
+      {enrolledList.length === 0 && !finishedProgram && (() => {
         const picks = programs.slice(0, 2).map(pr => pr.name);
         const rest = Math.max(0, programs.length - picks.length);
         const weeks = programs[0]?.weeks?.length;

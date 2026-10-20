@@ -13,7 +13,6 @@ import {
   getActiveProgramScheduleStatus,
   programWeekDayIndex,
   programCompletionCount,
-  freshProgramEntry,
   programSessionExerciseIds,
   programDose,
 } from "../lib/programProgress.js";
@@ -122,7 +121,7 @@ export default function ProgramsView({
   enrolledPrograms,
   setEnrolledPrograms,
   programProgress,
-  setProgramProgress,
+  enrollProgram,
   programSegment,
   setProgramSegment,
   programsHubSection,
@@ -181,17 +180,7 @@ export default function ProgramsView({
   const [buildPickQuery, setBuildPickQuery] = useState("");
 
   const enrollProg = (prog) => {
-    const startDate = new Date().toLocaleDateString("en-CA");
-    const startedAt = Date.now();
-    const nextEnrolled = { ...enrolledPrograms, [prog.id]: { startDate, startedAt } };
-    setEnrolledPrograms(nextEnrolled);
-    safePersistKey("fkh-programs", nextEnrolled, { force: true });
-    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id });
-    setProgramProgress(prev => {
-      const next = { ...prev, [prog.id]: freshProgramEntry(prog, prev, startedAt) };
-      safePersistKey("fkh-program-progress", next, { force: true });
-      return next;
-    });
+    enrollProgram(prog);
     setProgramSegment("myPlan");
   };
 
@@ -340,11 +329,14 @@ export default function ProgramsView({
       const todayPlan = enrollment
         ? buildTrainingDayPlan(today, schedule, [prog], enrolledPrograms, programProgress, workouts)
         : null;
-      const isComplete = schedStatus?.kind === "programComplete";
       const timesFinished = programCompletionCount(prog, programProgress);
+      /* A finished program retires from the enrolled list, so "finished" is history, not
+         enrollment. The completing render can still see it enrolled for a moment. */
+      const finished = schedStatus?.kind === "programComplete" || (!enrollment && timesFinished > 0);
       const locked = !enrollment && isProgramLocked(prog, programs, earnedBadges);
       const baseProg = prog.advancedOf ? programs.find(p => p.id === prog.advancedOf) : null;
-      const nextProg = isComplete ? suggestNextProgram(prog.id, programs, enrolledPrograms, earnedBadges) : null;
+      const nextProg = finished ? suggestNextProgram(prog.id, programs, enrolledPrograms, earnedBadges) : null;
+      const showMarks = !!enrollment || finished;
 
       return (
         <div style={{ background:BG,minHeight:"100vh",maxWidth:680,margin:"0 auto",paddingBottom:80 }}>
@@ -431,15 +423,32 @@ export default function ProgramsView({
               )}
             </div>
 
-            {isComplete ? (
+            {finished ? (
               <>
-                <button onClick={() => { if (window.confirm("Restart this program from Week 1? Your badge stays — only the checkmarks reset.")) enrollProg(prog); }}
-                  style={{ width:"100%",padding:"13px",borderRadius:12,border:"none",background:prog.color,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",marginBottom:8,boxShadow:`0 4px 16px ${prog.color}50` }}>
-                  Restart Program ↻
-                </button>
-                <button onClick={() => { if (window.confirm("Leave this program? Your exercise progress is kept.")) unenrollProg(prog.id); }}
-                  style={{ width:"100%",padding:"9px",borderRadius:10,border:"none",background:"transparent",color:"#64748b",fontSize:11,fontWeight:600,cursor:"pointer",marginBottom:18 }}>
-                  Leave Program
+                <div style={{ marginBottom:12,padding:"14px",borderRadius:12,background:`linear-gradient(135deg,${prog.color}22,${prog.color}0c)`,border:`1px solid ${prog.color}44`,textAlign:"center" }}>
+                  <div style={{ fontSize:24,marginBottom:4 }}>🎉</div>
+                  <div style={{ fontSize:14,fontWeight:800,color:"var(--fkh-text)" }}>You finished this program!</div>
+                  <div style={{ fontSize:12,color:"#94a3b8",marginTop:3 }}>It's saved in your Completed programs.</div>
+                </div>
+                {nextProg && (
+                  <div style={{ marginBottom:10,padding:"13px 14px",borderRadius:12,background:`${nextProg.color}0c`,border:`1px solid ${nextProg.color}33` }}>
+                    <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>{nextProg.advancedOf === prog.id ? "⬆️ Level Up" : "Up Next"}</div>
+                    <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                      <ProgramIcon prog={nextProg} size={40} />
+                      <div style={{ flex:1,minWidth:0 }}>
+                        <div style={{ fontSize:13,fontWeight:800,color:"var(--fkh-text)" }}>{nextProg.name}</div>
+                        <div style={{ fontSize:11,color:"#64748b",marginTop:1 }}>{programCadenceLabel(nextProg)}</div>
+                      </div>
+                      <button onClick={() => setSelectedProgram(nextProg.id)}
+                        style={{ padding:"8px 12px",borderRadius:8,border:"none",background:nextProg.color,color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",flexShrink:0 }}>
+                        View →
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <button onClick={() => { if (window.confirm(`Start ${prog.name} again from Week 1? Your badge stays.`)) enrollProg(prog); }}
+                  style={{ width:"100%",padding:"11px",borderRadius:10,border:`1px solid ${prog.color}40`,background:"transparent",color:prog.color,fontSize:12,fontWeight:700,cursor:"pointer",marginBottom:18 }}>
+                  Do it again ↻
                 </button>
               </>
             ) : locked ? (
@@ -457,23 +466,6 @@ export default function ProgramsView({
                   Start Program →
                 </button>
             }
-
-            {isComplete && nextProg && (
-              <div style={{ marginBottom:18,padding:"13px 14px",borderRadius:12,background:`${nextProg.color}0c`,border:`1px solid ${nextProg.color}33` }}>
-                <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>{nextProg.advancedOf === prog.id ? "⬆️ Level Up" : "Up Next"}</div>
-                <div style={{ display:"flex",alignItems:"center",gap:10 }}>
-                  <ProgramIcon prog={nextProg} size={40} />
-                  <div style={{ flex:1,minWidth:0 }}>
-                    <div style={{ fontSize:13,fontWeight:800,color:"var(--fkh-text)" }}>{nextProg.name}</div>
-                    <div style={{ fontSize:11,color:"#64748b",marginTop:1 }}>{programCadenceLabel(nextProg)}</div>
-                  </div>
-                  <button onClick={() => setSelectedProgram(nextProg.id)}
-                    style={{ padding:"8px 12px",borderRadius:8,border:"none",background:nextProg.color,color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",flexShrink:0 }}>
-                    View →
-                  </button>
-                </div>
-              </div>
-            )}
 
             <div style={{ fontSize:11,color:"#64748b",lineHeight:1.55,margin:"-8px 0 16px",padding:"10px 12px",borderRadius:10,background:"rgba(255,255,255,0.03)",border:`1px solid ${bd}` }}>
               {(() => {
@@ -494,15 +486,7 @@ export default function ProgramsView({
               )}
             </div>
 
-            {enrollment && schedStatus && schedStatus.kind === "programComplete" && (
-              <div style={{ marginBottom:16,padding:"14px",borderRadius:12,background:`linear-gradient(135deg,${prog.color}22,${prog.color}0c)`,border:`1px solid ${prog.color}44`,textAlign:"center" }}>
-                <div style={{ fontSize:24,marginBottom:4 }}>🎉</div>
-                <div style={{ fontSize:14,fontWeight:800,color:"var(--fkh-text)" }}>Program Complete!</div>
-                <div style={{ fontSize:12,color:"#94a3b8",marginTop:3 }}>You finished all {prog.duration} weeks of {prog.name}.</div>
-              </div>
-            )}
-
-            {enrollment && schedStatus && schedStatus.kind !== "programComplete" && (
+            {enrollment && schedStatus && !finished && (
               <div style={{ marginBottom:16,padding:"11px 13px",borderRadius:12,background:`${prog.color}0c`,border:`1px solid ${prog.color}33` }}>
                 <div style={{ fontSize:10,fontWeight:800,color:prog.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4 }}>Today</div>
                 {schedStatus.kind === "due" && (
@@ -558,7 +542,7 @@ export default function ProgramsView({
                 </div>
 
                 {(isUnlocked || !enrollment) && week.sessions.map((session, si) => {
-                  const sDone = enrollment && sessionDone(week.week, si);
+                  const sDone = showMarks && sessionDone(week.week, si);
                   return (
                     <div key={si} style={{ margin:"0 12px 10px",borderRadius:10,
                       background:sDone ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.04)",
@@ -571,7 +555,7 @@ export default function ProgramsView({
                       </div>
                       <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
                         {(() => {
-                          const ids = enrollment
+                          const ids = showMarks
                             ? programSessionExerciseIds(prog, programProgress, week.week, si)
                             : session.exercises;
                           /* Finished under a program's previous version: show what they actually did. */
@@ -584,7 +568,7 @@ export default function ProgramsView({
                           if (!allExercises[exId]) return null;
                           const ex = withDose(exId);
                           const change = session.dose && !legacy ? doseChangeLabel(prog, week.week, exId, ex.sets, allExercises) : null;
-                          const done = enrollment
+                          const done = showMarks
                             ? isProgramExerciseDone(programProgress, prog.id, week.week, si, exId)
                             : !!completed[`${todayKey()}-${exId}`];
                           const sessionExList = withSessionWarmup(
@@ -600,13 +584,13 @@ export default function ProgramsView({
                                 background:done?"rgba(34,197,94,0.08)":"rgba(255,255,255,0.04)",
                                 border:`1px solid ${done?"rgba(34,197,94,0.18)":"rgba(255,255,255,0.05)"}`,
                                 cursor:"pointer" }}>
-                              <button onClick={e => { e.stopPropagation();
+                              <button disabled={!enrollment && finished} onClick={e => { e.stopPropagation();
                                 if (enrollment) toggleProgramExercise(pCtx, exId);
-                                else toggle(exId);
+                                else if (!finished) toggle(exId);
                               }}
                                 style={{ width:20,height:20,borderRadius:6,border:`1.5px solid ${done?"#22c55e":prog.color+"60"}`,
                                   background:done?"#22c55e":"transparent",color:"#fff",fontSize:10,
-                                  display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0,padding:0 }}>
+                                  display:"flex",alignItems:"center",justifyContent:"center",cursor:!enrollment && finished ? "default" : "pointer",flexShrink:0,padding:0 }}>
                                 {done?"✓":""}
                               </button>
                               <span style={{ flex:1,fontSize:12,fontWeight:600,color:done?"#22c55e":"var(--fkh-text)",lineHeight:1.3 }}>{ex.name}</span>

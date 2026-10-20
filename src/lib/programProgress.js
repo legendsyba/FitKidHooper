@@ -89,6 +89,55 @@ export function freshProgramEntry(program, programProgress, startedAt) {
   return { _meta: { enrollmentStartedAt: startedAt, ...(completions.length ? { completions } : {}) } };
 }
 
+/**
+ * A finished program leaves the active list and becomes history: its checkmarks stay (badge,
+ * Completed tab), and `_meta.retiredAt` lets Home offer what comes next until the kid picks.
+ * Re-checked on every change because saves merge by union — an older copy of the enrollment
+ * can come back from cloud sync, and must be retired again rather than revived.
+ */
+export function retireFinishedPrograms(programs, enrolledPrograms, programProgress, now = Date.now()) {
+  const finished = programs.filter(p =>
+    enrolledPrograms?.[p.id] && computeProgramProgress(p, programProgress) >= 1);
+  if (!finished.length) return null;
+  const enrolled = { ...enrolledPrograms };
+  const progress = { ...programProgress };
+  for (const p of finished) {
+    delete enrolled[p.id];
+    const meta = progress[p.id]?._meta || {};
+    if (!isRetiredRun(meta)) progress[p.id] = { ...progress[p.id], _meta: { ...meta, retiredAt: now } };
+  }
+  return { enrolled, progress };
+}
+
+/* Timestamps, not flags: saves merge numbers by max, so a stale copy from an earlier run
+   can never re-open (or hide) the current run's next-step card. */
+const isRetiredRun = (meta) => !!meta?.retiredAt && meta.retiredAt >= (meta.enrollmentStartedAt ?? 0);
+const awaitingNextStep = (meta) => isRetiredRun(meta) && !((meta.nextHandledAt ?? 0) >= meta.retiredAt);
+
+/** Most recently finished program the kid hasn't chosen a next step for yet. */
+export function pendingNextStep(programs, programProgress) {
+  let best = null;
+  for (const p of programs) {
+    const meta = programProgress?.[p.id]?._meta;
+    if (!awaitingNextStep(meta)) continue;
+    if (!best || meta.retiredAt > best.at) best = { prog: p, at: meta.retiredAt };
+  }
+  return best?.prog ?? null;
+}
+
+/** The kid made their next choice (started something or waved it off) — stop asking. */
+export function markNextStepsHandled(programProgress, now = Date.now()) {
+  let changed = false;
+  const out = { ...programProgress };
+  for (const [id, entry] of Object.entries(out)) {
+    if (awaitingNextStep(entry?._meta)) {
+      out[id] = { ...entry, _meta: { ...entry._meta, nextHandledAt: now } };
+      changed = true;
+    }
+  }
+  return changed ? out : programProgress;
+}
+
 /** Returns the current week number (1-indexed, capped at duration) for an enrolled program. */
 export function programCurrentWeek(startDate, duration) {
   if (!startDate) return 1;

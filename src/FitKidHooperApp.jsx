@@ -47,7 +47,7 @@ import {
   evaluateEarned, computeCatCounts, grantEntries, getAchievementMeta,
   equipTitle, equipCosmetic, unequipSlot,
   getBenchmark, benchmarkCertTitle,
-  recommendProgramsForFavorite, PATHS, trackStageProgress,
+  recommendProgramsForFavorite, PATHS, trackStageProgress, suggestNextProgram,
 } from "./lib/achievements.js";
 import { computeExCounts } from "./lib/pathSignatures.js";
 import { recordBenchmark, recordLocalPB, readLocalPBs } from "./lib/benchmarksApi.js";
@@ -127,6 +127,10 @@ import {
   findDueProgramSession,
   buildProgramWeekPlan,
   rehydrateProgramProgressFromCompleted,
+  freshProgramEntry,
+  retireFinishedPrograms,
+  pendingNextStep,
+  markNextStepsHandled,
 } from "./lib/programProgress.js";
 import TodayView from "./views/TodayView.jsx";
 import ProgramsView from "./views/ProgramsView.jsx";
@@ -2802,6 +2806,46 @@ export default function FitKidHooperApp() {
     prevLevelRankRef.current = currentLevel.rank;
   }, [currentLevel, xpData.total]);
   const earnedBadges = useMemo(() => getEarnedBadges(completedSafe, programProgressSafe, PROGRAMS), [completedSafe, programProgressSafe]);
+
+  /* A finished program stops being "active" everywhere (Home, mission, calendar, coach) by
+     leaving the enrolled list. Forced writes: a normal persist merges by union and would
+     keep the old enrollment on disk. */
+  useEffect(() => {
+    const retired = retireFinishedPrograms(PROGRAMS, enrolledProgramsSafe, programProgressSafe);
+    if (!retired) return;
+    safePersistKey("fkh-programs", retired.enrolled, { force: true });
+    safePersistKey("fkh-program-progress", retired.progress, { force: true });
+    // Finishing can arrive from a drill, first load, or cloud sync; this is the one place that sees all three. Fires once per finish.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setEnrolledPrograms(retired.enrolled);
+    setProgramProgress(retired.progress);
+  }, [enrolledProgramsSafe, programProgressSafe]);
+
+  const enrollProgram = useCallback((prog) => {
+    const startDate = new Date().toLocaleDateString("en-CA");
+    const startedAt = Date.now();
+    setEnrolledPrograms(prev => {
+      const next = { ...prev, [prog.id]: { startDate, startedAt } };
+      safePersistKey("fkh-programs", next, { force: true });
+      return next;
+    });
+    setProgramProgress(prev => {
+      const next = markNextStepsHandled({ ...prev, [prog.id]: freshProgramEntry(prog, prev, startedAt) });
+      safePersistKey("fkh-program-progress", next, { force: true });
+      return next;
+    });
+    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id });
+  }, []);
+
+  const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
+  const nextProgram = useMemo(
+    () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges) : null,
+    [finishedProgram, enrolledProgramsSafe, earnedBadges],
+  );
+  const dismissNextStep = useCallback(() => {
+    setProgramProgress(prev => markNextStepsHandled(prev));
+  }, []);
+
   const personalChallenges = useMemo(() => buildPersonalChallenges(completedSafe, WORKOUTS), [completedSafe]);
   const recommendedProgramIds = useMemo(() => recommendProgramsForFavorite(settings), [settings]);
   const totalBadges = BADGES_DEF.length;
@@ -3341,7 +3385,7 @@ export default function FitKidHooperApp() {
         enrolledPrograms={enrolledPrograms}
         setEnrolledPrograms={setEnrolledPrograms}
         programProgress={programProgress}
-        setProgramProgress={setProgramProgress}
+        enrollProgram={enrollProgram}
         programSegment={programSegment}
         setProgramSegment={setProgramSegment}
         programsHubSection={programsHubSection}
@@ -4184,6 +4228,11 @@ export default function FitKidHooperApp() {
         onShowFindDrills={() => setShowFindDrills(true)}
         onHideFindDrills={() => setShowFindDrills(false)}
         onOpenProgramsSection={openProgramsSection}
+        finishedProgram={finishedProgram}
+        nextProgram={nextProgram}
+        onStartProgram={(prog) => { enrollProgram(prog); setProgramSegment("myPlan"); setSelectedProgram(prog.id); openProgramsSection("plans"); }}
+        onDismissNextStep={dismissNextStep}
+        onBrowsePrograms={() => { setSelectedProgram(null); setProgramSegment("browse"); openProgramsSection("plans"); }}
         favorites={favorites}
         cats={CATS}
         workouts={WORKOUTS}
