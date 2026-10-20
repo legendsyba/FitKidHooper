@@ -2623,6 +2623,56 @@ const PROGRAMS = [
     ],
   },
 
+  /* Level 2 of Jump Higher, for kids past the beginner stage of jump training (~3 months:
+     youth guidance moves to moderate-intensity, single-leg and combo jumps only then).
+     So it needs Bodyweight Beast II as well as Jump Higher — about 11 weeks of training.
+     Up to 80 landings a session (combo drills counted per landing), still two jump days
+     around a strength day, no equipment. Combo drills are rated 11+. */
+  {
+    id:"jump-higher-2", name:"Jump Higher II", emoji:"⏫", color:"#ea580c",
+    badgeId:"pgm-jump-higher-2", advancedOf:"jump-higher", requires:["jump-higher","bodyweight-beast-2"], level:2,
+    duration:4, daysPerWeek:3, ageRange:[11,17],
+    desc:"For jumpers with real training behind them: one-leg sticks, reactive pogos, then combo jumps. Unlocks after Jump Higher and Bodyweight Beast II. No equipment.",
+    weeks:[
+      { week:1, goal:"Stick it on one leg first — control before speed.",
+        sessions:[
+          { day:"Session 1", focus:"Reactive Bounce", exercises:["reactive-pogos","sl-stick-landing","tuck-jumps"],
+            dose:{ "reactive-pogos":"3x10", "sl-stick-landing":"2x4 each leg", "tuck-jumps":"3x4" } },
+          { day:"Session 2", focus:"Leg Strength", exercises:["split-sq","sl-hold","wall-sit"],
+            dose:{ "split-sq":"3x10 each leg", "sl-hold":"3x30 s each leg", "wall-sit":"3x45 s" } },
+          { day:"Session 3", focus:"Side & Bound", exercises:["lateral-bound-stick","power-bounds-series","single-leg-hops"],
+            dose:{ "lateral-bound-stick":"2x5 each side", "power-bounds-series":"3x3", "single-leg-hops":"2x4 each leg" } },
+        ]},
+      { week:2, goal:"One more set — and get off the ground faster.",
+        sessions:[
+          { day:"Session 1", focus:"Reactive Bounce", exercises:["reactive-pogos","sl-stick-landing","tuck-jumps"],
+            dose:{ "reactive-pogos":"3x12", "sl-stick-landing":"3x4 each leg", "tuck-jumps":"3x5" } },
+          { day:"Session 2", focus:"Leg Strength", exercises:["split-sq","sl-hold","wall-sit"],
+            dose:{ "split-sq":"3x12 each leg", "sl-hold":"3x40 s each leg", "wall-sit":"3x60 s" } },
+          { day:"Session 3", focus:"Side & Bound", exercises:["lateral-bound-stick","power-bounds-series","single-leg-hops"],
+            dose:{ "lateral-bound-stick":"3x5 each side", "power-bounds-series":"3x3", "single-leg-hops":"3x4 each leg" } },
+        ]},
+      { week:3, goal:"Combos: quick pogos into a tuck jump, bounds into a sprint.",
+        sessions:[
+          { day:"Session 1", focus:"Pogo Combos", exercises:["single-leg-pogo","pogo-to-tuck","drop-athletic-stance"],
+            dose:{ "single-leg-pogo":"2x6 each leg", "pogo-to-tuck":"3x4", "drop-athletic-stance":"2x8" } },
+          { day:"Session 2", focus:"Leg Strength", exercises:["split-sq","walk-lunge","sl-hold"],
+            dose:{ "split-sq":"3x12 each leg", "walk-lunge":"3x10 each leg", "sl-hold":"3x40 s each leg" } },
+          { day:"Session 3", focus:"Bound & Go", exercises:["broad-bounds-sprint","lat-skater-hops","tuck-jumps"],
+            dose:{ "broad-bounds-sprint":"3 rounds", "lat-skater-hops":"3x5 each side", "tuck-jumps":"3x5" } },
+        ]},
+      { week:4, goal:"Peak week — your best jumps yet. Measure your vertical again.",
+        sessions:[
+          { day:"Session 1", focus:"Max Air", exercises:["pogo-to-tuck","tuck-jumps","reactive-pogos"],
+            dose:{ "pogo-to-tuck":"3x4", "tuck-jumps":"3x4", "reactive-pogos":"2x10" } },
+          { day:"Session 2", focus:"Leg Strength", exercises:["split-sq","walk-lunge","wall-sit"],
+            dose:{ "split-sq":"3x12 each leg", "walk-lunge":"3x12 each leg", "wall-sit":"3x60 s" } },
+          { day:"Session 3", focus:"Bound & Go", exercises:["broad-bounds-sprint","lateral-bound-stick","power-bounds-series"],
+            dose:{ "broad-bounds-sprint":"3 rounds", "lateral-bound-stick":"3x6 each side", "power-bounds-series":"3x3" } },
+        ]},
+    ],
+  },
+
   {
     id:"guard-handles", name:"Handle Like a Guard", emoji:"🎮", color:"#06b6d4",
     badgeId:"pgm-guard-handles", duration:4, daysPerWeek:3, ageRange:[9,17],
@@ -3230,6 +3280,7 @@ const PROGRAMS = [
    UI can badge each week ("Tier 1 · Foundation") from this; nothing renders it yet. */
 const PROGRAM_WEEK_TIERS = {
   "jump-higher":          [1, 1, 2, 3],
+  "jump-higher-2":        [2, 2, 3, 3],
   "guard-handles":        [1, 2, 2, 3],
   "step-back-legends":    [2, 3],
   "become-shooter":       [1, 2, 2, 3],

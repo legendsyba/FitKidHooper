@@ -17,6 +17,7 @@ import { BADGES_DEF, getEarnedBadges } from "../src/lib/badges.js";
 import { parseExerciseSets } from "../src/lib/exerciseSession.js";
 import { mergeSaveValue } from "../src/lib/persistMerge.js";
 import { buildAthleteContext } from "../src/lib/coachAgent.js";
+import { suggestNextProgram, isProgramLocked, nextProgramReason } from "../src/lib/achievements.js";
 import {
   computeProgramProgress, isProgramSessionComplete, programCompletionCount,
   freshProgramEntry, retireFinishedPrograms, pendingNextStep, markNextStepsHandled,
@@ -39,10 +40,15 @@ const isLandingDrill = (id) => {
   if (JUMPS_TYPED_OTHERWISE.has(id)) return true;
   return ["medium", "high"].includes(m.impactLevel) && ["elastic", "deceleration"].includes(m.movementType);
 };
-const landings = (sets) => {
+/* Combo drills land several times per rep/round ("several pogos, then a tuck jump"). */
+const LANDINGS_PER_REP = { "pogo-to-tuck": 4, "broad-bounds-sprint": 5, "hop-hop-stick": 3 };
+const landings = (sets, id) => {
   const p = parseExerciseSets(sets);
-  if (!p?.value) return 0;
-  const perSet = p.type === "time" ? p.value * CONTACTS_PER_SECOND : p.value;
+  if (!p) return 0;
+  const perRep = LANDINGS_PER_REP[id] ?? 1;
+  if (p.type === "rounds") return p.count * perRep;
+  if (!p.value) return 0;
+  const perSet = p.type === "time" ? p.value * CONTACTS_PER_SECOND : p.value * perRep;
   return p.count * perSet * (p.bilateral ? 2 : 1);
 };
 
@@ -71,7 +77,7 @@ for (const prog of PROGRAMS) {
         }
         if (!isLandingDrill(id)) continue;
         if (meta.ageRange) assert(meta.ageRange[0] <= prog.ageRange[0], `${at}: jump drill ${id} is rated ${meta.ageRange[0]}+, program starts at ${prog.ageRange[0]}`);
-        total += landings(s.dose?.[id] ?? exercise(id)?.sets);
+        total += landings(s.dose?.[id] ?? exercise(id)?.sets, id);
       }
       assert(total <= LANDING_LIMIT, `${at}: ${total} landings (limit ${LANDING_LIMIT})`);
       if (total > 0) jumpDays.push({ at, day: wi * 7 + days[si] });
@@ -191,6 +197,19 @@ const run2done = { ...stale, [bb.id]: { ...marked(bb, s => s.exercises, restartA
 const second = retireFinishedPrograms(PROGRAMS, { [bb.id]: { startDate: D0, startedAt: restartAt } }, run2done, restartAt + 5000);
 assert(second && pendingNextStep(PROGRAMS, mergeSaveValue(second.progress, dismissed))?.id === bb.id, "an old dismissal must not hide the next finish's card");
 assert(second && programCompletionCount(bb, second.progress) === 2, "finishing twice should count twice");
+
+/* The road from beginner to Jump Higher II: Up Next always points at the next real step. */
+const next = (id, earned, enrolled = {}) => suggestNextProgram(id, PROGRAMS, enrolled, earned)?.id;
+const B = ["pgm-bodyweight"], B2 = [...B, "pgm-bodyweight-2"], J = ["pgm-jump-higher"];
+assert(next("bodyweight-beast", B) === "bodyweight-beast-2", "BB I → BB II");
+assert(next("jump-higher", J) === "bodyweight-beast", "JH done, no BB → BB I (on the way to JH II)");
+assert(next("bodyweight-beast-2", B2) === "jump-higher", "BB II done, no JH → JH");
+assert(next("bodyweight-beast-2", [...B2, ...J]) === "jump-higher-2", "BB II + JH done → JH II unlocked");
+assert(next("jump-higher", [...J, ...B2]) === "jump-higher-2", "JH + BB II done → JH II unlocked");
+const jh2 = PROGRAMS.find(p => p.id === "jump-higher-2");
+assert(isProgramLocked(jh2, PROGRAMS, J), "JH II stays locked without BB II");
+assert(nextProgramReason("jump-higher", PROGRAMS.find(p => p.id === "bodyweight-beast"), PROGRAMS, J) === "Next step toward Jump Higher II:",
+  "Up Next explains the road to JH II");
 
 const coachRecs = (completedProgramIds) => buildAthleteContext({
   settings: { dateOfBirth: "2015-06-15", experience: "beginner", goals: ["strength"], playStyle: "any" },

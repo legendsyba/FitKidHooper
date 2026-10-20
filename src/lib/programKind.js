@@ -1,6 +1,7 @@
 /** Skill vs strength lane for multi-program days (strength first, then skill). */
 export const PROGRAM_KIND = {
   "jump-higher": "strength",
+  "jump-higher-2": "strength",
   "bodyweight-beast": "strength",
   "bodyweight-beast-2": "strength",
   "jump-rope-basics": "strength",

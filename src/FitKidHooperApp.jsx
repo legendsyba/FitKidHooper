@@ -47,7 +47,7 @@ import {
   evaluateEarned, computeCatCounts, grantEntries, getAchievementMeta,
   equipTitle, equipCosmetic, unequipSlot,
   getBenchmark, benchmarkCertTitle,
-  recommendProgramsForFavorite, PATHS, trackStageProgress, suggestNextProgram,
+  recommendProgramsForFavorite, PATHS, trackStageProgress, suggestNextProgram, nextProgramReason,
 } from "./lib/achievements.js";
 import { computeExCounts } from "./lib/pathSignatures.js";
 import { recordBenchmark, recordLocalPB, readLocalPBs } from "./lib/benchmarksApi.js";
@@ -2853,6 +2853,10 @@ export default function FitKidHooperApp() {
     () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges) : null,
     [finishedProgram, enrolledProgramsSafe, earnedBadges],
   );
+  const nextProgramWhy = useMemo(
+    () => finishedProgram ? nextProgramReason(finishedProgram.id, nextProgram, PROGRAMS, earnedBadges) : null,
+    [finishedProgram, nextProgram, earnedBadges],
+  );
   const dismissNextStep = useCallback(() => {
     setProgramProgress(prev => markNextStepsHandled(prev));
   }, []);
@@ -4245,6 +4249,7 @@ export default function FitKidHooperApp() {
         onOpenProgramsSection={openProgramsSection}
         finishedProgram={finishedProgram}
         nextProgram={nextProgram}
+        nextProgramWhy={nextProgramWhy}
         onStartProgram={(prog) => { enrollProgram(prog); setProgramSegment("myPlan"); setSelectedProgram(prog.id); openProgramsSection("plans"); }}
         onDismissNextStep={dismissNextStep}
         onBrowsePrograms={() => { setSelectedProgram(null); setProgramSegment("browse"); openProgramsSection("plans"); }}

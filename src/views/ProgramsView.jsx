@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { pathTagForProgram, suggestNextProgram, isProgramLocked } from "../lib/achievements.js";
+import { pathTagForProgram, suggestNextProgram, isProgramLocked, missingPrerequisites, nextProgramReason } from "../lib/achievements.js";
 import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
 import { shareProgram } from "../lib/programShare.js";
@@ -333,8 +333,8 @@ export default function ProgramsView({
       /* A finished program retires from the enrolled list, so "finished" is history, not
          enrollment. The completing render can still see it enrolled for a moment. */
       const finished = schedStatus?.kind === "programComplete" || (!enrollment && timesFinished > 0);
-      const locked = !enrollment && isProgramLocked(prog, programs, earnedBadges);
-      const baseProg = prog.advancedOf ? programs.find(p => p.id === prog.advancedOf) : null;
+      const stillNeeded = enrollment ? [] : missingPrerequisites(prog, programs, earnedBadges);
+      const locked = stillNeeded.length > 0;
       const nextProg = finished ? suggestNextProgram(prog.id, programs, enrolledPrograms, earnedBadges) : null;
       const showMarks = !!enrollment || finished;
 
@@ -432,7 +432,12 @@ export default function ProgramsView({
                 </div>
                 {nextProg && (
                   <div style={{ marginBottom:10,padding:"13px 14px",borderRadius:12,background:`${nextProg.color}0c`,border:`1px solid ${nextProg.color}33` }}>
-                    <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>{nextProg.advancedOf === prog.id ? "⬆️ Level Up" : "Up Next"}</div>
+                    <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>{(() => {
+                      const why = nextProgramReason(prog.id, nextProg, programs, earnedBadges);
+                      if (why === "You unlocked the next level:") return "⬆️ Level Up";
+                      if (why?.startsWith("Next step toward")) return why.replace(/:$/, "");
+                      return "Up Next";
+                    })()}</div>
                     <div style={{ display:"flex",alignItems:"center",gap:10 }}>
                       <ProgramIcon prog={nextProg} size={40} />
                       <div style={{ flex:1,minWidth:0 }}>
@@ -452,9 +457,9 @@ export default function ProgramsView({
                 </button>
               </>
             ) : locked ? (
-              <button onClick={() => setSelectedProgram(baseProg.id)}
+              <button onClick={() => setSelectedProgram(stillNeeded[0].id)}
                 style={{ width:"100%",padding:"13px",borderRadius:12,border:`1px dashed ${prog.color}55`,background:`${prog.color}0a`,color:"var(--fkh-text-muted)",fontSize:13,fontWeight:700,cursor:"pointer",marginBottom:18 }}>
-                🔒 Finish {baseProg.name} to unlock Level {prog.level}
+                🔒 Finish {stillNeeded.map(p => p.name).join(" and ")} to unlock Level {prog.level}
               </button>
             ) : enrollment
               ? <button onClick={() => { if (window.confirm("Leave this program? Your exercise progress is kept.")) unenrollProg(prog.id); }}

@@ -83,6 +83,7 @@ export default function TodayView({
   onOpenProgramsSection,
   finishedProgram,
   nextProgram,
+  nextProgramWhy,
   onStartProgram,
   onDismissNextStep,
   onBrowsePrograms,
@@ -313,7 +314,7 @@ export default function TodayView({
           {nextProgram ? (
             <>
               <div style={{ fontSize:12, color:"#94a3b8", marginTop:3 }}>
-                {nextProgram.advancedOf === finishedProgram.id ? "You unlocked the next level:" : "Ready for your next program?"}
+                {nextProgramWhy}
               </div>
               <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:11, padding:"10px 11px",
                 borderRadius:12, background:"rgba(255,255,255,0.04)", border:`1px solid ${nextProgram.color}33` }}>

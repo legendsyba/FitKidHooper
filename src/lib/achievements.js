@@ -861,11 +861,33 @@ export function pathTagForProgram(programId) {
   return track ? track.archetype : null;
 }
 
-/** An advanced level stays locked until its base program's badge is earned. */
+/**
+ * Programs that must be finished first: `requires` when set (a level that needs more
+ * training behind it than its base), else the base program of an advanced level.
+ */
+export function missingPrerequisites(prog, programs, earnedBadges) {
+  const ids = prog.requires || (prog.advancedOf ? [prog.advancedOf] : []);
+  return ids
+    .map(id => programs.find(p => p.id === id))
+    .filter(p => p && !earnedBadges.includes(p.badgeId));
+}
+
 export function isProgramLocked(prog, programs, earnedBadges) {
-  if (!prog.advancedOf) return false;
-  const base = programs.find(p => p.id === prog.advancedOf);
-  return !!base && !earnedBadges.includes(base.badgeId);
+  return missingPrerequisites(prog, programs, earnedBadges).length > 0;
+}
+
+/** Why `next` follows `finishedId`, in a few kid-readable words for the Up Next card. */
+export function nextProgramReason(finishedId, next, programs, earnedBadges) {
+  if (!next) return null;
+  if (next.advancedOf === finishedId) return "You unlocked the next level:";
+  if ((next.requires || []).includes(finishedId)) return "You unlocked the next level:";
+  const target = programs.find(p =>
+    (p.advancedOf === finishedId || (p.requires || []).includes(finishedId))
+    && !earnedBadges.includes(p.badgeId)
+    && missingPrerequisites(p, programs, earnedBadges).some(m =>
+      m.id === next.id || missingPrerequisites(m, programs, earnedBadges).some(d => d.id === next.id)));
+  if (target) return `Next step toward ${target.name}:`;
+  return "Ready for your next program?";
 }
 
 /**
@@ -880,6 +902,23 @@ export function suggestNextProgram(programId, programs, enrolledPrograms, earned
 
   const levelUp = programs.find(p => p.advancedOf === programId && isAvailable(p));
   if (levelUp) return levelUp;
+
+  /* Finishing this may be what unlocked another program's next level. */
+  const justUnlocked = programs.find(p => (p.requires || []).includes(programId) && isAvailable(p));
+  if (justUnlocked) return justUnlocked;
+
+  /* A next level this program counts toward is still locked behind other programs: point
+     at the next one on that road (or, if that one is itself locked, at what unlocks it). */
+  const lockedTargets = programs.filter(p =>
+    (p.advancedOf === programId || (p.requires || []).includes(programId))
+    && !earnedBadges.includes(p.badgeId));
+  for (const target of lockedTargets) {
+    for (const need of missingPrerequisites(target, programs, earnedBadges)) {
+      if (isAvailable(need)) return need;
+      const deeper = missingPrerequisites(need, programs, earnedBadges).find(isAvailable);
+      if (deeper) return deeper;
+    }
+  }
 
   const familyId = programs.find(p => p.id === programId)?.advancedOf ?? programId;
   const relatedIds = MASTERY_TRACKS
