@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { drillGearLabel } from "../lib/programGear.js";
 import {
   TIMER_PREP_SECS, TIMER_WARN_SECS, TIMER_REST_WARN_SECS, TIMER_SWITCH_SECS,
   exerciseSideLabel, switchSpeechFor, parseExerciseSets, bilateralModeLabel,
@@ -489,7 +490,7 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
   const diffColor = { beginner:"#22c55e", intermediate:"#f59e0b", advanced:"#ef4444" }[meta.difficulty] || "#64748b";
   const diffLabel = { beginner:"Beginner", intermediate:"Intermediate", advanced:"Advanced" }[meta.difficulty] || "All Levels";
   const mins      = meta.estimatedDuration ? Math.max(1,Math.round(meta.estimatedDuration/60)) : null;
-  const eqLabel   = { none:"No Equipment", cones:"Cones", dumbbells:"Dumbbells", box:"Box / Step", bosu:"BOSU", jump_rope:"Jump Rope", ball:"Basketball", basketball:"Basketball", tennis_ball:"Tennis Ball", basketball_x2:"Two Basketballs", partner:"Partner", resistance_band:"Band" }[meta.equipment] || meta.equipment || "None";
+  const eqLabel   = drillGearLabel(meta.equipment);
   const spLabel   = { small:"Small Space", medium:"Medium Space", large:"Open Space" }[meta.spaceRequired] || meta.spaceRequired || "";
 
   const benefits = [...new Set(meta.basketballTransfer||[])].map(b=>BENEFIT_MAP[b]).filter(Boolean);

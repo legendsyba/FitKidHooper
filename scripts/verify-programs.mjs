@@ -13,6 +13,7 @@
 import { PROGRAMS, ALL_EXERCISES, EXERCISE_META, WORKOUTS, SCHEDULE, WORKOUT_TEMPLATES } from "../src/data/trainingCatalog.js";
 import { BUILD_FOCUS_OPTIONS } from "../src/lib/missionGenerator.js";
 import { pickSessionWarmupExercises, withSessionWarmup } from "../src/lib/sessionWarmup.js";
+import { drillGearItems } from "../src/lib/programGear.js";
 import { BADGES_DEF, getEarnedBadges } from "../src/lib/badges.js";
 import { parseExerciseSets } from "../src/lib/exerciseSession.js";
 import { mergeSaveValue } from "../src/lib/persistMerge.js";
@@ -88,21 +89,20 @@ for (const prog of PROGRAMS) {
   }
 }
 
-/* ── 2a: gear ── every program says what a kid needs (shown on the program page). Each
-   drill's recorded equipment must be covered, and shooting/finishing/rebounding/post
-   drills need a hoop even where the drill data only says "basketball". */
-const GEAR_ALIASES = {
-  basketball: "basketball", hoop: "hoop", wall: "wall", cones: "cones", box: "box", partner: "partner",
-  jump_rope: "jump_rope", dumbbells: "dumbbells", basketball_x2: "two_basketballs", "2 basketballs": "two_basketballs",
-  tennis_ball: "tennis_ball", "tennis ball": "tennis_ball", "full court": "hoop",
-};
+/* ── 2a: gear ── every program says what a kid needs (shown on its card and page), and every
+   drill records its gear (shown on the workout screen). A program must list everything its
+   drills need and nothing they don't. Shooting/finishing/rebounding/post drills need a hoop
+   unless they're solo footwork. */
 const HOOP_CATEGORIES = new Set(["shooting", "shootingdrills", "shooting_lab", "finishing", "finishing_school", "rebounding", "postmoves"]);
-const gearFor = (id) => {
-  const raw = EXERCISE_META[id]?.equipment;
-  const items = !raw || raw === "none" ? [] : raw.split("+").map(x => GEAR_ALIASES[x.trim().toLowerCase()] || `unknown:${x.trim()}`);
-  if (HOOP_CATEGORIES.has(exercise(id)?._cat)) items.push("hoop");
-  return items;
-};
+const NO_HOOP_OK = new Set(["reb-boxout"]);
+for (const [cat, list] of Object.entries(WORKOUTS)) {
+  for (const ex of list) {
+    const raw = EXERCISE_META[ex.id]?.equipment;
+    assert(!!raw, `${ex.id}: no equipment recorded (workout screen would say "None")`);
+    if (HOOP_CATEGORIES.has(cat) && !NO_HOOP_OK.has(ex.id)) assert(drillGearItems(raw).includes("hoop"), `${ex.id} (${cat}) doesn't list a hoop`);
+  }
+}
+const gearFor = (id) => drillGearItems(EXERCISE_META[id]?.equipment);
 for (const prog of PROGRAMS) {
   assert(Array.isArray(prog.equipment), `${prog.id}: declare equipment (use [] for none)`);
   const declared = new Set([...(prog.equipment || []), ...(prog.equipmentFew || [])]);

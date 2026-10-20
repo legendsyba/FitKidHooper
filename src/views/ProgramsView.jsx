@@ -381,8 +381,8 @@ export default function ProgramsView({
                   const gear = programGearSummary(prog);
                   return (
                     <div style={{ fontSize:12,fontWeight:700,color:"var(--fkh-text)",marginTop:6 }}>
-                      {gear.none ? "✅ No equipment needed" : <>You need: {gear.main}</>}
-                      {gear.few && <span style={{ fontWeight:500,color:"#64748b" }}>{gear.main ? " · " : "You need: "}some drills: {gear.few}</span>}
+                      {gear.none ? "✅ No equipment needed" : gear.main ? <>You need: {gear.main}</> : "✅ Mostly no equipment"}
+                      {gear.few && <span style={{ fontWeight:500,color:"#64748b" }}> · some drills: {gear.few}</span>}
                     </div>
                   );
                 })()}
@@ -716,7 +716,7 @@ export default function ProgramsView({
             <div style={{ fontSize:11,color:"#64748b",marginBottom:6 }}>
               {programCadenceLabel(prog, "x/week")} · Ages {prog.ageRange[0]}–{prog.ageRange[1]} · {(() => {
                 const gear = programGearSummary(prog);
-                return gear.none ? "No equipment" : gear.main || gear.few;
+                return gear.none ? "No equipment" : gear.main || "Mostly no equipment";
               })()}
             </div>
             {(() => {
