@@ -2830,6 +2830,39 @@ const PROGRAMS = [
     ],
   },
 
+  /* Level 2 of Handle Like a Guard: skill progresses by complexity, not volume — counters to a defender's reaction, then combos, then game speed. Solo drills only. */
+  {
+    id:"guard-handles-2", name:"Handle Like a Guard II", emoji:"🪄", color:"#0891b2",
+    badgeId:"pgm-guard-handles-2", advancedOf:"guard-handles", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball"],
+    desc:"You've got the moves — now the counters. Hang, pullback, freeze, half-spin, the Shamgod, and combos at game speed. Just you and a ball.",
+    weeks:[
+      { week:1, goal:"Change speeds: hang, stutter, and pull back to make defenders guess.",
+        sessions:[
+          { day:"Session 1", focus:"Change of Pace", exercises:["gh-hang-dribble","gh-stutter","gh-in-out"] },
+          { day:"Session 2", focus:"Pull Back", exercises:["gh-pullback","gh-snatch","bh-retreat"] },
+          { day:"Session 3", focus:"Freeze & Go", exercises:["gh-push-cross","gh-freeze","gh-hang-dribble"] },
+        ]},
+      { week:2, goal:"Counters: when the defender reacts, go the other way.",
+        sessions:[
+          { day:"Session 1", focus:"Pull Back & Go", exercises:["gh-pullback","gh-snatch","gh-cross-behind"] },
+          { day:"Session 2", focus:"Freeze & Push", exercises:["gh-freeze","gh-push-cross","gh-stutter"] },
+          { day:"Session 3", focus:"Hesi Counters", exercises:["gh-hang-hesi-cross","gh-cross-behind","bh-attack-cross"] },
+        ]},
+      { week:3, goal:"Spins and combos: chain two moves without losing the ball.",
+        sessions:[
+          { day:"Session 1", focus:"Spin Counters", exercises:["gh-half-spin","gh-cross-behind","gh-hang-hesi-cross"] },
+          { day:"Session 2", focus:"Shamgod", exercises:["gh-shamgod","gh-half-spin","gh-snatch"] },
+          { day:"Session 3", focus:"Combo Chains", exercises:["gethandles-combo","gh-hang-hesi-cross","gh-pullback"] },
+        ]},
+      { week:4, goal:"Game speed: every move at full speed, finishing with an attack.",
+        sessions:[
+          { day:"Session 1", focus:"Attack Moves", exercises:["gh-dribble-drive","gh-hang-hesi-cross","gh-half-spin"] },
+          { day:"Session 2", focus:"Signature Moves", exercises:["gh-shamgod","gethandles-combo","gh-freeze"] },
+          { day:"Session 3", focus:"Full Guard Package", exercises:["bh-attack-cross","gh-cross-behind","gethandles-combo"] },
+        ]},
+    ],
+  },
+
   {
     id:"step-back-legends", name:"Step Back Legends", emoji:"↩️", color:"#7c3aed",
     badgeId:"pgm-step-back-legends", duration:2, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
@@ -2878,6 +2911,39 @@ const PROGRAMS = [
           { day:"Session 1", focus:"Range Extension",        exercises:["slab-corner-3","sb-drive-step","sh-spot"] },
           { day:"Session 2", focus:"Step Back Legends",    exercises:["sb-hop-shoot","sb-dribble-step","sb-drive-step"] },
           { day:"Session 3", focus:"Compete",                exercises:["sh-beat-pro","slab-corner-3","sb-drive-step"] },
+        ]},
+    ],
+  },
+
+  /* Level 2 of Become a Shooter: movement and off-the-dribble shooting, ending in the app's shooting challenges as a test week. Screen actions (flare, pin-down, DHO) are left out — they need teammates. */
+  {
+    id:"become-shooter-2", name:"Become a Shooter II", emoji:"🔥", color:"#7c3aed",
+    badgeId:"pgm-become-shooter-2", advancedOf:"become-shooter", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
+    desc:"Shoot like a scorer: deeper range, pull-ups off one and two dribbles, floaters and side-steps — then a test week to beat your own scores.",
+    weeks:[
+      { week:1, goal:"Range and rhythm: keep your form as you move back and on the move.",
+        sessions:[
+          { day:"Session 1", focus:"Range Builder", exercises:["sackmann-range","relph-5spot","slab-relocation"] },
+          { day:"Session 2", focus:"Off the Bounce", exercises:["slab-pullup-1","sackmann-hesi-shot","slab-side-step"] },
+          { day:"Session 3", focus:"Baseline Test", exercises:["chal-5spot-mid","slab-relocation","slab-transition-shot"] },
+        ]},
+      { week:2, goal:"Shoot off the dribble: one and two dribbles into a clean pull-up.",
+        sessions:[
+          { day:"Session 1", focus:"Pull-Ups", exercises:["slab-pullup-1","slab-pullup-2","sackmann-hesi-shot"] },
+          { day:"Session 2", focus:"Space & Shoot", exercises:["slab-side-step","slab-relocation","relph-5spot"] },
+          { day:"Session 3", focus:"On the Run", exercises:["slab-transition-shot","slab-floater","sackmann-range"] },
+        ]},
+      { week:3, goal:"Game shots: the shots you actually get in games, at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"Create Space", exercises:["slab-pullup-2","slab-floater","slab-side-step"] },
+          { day:"Session 2", focus:"Compete", exercises:["relph-42pt","slab-transition-shot","sackmann-hesi-shot"] },
+          { day:"Session 3", focus:"Threes", exercises:["chal-5spot-3pt","slab-relocation","slab-pullup-1"] },
+        ]},
+      { week:4, goal:"Test week: beat your Week 1 scores.",
+        sessions:[
+          { day:"Session 1", focus:"Shooting Test", exercises:["chal-5spot-mid","chal-5spot-3pt","slab-floater"] },
+          { day:"Session 2", focus:"Beat the Clock", exercises:["chal-timed-3pt","slab-side-step","slab-pullup-2"] },
+          { day:"Session 3", focus:"Final Exam", exercises:["chal-beal-5spot","chal-atw-3pt","relph-42pt"] },
         ]},
     ],
   },
@@ -3456,8 +3522,10 @@ const PROGRAM_WEEK_TIERS = {
   "jump-higher":          [1, 1, 2, 3],
   "jump-higher-2":        [2, 2, 3, 3],
   "guard-handles":        [1, 2, 2, 3],
+  "guard-handles-2":      [2, 2, 3, 3],
   "step-back-legends":    [2, 3],
   "become-shooter":       [1, 2, 2, 3],
+  "become-shooter-2":     [2, 2, 3, 3],
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],

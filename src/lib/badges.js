@@ -37,6 +37,8 @@ export const BADGES_DEF = [
   { id:"pgm-jump-higher",    cat:"program", name:"Vertical Unlocked", emoji:"⬆️", desc:"Complete the Jump Higher program",           color:"#f97316" },
   { id:"pgm-jump-higher-2",  cat:"program", name:"Sky High",          emoji:"🚀", desc:"Complete Jump Higher II",                    color:"#ea580c" },
   { id:"pgm-guard-handles",  cat:"program", name:"Guard Certified",   emoji:"🎮", desc:"Complete Handle Like a Guard",               color:"#06b6d4" },
+  { id:"pgm-guard-handles-2",cat:"program", name:"Handle Wizard",     emoji:"🪄", desc:"Complete Handle Like a Guard II",            color:"#0891b2" },
+  { id:"pgm-become-shooter-2",cat:"program", name:"Bucket Getter",    emoji:"🔥", desc:"Complete Become a Shooter II",               color:"#7c3aed" },
   { id:"pgm-become-shooter", cat:"program", name:"Pure Shooter",      emoji:"🎯", desc:"Complete Become a Shooter",                  color:"#8b5cf6" },
   { id:"pgm-first-step",     cat:"program", name:"First Step Elite",  emoji:"⚡", desc:"Complete First Step Explosion",              color:"#f43f5e" },
   { id:"pgm-complete-hooper",cat:"program", name:"Complete Hooper",   emoji:"🏆", desc:"Complete the Complete Hooper program",       color:"#f59e0b" },
