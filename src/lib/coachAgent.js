@@ -359,7 +359,7 @@ export function explainLegendTrack({ track, registryEntry }, athleteContext = {}
 
 // Catalog category (ALL_EXERCISES[id]._cat) → human label, for grouping a built workout.
 const CATEGORY_LABELS = {
-  strength: "Strength", conditioning: "Conditioning", athletic: "Athletic Movement",
+  strength: "Strength", conditioning: "Conditioning", jumprope: "Jump Rope", athletic: "Athletic Movement",
   explosion: "Explosion", speed: "Speed", balance: "Balance", coordination: "Coordination",
   deceleration: "Deceleration",
   handles: "Ball Handling", ballhandling: "Ball Handling", game_handles: "Ball Handling",

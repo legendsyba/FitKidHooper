@@ -196,7 +196,7 @@ export const CATEGORY_TO_AREA = {
   defense: "defense",
   // athletic/strength/speed/etc. → athleticism (attributes)
   athletic: "athleticism", explosion: "athleticism", strength: "athleticism",
-  speed: "athleticism", conditioning: "athleticism", coordination: "athleticism",
+  speed: "athleticism", conditioning: "athleticism", coordination: "athleticism", jumprope: "athleticism",
   balance: "athleticism", deceleration: "athleticism",
 };
 export const areaForCategory = (cat) => CATEGORY_TO_AREA[cat] ?? null;

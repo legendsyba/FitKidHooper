@@ -25,7 +25,7 @@ const CAT_TO_AREA = {
   rebounding: "rebounding",
   postmoves: "post",
   basketball_iq: "iq",
-  strength: "athleticism", conditioning: "athleticism", athletic: "athleticism",
+  strength: "athleticism", conditioning: "athleticism", athletic: "athleticism", jumprope: "athleticism",
   explosion: "athleticism", speed: "athleticism", balance: "athleticism",
   coordination: "athleticism", deceleration: "athleticism",
 };

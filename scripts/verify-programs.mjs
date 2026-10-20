@@ -10,7 +10,8 @@
  * 3. Progress logic: rebuilt sessions keep old completions, finishing retires a program
  *    into history, and the Home next-step card survives union merges from cloud sync.
  */
-import { PROGRAMS, ALL_EXERCISES, EXERCISE_META, WORKOUTS } from "../src/data/trainingCatalog.js";
+import { PROGRAMS, ALL_EXERCISES, EXERCISE_META, WORKOUTS, SCHEDULE, WORKOUT_TEMPLATES } from "../src/data/trainingCatalog.js";
+import { BUILD_FOCUS_OPTIONS } from "../src/lib/missionGenerator.js";
 import { pickSessionWarmupExercises, withSessionWarmup } from "../src/lib/sessionWarmup.js";
 import { BADGES_DEF, getEarnedBadges } from "../src/lib/badges.js";
 import { parseExerciseSets } from "../src/lib/exerciseSession.js";
@@ -121,6 +122,17 @@ for (const prog of PROGRAMS) {
     assert(!isLandingDrill(launched[0]?.id), `${prog.id} w${w.week}s${si + 1}: starts cold on ${launched[0]?.id} (no warm-up)`);
   }));
 }
+
+/* Rope drills live only in the jumprope category, and nothing that builds a workout for
+   any kid (schedule days, quick templates, mission focuses) draws from it. */
+for (const [cat, list] of Object.entries(WORKOUTS)) {
+  for (const ex of list) {
+    if (EXERCISE_META[ex.id]?.equipment === "jump_rope") assert(cat === "jumprope", `${ex.id} needs a rope but sits in ${cat}`);
+  }
+}
+for (const day of SCHEDULE) assert(!(day.cats || []).includes("jumprope"), `schedule ${day.day} pulls rope drills for every kid`);
+for (const [key, t] of Object.entries(WORKOUT_TEMPLATES)) assert(!(t.cats || []).includes("jumprope"), `template ${key} pulls rope drills for every kid`);
+for (const f of BUILD_FOCUS_OPTIONS) assert(!(f.cats || []).includes("jumprope"), `mission focus ${f.id} pulls rope drills for every kid`);
 
 const warmIds = (hasRope) => pickSessionWarmupExercises(WORKOUTS, EXERCISE_META, { categories: ["strength"], hasRope });
 assert(!warmIds(false).some(w => EXERCISE_META[w.id]?.equipment === "jump_rope"), "kids without a rope must not get rope warm-ups");
