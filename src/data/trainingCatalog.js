@@ -2563,7 +2563,7 @@ const ALL_EXERCISES = Object.fromEntries(
 const PROGRAMS = [
   {
     id:"jump-higher", name:"Jump Higher", emoji:"⬆️", color:"#f97316",
-    badgeId:"pgm-jump-higher", duration:4, daysPerWeek:3, ageRange:[10,17],
+    badgeId:"pgm-jump-higher", duration:4, daysPerWeek:3, ageRange:[10,17], equipment:[],
     desc:"A 4-week jump plan: learn to bounce and land, then add tuck jumps and one-leg hops. Two jump days and one strength day a week. No equipment.",
     /* Rebuilt to youth plyometric guidance: a 4-week program means beginners the whole
        way, so 50–80 landings max (kept ≤ 60), jumps on Sessions 1 and 3 only (72 h+ apart)
@@ -2631,7 +2631,7 @@ const PROGRAMS = [
   {
     id:"jump-higher-2", name:"Jump Higher II", emoji:"⏫", color:"#ea580c",
     badgeId:"pgm-jump-higher-2", advancedOf:"jump-higher", requires:["jump-higher","bodyweight-beast-2"], level:2,
-    duration:4, daysPerWeek:3, ageRange:[11,17],
+    duration:4, daysPerWeek:3, ageRange:[11,17], equipment:[],
     desc:"For jumpers with real training behind them: one-leg sticks, reactive pogos, then combo jumps. Unlocks after Jump Higher and Bodyweight Beast II. No equipment.",
     weeks:[
       { week:1, goal:"Stick it on one leg first — control before speed.",
@@ -2675,7 +2675,7 @@ const PROGRAMS = [
 
   {
     id:"guard-handles", name:"Handle Like a Guard", emoji:"🎮", color:"#06b6d4",
-    badgeId:"pgm-guard-handles", duration:4, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-guard-handles", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball"], equipmentFew:["two_basketballs","tennis_ball","cones"],
     desc:"Build elite ball-handling skills from stationary foundation through full game-speed combo moves.",
     weeks:[
       { week:1, goal:"Master the foundation — ball feel, weak hand, and basic stationary control.",
@@ -2707,7 +2707,7 @@ const PROGRAMS = [
 
   {
     id:"step-back-legends", name:"Step Back Legends", emoji:"↩️", color:"#7c3aed",
-    badgeId:"pgm-step-back-legends", duration:2, daysPerWeek:3, ageRange:[10,17],
+    badgeId:"pgm-step-back-legends", duration:2, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
     desc:"Three levels — hop balance, dribble separation, drive-and-step — built for the Step-Back legend path.",
     weeks:[
       { week:1, goal:"Levels 1 & 2 — hop back on one foot, then dribble step-back separation.",
@@ -2727,7 +2727,7 @@ const PROGRAMS = [
 
   {
     id:"become-shooter", name:"Become a Shooter", emoji:"🎯", color:"#8b5cf6",
-    badgeId:"pgm-become-shooter", duration:4, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-become-shooter", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
     desc:"Fix your mechanics, build shot consistency, and earn the reputation as the player who never misses.",
     weeks:[
       { week:1, goal:"Lock in your shooting mechanics — form shooting, wrist, and free throw routine.",
@@ -2759,7 +2759,7 @@ const PROGRAMS = [
 
   {
     id:"first-step-explosion", name:"First Step Explosion", emoji:"⚡", color:"#f43f5e",
-    badgeId:"pgm-first-step", duration:4, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-first-step", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
     desc:"Build the footwork, pivots, and finishing moves that let you attack the basket with confidence every possession.",
     weeks:[
       { week:1, goal:"Establish the movement foundation — triple threat, jump stop, and basic finishing.",
@@ -2791,7 +2791,7 @@ const PROGRAMS = [
 
   {
     id:"complete-hooper", name:"Complete Hooper", emoji:"🏆", color:"#f59e0b",
-    badgeId:"pgm-complete-hooper", duration:6, daysPerWeek:4, ageRange:[10,17],
+    badgeId:"pgm-complete-hooper", duration:6, daysPerWeek:4, ageRange:[10,17], equipment:["basketball","hoop"], equipmentFew:["two_basketballs","cones"],
     desc:"The full development system — 6 weeks covering handles, footwork, finishing, shooting, post play, and basketball IQ.",
     weeks:[
       { week:1, goal:"Foundation week — ball control, triple threat, shot mechanics, and athletic base.",
@@ -2843,7 +2843,7 @@ const PROGRAMS = [
 
   {
     id:"bodyweight-beast", name:"Bodyweight Beast", emoji:"💪", color:"#22c55e",
-    badgeId:"pgm-bodyweight", duration:3, daysPerWeek:3, ageRange:[9,15],
+    badgeId:"pgm-bodyweight", duration:3, daysPerWeek:3, ageRange:[9,15], equipment:[],
     desc:"No hoop, no weights, no problem. Three weeks to get stronger anywhere: learn the moves, add a set, then add reps. Finish it to unlock Level 2.",
     /* Built on the NSCA youth guidance: novices start at 1–2 sets of 10–15 and progress
        volume before difficulty, so the same moves repeat all three weeks and only the dose
@@ -2897,7 +2897,7 @@ const PROGRAMS = [
   {
     id:"bodyweight-beast-2", name:"Bodyweight Beast II", emoji:"🦍", color:"#16a34a",
     badgeId:"pgm-bodyweight-2", advancedOf:"bodyweight-beast", level:2,
-    duration:4, daysPerWeek:3, ageRange:[10,15],
+    duration:4, daysPerWeek:3, ageRange:[10,15], equipment:[],
     desc:"You beat Level 1 — now you learn to jump. Harder moves, more sets, then real jumps that you land like a pro. Still no equipment, still anywhere.",
     weeks:[
       { week:1, goal:"Harder moves, fewer reps. Learn them clean before you go big.",
@@ -3036,7 +3036,7 @@ const PROGRAMS = [
 
   {
     id:"own-the-glass", name:"Own the Glass", emoji:"🪃", color:"#22c55e",
-    badgeId:"pgm-own-the-glass", duration:3, daysPerWeek:3, ageRange:[10,17], equipment:["basketball + hoop"],
+    badgeId:"pgm-own-the-glass", duration:3, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
     desc:"Become the player who owns the boards — box out, go get it at its highest point, and win the second jump. Two jump days and a box-out day each week. Needs a ball and a hoop.",
     /* Same youth jump rules as Jump Higher: rebound jumps count as landings, ≤ 60 a session,
        jumping on Sessions 1 and 3 only, nothing rated older than the floor. Rebound drills
@@ -3084,7 +3084,7 @@ const PROGRAMS = [
   },
   {
     id:"lockdown-defender", name:"Lockdown Defender", emoji:"🛡️", color:"#0ea5e9",
-    badgeId:"pgm-lockdown-defender", duration:4, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-lockdown-defender", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["cones"],
     desc:"Become the player nobody wants to be guarded by — stance, slide, containment, closeouts, and team defense that shuts the ball down.",
     weeks:[
       { week:1, goal:"Build the base — athletic stance and a slide that never crosses its feet.",
@@ -3095,7 +3095,8 @@ const PROGRAMS = [
         ]},
       { week:2, goal:"Keep the ball in front — mirror the handler and beat them to the spot.",
         sessions:[
-          { day:"Session 1", focus:"Mirror the Ball",      exercises:["def-contain","partner-mirror","defensive-hip-flip"] },
+          { day:"Session 1", focus:"Slide & Contain",      exercises:["def-contain","def-lateral","defensive-hip-flip"],
+            was:["def-contain","partner-mirror","defensive-hip-flip"] },
           { day:"Session 2", focus:"Beat Them to the Spot",exercises:["def-contain","reactive-slide","hip-turns"] },
           { day:"Session 3", focus:"Change Direction",     exercises:["defensive-hip-flip","reactive-cone-calls","def-contain"] },
         ]},
@@ -3118,7 +3119,7 @@ const PROGRAMS = [
 
   {
     id:"passing-fundamentals", name:"Passing Fundamentals", emoji:"🤝", color:"#14b8a6",
-    badgeId:"pgm-passing-fundamentals", duration:3, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-passing-fundamentals", duration:3, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","wall"],
     desc:"Snap, accurate passes you can train solo — chest, bounce, pivot, and drive-and-kick before you run the floor as a playmaker.",
     weeks:[
       { week:1, goal:"Crisp stationary passes — chest and bounce off the wall.",
@@ -3144,7 +3145,7 @@ const PROGRAMS = [
 
   {
     id:"floor-general", name:"Floor General", emoji:"🧠", color:"#6366f1",
-    badgeId:"pgm-floor-general", duration:4, daysPerWeek:3, ageRange:[9,17],
+    badgeId:"pgm-floor-general", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","wall"],
     desc:"Become the passer your team runs through — all you need is a ball and a wall. Snappy fundamentals, passing off the move, and the game reads that create easy buckets for everyone.",
     weeks:[
       { week:1, goal:"Snap it — accurate, catch-ready chest and bounce passes off a wall.",
@@ -3176,7 +3177,7 @@ const PROGRAMS = [
 
   {
     id:"smooth-handles", name:"Smooth Handles", emoji:"🌊", icon:"handles", color:"#38bdf8",
-    badgeId:"pgm-smooth-handles", duration:4, daysPerWeek:3, ageRange:[10,17],
+    badgeId:"pgm-smooth-handles", duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"], equipmentFew:["two_basketballs","tennis_ball","cones"],
     /* `featured` floats a program to the top of every Programs list; `trainer` renders as a
        credit badge on its card, and `brandLogo` upgrades that badge to the partner's actual
        mark (see lib/brandLogos.js). Set here because this is the first program built on
@@ -3216,7 +3217,7 @@ const PROGRAMS = [
 
   {
     id:"cramer-29", name:"Cramer 29 Day Challenge", emoji:"🔥", icon:"streak29", color:"#f97316",
-    badgeId:"pgm-cramer-29", duration:5, daysPerWeek:7, ageRange:[9,17],
+    badgeId:"pgm-cramer-29", duration:5, daysPerWeek:7, ageRange:[9,17], equipment:["basketball"], equipmentFew:["hoop","two_basketballs","wall"],
     /* The only DAILY program in the catalog — 29 straight days, one Cramer Basketball video
        each. That cadence is why programSessionScheduleDays() drops to one-day spacing above
        four sessions a week; at the old every-other-day spacing days 4–7 of each week would

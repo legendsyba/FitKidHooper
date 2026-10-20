@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { pathTagForProgram, suggestNextProgram, isProgramLocked, missingPrerequisites, nextProgramReason } from "../lib/achievements.js";
 import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
+import { programGearSummary } from "../lib/programGear.js";
 import { shareProgram } from "../lib/programShare.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
 import {
@@ -376,6 +377,15 @@ export default function ProgramsView({
               <div>
                 <div style={{ fontSize:20,fontWeight:800,color:"var(--fkh-text)",lineHeight:1.2 }}>{prog.name}</div>
                 <div style={{ fontSize:11,color:"#64748b",marginTop:2 }}>{programCadenceLabel(prog)} · Ages {prog.ageRange[0]}–{prog.ageRange[1]}</div>
+                {(() => {
+                  const gear = programGearSummary(prog);
+                  return (
+                    <div style={{ fontSize:12,fontWeight:700,color:"var(--fkh-text)",marginTop:6 }}>
+                      {gear.none ? "✅ No equipment needed" : <>You need: {gear.main}</>}
+                      {gear.few && <span style={{ fontWeight:500,color:"#64748b" }}>{gear.main ? " · " : "You need: "}some drills: {gear.few}</span>}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
             {(() => {
@@ -703,7 +713,12 @@ export default function ProgramsView({
               {completedBadge && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:"rgba(34,197,94,0.2)",color:"#22c55e",fontWeight:700 }}>✓ DONE</span>}
               <TrainerCredit prog={prog} />
             </div>
-            <div style={{ fontSize:11,color:"#64748b",marginBottom:6 }}>{programCadenceLabel(prog, "x/week")} · Ages {prog.ageRange[0]}–{prog.ageRange[1]}</div>
+            <div style={{ fontSize:11,color:"#64748b",marginBottom:6 }}>
+              {programCadenceLabel(prog, "x/week")} · Ages {prog.ageRange[0]}–{prog.ageRange[1]} · {(() => {
+                const gear = programGearSummary(prog);
+                return gear.none ? "No equipment" : gear.main || gear.few;
+              })()}
+            </div>
             {(() => {
               const pathTag = pathTagForProgram(prog.id);
               return pathTag ? (

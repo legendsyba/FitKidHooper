@@ -73,7 +73,6 @@ for (const prog of PROGRAMS) {
         const meta = EXERCISE_META[id] || {};
         if (s.dose) {
           assert(!!s.dose[id], `${at}: ${id} has no dose`);
-          if (meta.equipment && meta.equipment !== "none") assert((prog.equipment || []).includes(meta.equipment), `${at}: ${id} needs ${meta.equipment}, program doesn't list it`);
         }
         if (!isLandingDrill(id)) continue;
         if (meta.ageRange) assert(meta.ageRange[0] <= prog.ageRange[0], `${at}: jump drill ${id} is rated ${meta.ageRange[0]}+, program starts at ${prog.ageRange[0]}`);
@@ -87,6 +86,34 @@ for (const prog of PROGRAMS) {
     const hours = (jumpDays[i].day - jumpDays[i - 1].day) * 24;
     assert(hours >= MIN_HOURS_BETWEEN_JUMP_DAYS, `${tag}: ${jumpDays[i - 1].at} → ${jumpDays[i].at} only ${hours} h apart (min ${MIN_HOURS_BETWEEN_JUMP_DAYS})`);
   }
+}
+
+/* ── 2a: gear ── every program says what a kid needs (shown on the program page). Each
+   drill's recorded equipment must be covered, and shooting/finishing/rebounding/post
+   drills need a hoop even where the drill data only says "basketball". */
+const GEAR_ALIASES = {
+  basketball: "basketball", hoop: "hoop", wall: "wall", cones: "cones", box: "box", partner: "partner",
+  jump_rope: "jump_rope", dumbbells: "dumbbells", basketball_x2: "two_basketballs", "2 basketballs": "two_basketballs",
+  tennis_ball: "tennis_ball", "tennis ball": "tennis_ball", "full court": "hoop",
+};
+const HOOP_CATEGORIES = new Set(["shooting", "shootingdrills", "shooting_lab", "finishing", "finishing_school", "rebounding", "postmoves"]);
+const gearFor = (id) => {
+  const raw = EXERCISE_META[id]?.equipment;
+  const items = !raw || raw === "none" ? [] : raw.split("+").map(x => GEAR_ALIASES[x.trim().toLowerCase()] || `unknown:${x.trim()}`);
+  if (HOOP_CATEGORIES.has(exercise(id)?._cat)) items.push("hoop");
+  return items;
+};
+for (const prog of PROGRAMS) {
+  assert(Array.isArray(prog.equipment), `${prog.id}: declare equipment (use [] for none)`);
+  const declared = new Set([...(prog.equipment || []), ...(prog.equipmentFew || [])]);
+  const seen = new Set();
+  for (const w of prog.weeks) for (const s of w.sessions) for (const id of s.exercises) {
+    for (const g of gearFor(id)) {
+      seen.add(g);
+      assert(declared.has(g), `${prog.id}: ${id} needs ${g}, program doesn't list it`);
+    }
+  }
+  for (const g of declared) assert(seen.has(g), `${prog.id}: lists ${g} but no drill uses it`);
 }
 
 /* ── 2b: jump rope volume ── rope is high-frequency, low-amplitude jumping (not counted as
