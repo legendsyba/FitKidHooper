@@ -14,6 +14,7 @@ import { PROGRAMS, ALL_EXERCISES, EXERCISE_META } from "../src/data/trainingCata
 import { BADGES_DEF, getEarnedBadges } from "../src/lib/badges.js";
 import { parseExerciseSets } from "../src/lib/exerciseSession.js";
 import { mergeSaveValue } from "../src/lib/persistMerge.js";
+import { buildAthleteContext } from "../src/lib/coachAgent.js";
 import {
   computeProgramProgress, isProgramSessionComplete, programCompletionCount,
   freshProgramEntry, retireFinishedPrograms, pendingNextStep, markNextStepsHandled,
@@ -133,6 +134,14 @@ const run2done = { ...stale, [bb.id]: { ...marked(bb, s => s.exercises, restartA
 const second = retireFinishedPrograms(PROGRAMS, { [bb.id]: { startDate: D0, startedAt: restartAt } }, run2done, restartAt + 5000);
 assert(second && pendingNextStep(PROGRAMS, mergeSaveValue(second.progress, dismissed))?.id === bb.id, "an old dismissal must not hide the next finish's card");
 assert(second && programCompletionCount(bb, second.progress) === 2, "finishing twice should count twice");
+
+const coachRecs = (completedProgramIds) => buildAthleteContext({
+  settings: { dateOfBirth: "2015-06-15", experience: "beginner", goals: ["strength"], playStyle: "any" },
+  completed: {}, enrolledProgramIds: [], completedProgramIds,
+}).developmentPlan.recommendedPrograms;
+assert(coachRecs([]).includes(bb.id), "(setup) coach should recommend Bodyweight Beast to a new strength kid");
+assert(!coachRecs([bb.id]).includes(bb.id), "coach must not recommend a program the kid already finished");
+assert(coachRecs([bb.id]).includes("bodyweight-beast-2"), "coach should offer the next level of a finished program");
 
 if (failures.length) {
   console.error(`verify-programs: ${failures.length} problem(s)\n  - ${failures.join("\n  - ")}`);

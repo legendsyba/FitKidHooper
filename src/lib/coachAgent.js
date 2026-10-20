@@ -187,6 +187,7 @@ export function buildAthleteContext({
   settings = {},
   completed = {},
   enrolledProgramIds = [],
+  completedProgramIds = [],
   age,
   streak = 0,
   activeChallenges = [],
@@ -200,6 +201,7 @@ export function buildAthleteContext({
     playStyle: settings.playStyle || "any",
     completed,
     enrolledProgramIds,
+    completedProgramIds,
     exerciseSkillIndex: index,
   });
   return { athleteAge, exerciseSkillIndex: index, developmentPlan: plan, settings, streak, activeChallenges };

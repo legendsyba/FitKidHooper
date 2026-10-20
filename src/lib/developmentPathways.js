@@ -3,6 +3,7 @@
  * Source of truth for agent adaptation and program sequencing. References catalog program ids.
  */
 import { SKILL_AREAS, getSkill, skillTier, skillsByArea } from "./skillGraph.js";
+import { PROGRAMS } from "../data/trainingCatalog.js";
 
 export const DEVELOPMENT_TIERS = {
   1: { key: "foundation", label: "Foundation", ageHint: "9–11", description: "Isolated reps, form, controlled speed" },
@@ -244,6 +245,7 @@ export function adaptDevelopmentPlan({
   playStyle = "any",
   completed = {},
   enrolledProgramIds = [],
+  completedProgramIds = [],
   exerciseSkillIndex = {},
   pathway: pathwayOverride = null,
 }) {
@@ -261,7 +263,12 @@ export function adaptDevelopmentPlan({
   const phase = pathway.phases.find((p) => p.tier === targetTier) || pathway.phases[0];
   const gapIds = skillGapsForPhase(phase, completed, exerciseSkillIndex);
 
-  const recommendedPrograms = (phase.programIds || []).filter((id) => !enrolledProgramIds.includes(id));
+  /* A finished program is history: offer its next level instead, else drop it. */
+  const taken = (id) => enrolledProgramIds.includes(id) || completedProgramIds.includes(id);
+  const recommendedPrograms = [...new Set((phase.programIds || []).map((id) => {
+    if (!completedProgramIds.includes(id)) return id;
+    return PROGRAMS.find((p) => p.advancedOf === id && !taken(p.id))?.id ?? null;
+  }))].filter((id) => id && !taken(id));
 
   const weakAreas = Object.entries(areaTiers)
     .filter(([area]) => area !== "athleticism")

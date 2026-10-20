@@ -128,6 +128,7 @@ import {
   buildProgramWeekPlan,
   rehydrateProgramProgressFromCompleted,
   freshProgramEntry,
+  programCompletionCount,
   retireFinishedPrograms,
   pendingNextStep,
   markNextStepsHandled,
@@ -2782,8 +2783,14 @@ export default function FitKidHooperApp() {
   }, [enrolledPrograms, programProgress]);
 
   const coachAthleteContext = useMemo(
-    () => buildCoachAthleteContext({ settings, completed: completedSafe, enrolledPrograms: enrolledProgramsSafe, workouts: WORKOUTS }),
-    [settings, completedSafe, enrolledProgramsSafe],
+    () => buildCoachAthleteContext({
+      settings,
+      completed: completedSafe,
+      enrolledPrograms: enrolledProgramsSafe,
+      completedProgramIds: PROGRAMS.filter(p => programCompletionCount(p, programProgressSafe) > 0).map(p => p.id),
+      workouts: WORKOUTS,
+    }),
+    [settings, completedSafe, enrolledProgramsSafe, programProgressSafe],
   );
   const coachGapAnalysis = useMemo(() => runGapAnalysis(coachAthleteContext), [coachAthleteContext]);
 

@@ -8,7 +8,7 @@ import { buildPersonalChallenges } from "./personalChallenges.js";
  * tab and Today card already compute from, so Coach FKH's answers reflect
  * live progress instead of just enrolled programs and completed drills.
  */
-export function buildCoachAthleteContext({ settings, completed, enrolledPrograms, workouts = {} }) {
+export function buildCoachAthleteContext({ settings, completed, enrolledPrograms, completedProgramIds = [], workouts = {} }) {
   const enrolled = enrolledPrograms && typeof enrolledPrograms === "object" && !Array.isArray(enrolledPrograms)
     ? Object.keys(enrolledPrograms).filter((id) => enrolledPrograms[id])
     : (enrolledPrograms || []).map((p) => (typeof p === "string" ? p : p.id)).filter(Boolean);
@@ -28,6 +28,7 @@ export function buildCoachAthleteContext({ settings, completed, enrolledPrograms
     },
     completed: completed || {},
     enrolledProgramIds: enrolled,
+    completedProgramIds,
     streak,
     activeChallenges,
   };
