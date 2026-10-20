@@ -54,6 +54,24 @@ export function computeProgramProgress(program, programProgress) {
   return total === 0 ? 0 : done / total;
 }
 
+/**
+ * Times this program has been finished. Restarting wipes the session marks, so earlier
+ * finishes are kept in _meta.completions — otherwise a restart would revoke the badge.
+ */
+export function programCompletionCount(program, programProgress) {
+  const past = programProgress?.[program.id]?._meta?.completions?.length ?? 0;
+  return past + (computeProgramProgress(program, programProgress) >= 1 ? 1 : 0);
+}
+
+/** Fresh progress entry for a (re)enrollment, carrying forward any finished runs. */
+export function freshProgramEntry(program, programProgress, startedAt) {
+  const prior = programProgress?.[program.id]?._meta?.completions ?? [];
+  const completions = computeProgramProgress(program, programProgress) >= 1
+    ? [...prior, startedAt]
+    : prior;
+  return { _meta: { enrollmentStartedAt: startedAt, ...(completions.length ? { completions } : {}) } };
+}
+
 /** Returns the current week number (1-indexed, capped at duration) for an enrolled program. */
 export function programCurrentWeek(startDate, duration) {
   if (!startDate) return 1;
@@ -164,7 +182,10 @@ export function getActiveProgramScheduleStatus(program, enrollment, programProgr
 
   const weekComplete = weekData.sessions.every((_, si) =>
     isProgramSessionComplete(program, programProgress, curWeek, si));
-  if (weekComplete) return { kind:"weekComplete", week: curWeek };
+  if (weekComplete) {
+    if (curWeek >= program.duration) return { kind:"programComplete", week: curWeek };
+    return { kind:"weekComplete", week: curWeek };
+  }
 
   const weekDay = programWeekDayIndex(enrollment.startDate, todayStr);
   const scheduleDays = programSessionScheduleDays(weekData.sessions.length);
@@ -203,6 +224,7 @@ export function getActiveProgramScheduleStatus(program, enrollment, programProgr
     }
   }
 
+  if (curWeek >= program.duration) return { kind:"programComplete", week: curWeek };
   return { kind:"weekComplete", week: curWeek };
 }
 
@@ -291,7 +313,7 @@ export function rehydrateProgramProgressFromCompleted({
       out[prog.id] = { _meta: { enrollmentStartedAt: anchor } };
       changed = true;
     } else if (!out[prog.id]._meta?.enrollmentStartedAt) {
-      out[prog.id] = { ...out[prog.id], _meta: { enrollmentStartedAt: anchor } };
+      out[prog.id] = { ...out[prog.id], _meta: { ...out[prog.id]._meta, enrollmentStartedAt: anchor } };
       changed = true;
     }
 

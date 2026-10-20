@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { pathTagForProgram } from "../lib/achievements.js";
+import { pathTagForProgram, suggestNextProgram } from "../lib/achievements.js";
 import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
 import { shareProgram } from "../lib/programShare.js";
@@ -12,6 +12,8 @@ import {
   countProgramSessionsDone,
   getActiveProgramScheduleStatus,
   programWeekDayIndex,
+  programCompletionCount,
+  freshProgramEntry,
 } from "../lib/programProgress.js";
 import {
   readCustomWorkouts,
@@ -157,7 +159,7 @@ export default function ProgramsView({
     safePersistKey("fkh-programs", nextEnrolled, { force: true });
     track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id });
     setProgramProgress(prev => {
-      const next = { ...prev, [prog.id]: { _meta: { enrollmentStartedAt: startedAt } } };
+      const next = { ...prev, [prog.id]: freshProgramEntry(prog, prev, startedAt) };
       safePersistKey("fkh-program-progress", next, { force: true });
       return next;
     });
@@ -309,6 +311,9 @@ export default function ProgramsView({
       const todayPlan = enrollment
         ? buildTrainingDayPlan(today, schedule, [prog], enrolledPrograms, programProgress, workouts)
         : null;
+      const isComplete = schedStatus?.kind === "programComplete";
+      const timesFinished = programCompletionCount(prog, programProgress);
+      const nextProg = isComplete ? suggestNextProgram(prog.id, programs, enrolledPrograms, earnedBadges) : null;
 
       return (
         <div style={{ background:BG,minHeight:"100vh",maxWidth:680,margin:"0 auto",paddingBottom:80 }}>
@@ -388,9 +393,25 @@ export default function ProgramsView({
                     : <>Currently on <span style={{ color:prog.color,fontWeight:700 }}>Week {curWeekNum}</span> of {prog.duration}</>}
                 </div>
               )}
+              {timesFinished > 0 && (
+                <div style={{ marginTop:4,fontSize:11,color:"#22c55e",fontWeight:700 }}>
+                  🏅 Finished {timesFinished === 1 ? "once" : `${timesFinished}×`}
+                </div>
+              )}
             </div>
 
-            {enrollment
+            {isComplete ? (
+              <>
+                <button onClick={() => { if (window.confirm("Restart this program from Week 1? Your badge stays — only the checkmarks reset.")) enrollProg(prog); }}
+                  style={{ width:"100%",padding:"13px",borderRadius:12,border:"none",background:prog.color,color:"#fff",fontSize:14,fontWeight:800,cursor:"pointer",marginBottom:8,boxShadow:`0 4px 16px ${prog.color}50` }}>
+                  Restart Program ↻
+                </button>
+                <button onClick={() => { if (window.confirm("Leave this program? Your exercise progress is kept.")) unenrollProg(prog.id); }}
+                  style={{ width:"100%",padding:"9px",borderRadius:10,border:"none",background:"transparent",color:"#64748b",fontSize:11,fontWeight:600,cursor:"pointer",marginBottom:18 }}>
+                  Leave Program
+                </button>
+              </>
+            ) : enrollment
               ? <button onClick={() => { if (window.confirm("Leave this program? Your exercise progress is kept.")) unenrollProg(prog.id); }}
                   style={{ width:"100%",padding:"11px",borderRadius:10,border:`1px solid ${prog.color}30`,background:"transparent",color:"#64748b",fontSize:12,fontWeight:600,cursor:"pointer",marginBottom:18 }}>
                   Leave Program
@@ -400,6 +421,23 @@ export default function ProgramsView({
                   Start Program →
                 </button>
             }
+
+            {isComplete && nextProg && (
+              <div style={{ marginBottom:18,padding:"13px 14px",borderRadius:12,background:`${nextProg.color}0c`,border:`1px solid ${nextProg.color}33` }}>
+                <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>Up Next</div>
+                <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                  <ProgramIcon prog={nextProg} size={40} />
+                  <div style={{ flex:1,minWidth:0 }}>
+                    <div style={{ fontSize:13,fontWeight:800,color:"var(--fkh-text)" }}>{nextProg.name}</div>
+                    <div style={{ fontSize:11,color:"#64748b",marginTop:1 }}>{programCadenceLabel(nextProg)}</div>
+                  </div>
+                  <button onClick={() => setSelectedProgram(nextProg.id)}
+                    style={{ padding:"8px 12px",borderRadius:8,border:"none",background:nextProg.color,color:"#fff",fontSize:11,fontWeight:800,cursor:"pointer",flexShrink:0 }}>
+                    View →
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div style={{ fontSize:11,color:"#64748b",lineHeight:1.55,margin:"-8px 0 16px",padding:"10px 12px",borderRadius:10,background:"rgba(255,255,255,0.03)",border:`1px solid ${bd}` }}>
               {(() => {
@@ -420,7 +458,15 @@ export default function ProgramsView({
               )}
             </div>
 
-            {enrollment && schedStatus && (
+            {enrollment && schedStatus && schedStatus.kind === "programComplete" && (
+              <div style={{ marginBottom:16,padding:"14px",borderRadius:12,background:`linear-gradient(135deg,${prog.color}22,${prog.color}0c)`,border:`1px solid ${prog.color}44`,textAlign:"center" }}>
+                <div style={{ fontSize:24,marginBottom:4 }}>🎉</div>
+                <div style={{ fontSize:14,fontWeight:800,color:"var(--fkh-text)" }}>Program Complete!</div>
+                <div style={{ fontSize:12,color:"#94a3b8",marginTop:3 }}>You finished all {prog.duration} weeks of {prog.name}.</div>
+              </div>
+            )}
+
+            {enrollment && schedStatus && schedStatus.kind !== "programComplete" && (
               <div style={{ marginBottom:16,padding:"11px 13px",borderRadius:12,background:`${prog.color}0c`,border:`1px solid ${prog.color}33` }}>
                 <div style={{ fontSize:10,fontWeight:800,color:prog.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:4 }}>Today</div>
                 {schedStatus.kind === "due" && (
@@ -576,8 +622,7 @@ export default function ProgramsView({
     if (programSegment === "myPlan") return ranked.filter(p => enrolledPrograms[p.id]);
     if (programSegment === "completed") {
       return ranked.filter(p =>
-        earnedBadges.includes(p.badgeId) ||
-        (enrolledPrograms[p.id] && computeProgramProgress(p, programProgress) >= 1),
+        earnedBadges.includes(p.badgeId) || programCompletionCount(p, programProgress) >= 1,
       );
     }
     return ranked;

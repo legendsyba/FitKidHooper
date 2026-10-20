@@ -861,6 +861,29 @@ export function pathTagForProgram(programId) {
   return track ? track.archetype : null;
 }
 
+/**
+ * What to try next after finishing a program. Pulls from the mastery tracks that
+ * list this program (same skill family), falling back to any featured program,
+ * skipping anything already completed or currently enrolled.
+ */
+export function suggestNextProgram(programId, programs, enrolledPrograms, earnedBadges) {
+  const isAvailable = (p) =>
+    p.id !== programId && !enrolledPrograms[p.id] && !earnedBadges.includes(p.badgeId);
+
+  const relatedIds = MASTERY_TRACKS
+    .filter(t => (t.relatedProgramIds || []).includes(programId))
+    .flatMap(t => t.relatedProgramIds);
+  for (const id of relatedIds) {
+    const p = programs.find(p => p.id === id);
+    if (p && isAvailable(p)) return p;
+  }
+
+  const featured = programs.find(p => p.featured && isAvailable(p));
+  if (featured) return featured;
+
+  return programs.find(isAvailable) || null;
+}
+
 export { FAVORITE_PLAYER_REGISTRY, displayFavoritePlayer, matchRegistryEntry };
 
 /**

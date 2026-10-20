@@ -1,4 +1,4 @@
-import { computeProgramProgress, countProgramSessionsDone } from "./programProgress.js";
+import { countProgramSessionsDone, programCompletionCount } from "./programProgress.js";
 import { PROGRESSION_CHAINS, getChainStatus } from "./progressionChains.js";
 import { countShotMakes, readShotLog } from "./shotLog.js";
 import { parseStoredObject } from "./storageParse.js";
@@ -8,6 +8,7 @@ export const BADGE_CATS = {
   streak:      { label:"Streaks",            emoji:"🔥" },
   shooting:    { label:"Shooting",           emoji:"🏀" },
   milestone:   { label:"Workout Milestones", emoji:"🏋️" },
+  program:     { label:"Programs",           emoji:"📋" },
 };
 
 export const BADGES_DEF = [
@@ -110,7 +111,7 @@ export function getEarnedBadges(completed, programProgress = {}, programs = []) 
   if (workoutDays >= 100) earned.add("workouts-100");
 
   for (const prog of programs) {
-    if (computeProgramProgress(prog, progress) >= 1) earned.add(prog.badgeId);
+    if (programCompletionCount(prog, progress) >= 1) earned.add(prog.badgeId);
   }
 
   return [...earned];
@@ -144,6 +145,7 @@ export function getBadgeProgress(badge, completed, programProgress = {}, program
   const prog = programs.find(p => p.badgeId === badge.id);
   if (prog) {
     const totalSessions = prog.weeks.reduce((s, w) => s + w.sessions.length, 0);
+    if (programCompletionCount(prog, progress) >= 1) return { cur: totalSessions, target: totalSessions };
     const doneSessions = countProgramSessionsDone(prog, progress);
     return { cur: doneSessions, target: totalSessions };
   }
