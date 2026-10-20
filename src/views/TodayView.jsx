@@ -250,7 +250,22 @@ export default function TodayView({
     const { cur, target } = getMissionTaskProgress(t, completed, today, programProgress);
     return cur < target;
   });
+  /* Today's mission is frozen once generated (see dailyMission.js), so a program started
+     later in the day isn't in it. The session due from live enrollments still leads the
+     card — program before mission, the existing precedence — without touching the mission. */
+  const liveProgramTask = (() => {
+    const w = dailyAction.programWidget;
+    if (!w || mission.tasks.some(t => t.type === "program")) return null;
+    return {
+      programId: w.program.id, week: w.week, sessionIdx: w.sessionIdx,
+      exercises: w.session.exercises,
+      title: `${w.program.emoji} ${w.program.name}`,
+      subtitle: `Week ${w.week} · ${w.session.focus}`,
+    };
+  })();
+
   const practiceCTA = (() => {
+    if (liveProgramTask) return { label: "Start program session", run: () => startProgramSession(liveProgramTask) };
     if (claimed) return null;
     if (dailyAction.primaryCTA?.focus === "program") {
       const programTask = mission.tasks.find(t => t.type === "program"
@@ -271,6 +286,7 @@ export default function TodayView({
   /* The drill the CTA will actually open — first undone exercise of the next
      unfinished task, falling back to the task's own label. */
   const nextDrillName = (() => {
+    if (liveProgramTask) return liveProgramTask.title;
     if (!nextMissionTask) return null;
     if (nextMissionTask.type === "program") return nextMissionTask.kindLabel || "Next session";
     const firstUndone = (nextMissionTask.exercises || [])
@@ -357,7 +373,9 @@ export default function TodayView({
                 textWrap:"pretty", color:"var(--fkh-text)" }}>
                 {nextDrillName || mission.title}
               </div>
-              {todayTrainingSummary && (
+              {liveProgramTask ? (
+                <div style={{ fontSize:11, color:"#64748b", marginTop:4 }}>{liveProgramTask.subtitle}</div>
+              ) : todayTrainingSummary && (
                 <div style={{ fontSize:11, color:"#64748b", marginTop:4 }}>
                   {todayTrainingSummary.minutes} min · +{todayTrainingSummary.xp} XP
                 </div>

@@ -4,6 +4,8 @@
  * - After generation, today's mission definition must NOT change for the rest of that day.
  * - Program enrollment, completed drills, or profile updates must NOT regenerate today's mission.
  * - Live completion state still drives task progress; only the mission definition is frozen.
+ * - A program started later in the day leads Home's top card from live enrollment
+ *   (TodayView liveProgramTask) instead of being added to the mission.
  */
 
 export function isValidCachedMission(mission, today) {
