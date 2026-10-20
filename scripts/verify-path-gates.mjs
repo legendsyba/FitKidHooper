@@ -30,13 +30,22 @@ assert(earned1.has("shooter-1"), "shooter-1 should unlock at 100 makes");
 const s3fail = buildEvalCtx({ ...baseCtx, makes: 2500, maxStreak: 3 });
 assert(!evaluateStageGate(getTrack("shooter").stages[2], s3fail), "stage 3 needs streak 7");
 
-const s3ok = buildEvalCtx({ ...baseCtx, makes: 2500, maxStreak: 7 });
-assert(evaluateStageGate(getTrack("shooter").stages[2], s3ok), "stage 3 ok with streak");
+// Stage 3 also has signature goals: corner 3s plus catch-and-shoot and stationary makes.
+const s3sig = { exCounts: { "slab-corner-3": 10 }, styleMakes: { catch_shoot: 120, stationary: 80 } };
+const s3noSig = buildEvalCtx({ ...baseCtx, makes: 2500, maxStreak: 7 });
+assert(!evaluateStageGate(getTrack("shooter").stages[2], s3noSig), "stage 3 still locked without its signature goals");
+
+const s3ok = buildEvalCtx({ ...baseCtx, makes: 2500, maxStreak: 7, ...s3sig });
+assert(evaluateStageGate(getTrack("shooter").stages[2], s3ok), "stage 3 ok with streak + signature goals");
 
 assert(recommendTrackForFavorite({ favoritePlayLike: "Steph Curry" }) === "shooter", "Curry → shooter");
 assert(recommendTrackForFavorite({ favoritePlayLike: "Allen Iverson" }) === "ballhandling", "AI → ballhandling");
 
-const prog = trackStageProgress(getTrack("shooter"), { ...baseCtx, makes: 425 });
+// Next rung (shooter-2) has signature goals; half of each is done here.
+const prog = trackStageProgress(getTrack("shooter"), {
+  ...baseCtx, makes: 425,
+  exCounts: { "slab-catch-shoot": 4, "sh-form": 4 }, styleMakes: { catch_shoot: 20 },
+});
 assert(prog.stagePct > 0 && prog.stagePct < 100, "partial stage progress");
 assert(prog.progressLabel.includes("425"), "progress label shows current makes");
 

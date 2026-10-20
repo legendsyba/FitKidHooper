@@ -2,6 +2,7 @@
  * Path stage signature drills + logged shot types — required reps for each legend rung.
  */
 import { getShotStyle } from "./shotStyles.js";
+import { ALL_EXERCISES } from "../data/trainingCatalog.js";
 
 export function computeExCounts(completed) {
   const counts = {};
@@ -63,7 +64,9 @@ export function formatSignatureSummary(signatureProgress, nameForExId) {
   if (first.kind === "shot") {
     return `${first.label} ${first.current}/${first.min} makes${more}`;
   }
-  const name = nameForExId?.(first.exId) || first.exId.replace(/-/g, " ");
+  /* Progress Rail and the Path view call this without a resolver; kids were reading raw ids
+     like "slab catch shoot". Fall back to the catalog name. */
+  const name = nameForExId?.(first.exId) || ALL_EXERCISES[first.exId]?.name || first.exId.replace(/-/g, " ");
   return `${name} ${first.current}/${first.min}${more}`;
 }
 
