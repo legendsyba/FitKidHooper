@@ -2,6 +2,9 @@ import BoardView from "../components/BoardView.jsx";
 import GuideNavButton from "../components/GuideNavButton.jsx";
 import CoachNavButton from "../components/CoachNavButton.jsx";
 
+/* Stable identity — BoardView effects depend on it. */
+const CHALLENGE_MODES = ["challenges", "rankings"];
+
 export default function ChallengesView({
   settings,
   completed,
@@ -44,7 +47,7 @@ export default function ChallengesView({
       </div>
 
       <BoardView
-        modes={["challenges", "rankings"]}
+        modes={CHALLENGE_MODES}
         settings={settings}
         completed={completed}
         missionLog={missionLog}

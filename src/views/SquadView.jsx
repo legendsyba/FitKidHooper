@@ -4,6 +4,9 @@ import CountBadge from "../components/CountBadge.jsx";
 import GuideNavButton from "../components/GuideNavButton.jsx";
 import CoachNavButton from "../components/CoachNavButton.jsx";
 
+/* Stable identity — BoardView effects depend on it. */
+const SQUAD_MODES = ["friends"];
+
 export default function SquadView({
   settings,
   completed,
@@ -74,7 +77,7 @@ export default function SquadView({
       )}
 
       <BoardView
-        modes={["friends"]}
+        modes={SQUAD_MODES}
         settings={settings}
         completed={completed}
         missionLog={missionLog}

@@ -238,15 +238,20 @@ export default function BoardView({
     return () => { alive = false; };
   }, [mode, athleteId, configured, requests.length]);
 
+  /* Act once per focus request. The tick never resets, so re-running on every render
+     (or when the inbox flag clears) kept yanking kids back to Friends — out of Messages
+     right after a "messages" deep link, and out of an open chat on any re-render. */
+  const hasFriendsMode = modes.includes("friends");
+  const handledFocusTickRef = useRef(0);
   useEffect(() => {
-    if (!focusFriendsTick || !modes.includes("friends")) return;
+    if (!focusFriendsTick || !hasFriendsMode || handledFocusTickRef.current === focusFriendsTick) return;
+    handledFocusTickRef.current = focusFriendsTick;
     setMode("friends");
     if (!openMessagesInbox) setSquadTab("friends");
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       friendsPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
-    return () => clearTimeout(timer);
-  }, [focusFriendsTick, openMessagesInbox, modes]);
+  }, [focusFriendsTick, openMessagesInbox, hasFriendsMode]);
 
   useEffect(() => {
     if (!isSquadLayout || !openMessagesInbox) return;
