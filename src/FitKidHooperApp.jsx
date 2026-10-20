@@ -2956,7 +2956,7 @@ export default function FitKidHooperApp() {
       badgesDef: BADGES_DEF,
       levelContext,
     });
-  }, [completedSafe, settings, earnedBadges, badgeDates, ledger, progressCtx, programProgressSafe, currentLevel, xpData.total, shotLogTick]);
+  }, [completedSafe, settings, earnedBadges, badgeDates, ledger, progressCtx, programProgressSafe, currentLevel, xpData.total, shotLogTick, getExerciseCategory]);
 
   // Progression ledger — the single grant path.
   // journey milestones/titles/cosmetics, syncs to the cloud ledger, and celebrates

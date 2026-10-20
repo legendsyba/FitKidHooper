@@ -319,7 +319,7 @@ export default function BoardView({
       setInviteInput(initialInviteCode);
       setMode("friends");
     }
-  }, [initialInviteCode, athleteId]);
+  }, [initialInviteCode, athleteId, modes]);
 
   const handleSyncNow = async () => {
     setPushing(true);

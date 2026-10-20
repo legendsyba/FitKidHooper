@@ -12,6 +12,11 @@ import {
   computeShootingStats, computeLocationTypeStats, computeZoneTypeStats, ZONES,
 } from "../lib/shootingStats.js";
 import { getPeriodRange, LEADERBOARD_PERIODS } from "../lib/periodStats.js";
+
+/** Now for today's log; noon for a back-dated day, so its shots sort inside that day. */
+function shotTimestampFor(dayKey) {
+  return dayKey === todayKey() ? Date.now() : new Date(`${dayKey}T12:00:00`).getTime();
+}
 import {
   getWeekShotGoal, getMonthShotGoal, getDayShotGoal,
   setWeekShotGoal, setMonthShotGoal, setDayShotGoal,
@@ -79,8 +84,7 @@ export default function ShotTracker({ P, S, BG, athleteName, settings, onLogChan
   const logBatch = (tid, loc, made, missed) => {
     if (made + missed === 0) return;
     const k = logDate;
-    const isToday = k === todayKey();
-    const ts = isToday ? Date.now() : new Date(`${k}T12:00:00`).getTime();
+    const ts = shotTimestampFor(k);
     const style = shotStyle;
     const entries = [
       ...Array(made).fill(null).map((_,i)  => ({ type:tid, location:loc||null, ts:ts+i,   made:true,  style })),
@@ -124,7 +128,8 @@ export default function ShotTracker({ P, S, BG, athleteName, settings, onLogChan
     setLastShot(null);
   };
 
-  const todayShots = log[todayKey()]||[];
+  const today = todayKey();
+  const todayShots = useMemo(() => log[today] || [], [log, today]);
   const logDayShots = log[logDate]||[];
   const logDayLabel = logDate === todayKey() ? "Today" : fmtDate(logDate);
   const logDayTotal = logDayShots.length;
