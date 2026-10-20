@@ -2248,12 +2248,16 @@ export default function FitKidHooperApp() {
 
   const getExerciseCategory = useCallback(exId => (ALL_EXERCISES[exId] || {})._cat, []);
 
+  /* Badges and the ledger feed the path snapshot friends see (certified titles gate the
+     top stage of three paths). Omitting them under-reported ranks on every auto push. */
   const syncLeaderboard = useCallback(async ({ force = false } = {}) => {
     const result = await maybeAutoSyncLeaderboard({
       settings,
       completed,
       missionLog,
       getCategory: getExerciseCategory,
+      earnedBadges: getEarnedBadges(completedSafe, programProgressSafe, PROGRAMS),
+      ledger,
       force,
     });
     if (result.ok) {
@@ -2262,7 +2266,7 @@ export default function FitKidHooperApp() {
       track(ANALYTICS_EVENTS.LEADERBOARD_PUSH, { success: false, auto: !force, error: result.error });
     }
     return result;
-  }, [settings, completed, missionLog, getExerciseCategory]);
+  }, [settings, completed, missionLog, getExerciseCategory, completedSafe, programProgressSafe, ledger]);
 
   const syncLeaderboardRef = useRef(syncLeaderboard);
   useEffect(() => { syncLeaderboardRef.current = syncLeaderboard; }, [syncLeaderboard]);
@@ -3145,6 +3149,7 @@ export default function FitKidHooperApp() {
     return () => window.removeEventListener("pageshow", onShow);
   }, []);
 
+  const [boardPushRequest, setBoardPushRequest] = useState(0);
   useEffect(() => {
     if (!auth.isSignedIn || auth.loading) return;
     let cancelled = false;
@@ -3154,13 +3159,24 @@ export default function FitKidHooperApp() {
         if (cancelled) return;
         await claimChallengeRewards().catch(() => 0);
         await pullLedger().catch(() => {});
-        if (!cancelled) setLedger(readLocalLedger());
+        if (!cancelled) {
+          setLedger(readLocalLedger());
+          setBoardPushRequest(n => n + 1);
+        }
       } catch (e) {
         console.error("[fkh] post-sign-in sync failed", e);
       }
     })();
     return () => { cancelled = true; };
   }, [auth.isSignedIn, auth.loading, applyCloudSync]);
+
+  /* Push to the board once the cloud merge has landed, on the next render so the sync
+     closure (via the ref, refreshed earlier in the same commit) sees merged state.
+     Forced: the app-open push may already have used the throttle with pre-merge stats. */
+  useEffect(() => {
+    if (!boardPushRequest) return;
+    syncLeaderboardRef.current({ force: true }).catch(() => {});
+  }, [boardPushRequest]);
 
   // Normalize legacy profile fields when Settings opens — local only, no cloud overwrite.
   useEffect(() => {
@@ -3175,14 +3191,6 @@ export default function FitKidHooperApp() {
       console.error("[fkh] settings normalize failed", e);
     }
   }, [showSettings, view, progressTab]);
-
-  // Auto-sync the leaderboard on app open / sign-in (not just when Boards is
-  // opened). Self-throttled to ~30 min, so it's cheap to fire here.
-  useEffect(() => {
-    maybeAutoSyncLeaderboard({
-      settings, completed, missionLog, getCategory: getExerciseCategory, earnedBadges, ledger,
-    }).catch(() => {});
-  }, [auth.isSignedIn]);
 
   useEffect(() => {
     scheduleMissionReminder({
