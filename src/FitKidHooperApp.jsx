@@ -110,7 +110,6 @@ import {
 } from "./lib/themeColors.js";
 import GuideSheet from "./components/GuideSheet.jsx";
 import CoachFKHSheet from "./components/CoachFKHSheet.jsx";
-import CoachIntroSheet from "./components/CoachIntroSheet.jsx";
 import { buildCoachAthleteContext } from "./lib/coachAgentApi.js";
 import { runGapAnalysis } from "./lib/coachAgent.js";
 import OnboardingTour from "./components/OnboardingTour.jsx";
@@ -182,11 +181,13 @@ const DEFAULT = {
 
 /**
  * Calculate current age from an ISO date-of-birth string ("YYYY-MM-DD").
- * Returns 12 when dob is absent (safe fallback for new/migrated profiles).
+ * Returns 9 when dob is absent: the youngest age the app trains, so a kid who
+ * has not given a birthday (onboarding no longer asks) gets the most careful
+ * jump volume and drill picks rather than a 12-year-old's.
  * Age updates automatically every time the function is called — no manual updates needed.
  */
 function calcAge(dob) {
-  if (!dob) return 12;
+  if (!dob) return 9;
   const birth = new Date(dob + "T00:00:00");
   const today = new Date();
   let age = today.getFullYear() - birth.getFullYear();
@@ -1961,8 +1962,6 @@ export default function FitKidHooperApp() {
   const [showFindDrills, setShowFindDrills] = useState(false);
   const [showCoachFKH, setShowCoachFKH] = useState(false);
   const [coachInitialQuery, setCoachInitialQuery] = useState(null);
-  const [showCoachIntro, setShowCoachIntro] = useState(false);
-  const [tourPendingAfterCoach, setTourPendingAfterCoach] = useState(false);
   const [workoutOpen, setWorkoutOpen] = useState(() => {
     try { return localStorage.getItem("fkh-workout-open") === "1"; } catch { return false; }
   });
@@ -2211,13 +2210,8 @@ export default function FitKidHooperApp() {
     setShowOnboarding(false);
   }, [auth.loading, auth.isSignedIn]);
 
-  // Post-onboarding sequence in progress: Meet Coach FKH intro, or the coach
-  // sheet it opened while a tour start is still pending. Other first-run
-  // surfaces (notifications, tour prompt, what's new) must wait their turn.
-  const inPostOnboardingFlow = showCoachIntro || (showCoachFKH && tourPendingAfterCoach);
-
   useEffect(() => {
-    if (!auth.isSignedIn || tourActive || showOnboarding || inPostOnboardingFlow) {
+    if (!auth.isSignedIn || tourActive || showOnboarding) {
       setShowNotificationPrompt(false);
       return undefined;
     }
@@ -2226,12 +2220,12 @@ export default function FitKidHooperApp() {
       if (!cancelled) setShowNotificationPrompt(need);
     });
     return () => { cancelled = true; };
-  }, [auth.isSignedIn, tourActive, showOnboarding, inPostOnboardingFlow]);
+  }, [auth.isSignedIn, tourActive, showOnboarding]);
 
   useEffect(() => {
-    if (tourActive || showOnboarding || inPostOnboardingFlow) return;
+    if (tourActive || showOnboarding) return;
     setShowTourPrompt(shouldShowTourPrompt());
-  }, [tourActive, showOnboarding, inPostOnboardingFlow, completedSafe]);
+  }, [tourActive, showOnboarding, completedSafe]);
 
   useEffect(() => {
     const onShow = () => setShowWhatsNew(true);
@@ -2240,11 +2234,11 @@ export default function FitKidHooperApp() {
   }, []);
 
   useEffect(() => {
-    if (showOnboarding || inPostOnboardingFlow || tourActive || auth.loading) return;
+    if (showOnboarding || tourActive || auth.loading) return;
     if (!shouldShowWhatsNew()) return;
     const t = setTimeout(() => setShowWhatsNew(true), 800);
     return () => clearTimeout(t);
-  }, [showOnboarding, inPostOnboardingFlow, tourActive, auth.loading]);
+  }, [showOnboarding, tourActive, auth.loading]);
 
   const getExerciseCategory = useCallback(exId => (ALL_EXERCISES[exId] || {})._cat, []);
 
@@ -2670,6 +2664,12 @@ export default function FitKidHooperApp() {
       zIndex={showOnboarding ? 450 : pendingClassId ? 430 : 350}
       initialMode={authInitialMode}
       parentConsent={needsParentConsent(settings.dateOfBirth)}
+      askBirthday={!settings.dateOfBirth}
+      onBirthday={dob => setSettings(p => {
+        const next = { ...p, dateOfBirth: dob };
+        safePersistKey("s_settings", next, { force: true });
+        return next;
+      })}
       firstName={settings.athleteName || ""}
       lastName={settings.lastName || ""}
       onClose={() => { setShowAuth(false); setAuthInitialMode("signin"); }}
@@ -2678,9 +2678,8 @@ export default function FitKidHooperApp() {
         setAuthInitialMode("signin");
         if (showOnboarding) {
           localStorage.setItem("s_onboarded", "1");
-          track(ANALYTICS_EVENTS.ONBOARDING_COMPLETE, {});
+          track(ANALYTICS_EVENTS.ONBOARDING_COMPLETE, { via: "log_in" });
           setShowOnboarding(false);
-          setShowCoachIntro(true);
         }
       }}
     />
@@ -3376,9 +3375,6 @@ export default function FitKidHooperApp() {
           onClose={() => {
             setShowCoachFKH(false);
             setCoachInitialQuery(null);
-            // Don't auto-start the guided tour — first practice comes first.
-            // Tour prompt appears after the first completed drill.
-            if (tourPendingAfterCoach) setTourPendingAfterCoach(false);
           }}
           P={P}
           SF={SF}
@@ -4112,7 +4108,7 @@ export default function FitKidHooperApp() {
       {showOnboarding && !auth.loading && (
         <OnboardingSheet
           P={P}
-          onComplete={({ settings: patch, finalize = true }) => {
+          onComplete={({ settings: patch, finalize = true, via }) => {
             setSettings(p => {
               const next = { ...p, ...patch };
               safePersistKey("s_settings", next, { force: true });
@@ -4121,25 +4117,14 @@ export default function FitKidHooperApp() {
             if (!finalize) return;
             localStorage.setItem("s_onboarded", "1");
             markWhatsNewSeen(); // baseline release so brand-new athletes skip changelog
-            track(ANALYTICS_EVENTS.ONBOARDING_COMPLETE, {});
+            track(ANALYTICS_EVENTS.ONBOARDING_COMPLETE, via ? { via } : {});
+            /* Straight to Home and today's practice. The Meet Coach FKH sheet
+               used to open here — one more screen between a new kid and a
+               first drill; Coach stays one tap away in the header. */
             setShowOnboarding(false);
-            setShowCoachIntro(true);
           }}
           onAuthSuccess={undefined}
           onForgotPasscode={() => { setAuthInitialMode("forgot"); setShowAuth(true); }}
-        />
-      )}
-      {showCoachIntro && (
-        <CoachIntroSheet
-          P={P}
-          athleteName={settings.athleteName}
-          onPickPrompt={(q) => {
-            setShowCoachIntro(false);
-            setCoachInitialQuery({ intent: q.intent, label: q.label });
-            setShowCoachFKH(true);
-            setTourPendingAfterCoach(true);
-          }}
-          onSkip={() => { setShowCoachIntro(false); /* tour waits until after first practice */ }}
         />
       )}
       {/* One row: who you are, then the two things you can ask for anywhere.

@@ -192,7 +192,7 @@ export function buildAthleteContext({
   streak = 0,
   activeChallenges = [],
 }) {
-  const athleteAge = age ?? (settings.dateOfBirth ? calcAgeFromDob(settings.dateOfBirth) : 12);
+  const athleteAge = age ?? (settings.dateOfBirth ? calcAgeFromDob(settings.dateOfBirth) : 9); // unknown → youngest, most careful
   const index = getExerciseSkillIndex();
   const plan = adaptDevelopmentPlan({
     age: athleteAge,

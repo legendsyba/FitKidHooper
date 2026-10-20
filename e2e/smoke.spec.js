@@ -54,6 +54,19 @@ test.describe("FKH pre-deploy smoke", () => {
     await expect(page.locator("#fkh-boot-shell")).toBeHidden();
   });
 
+  // First run is one screen: a name, then Home with today's practice — no
+  // birthday, no account, no Coach intro in between.
+  test("new kid goes from welcome to Today in one screen", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText("Welcome, hooper!")).toBeVisible({ timeout: 20_000 });
+    await page.getByPlaceholder("First name").fill("Jordan");
+    await page.getByRole("button", { name: "Let's train →" }).click();
+    await expectAppBooted(page);
+    await expect(page.getByText("Welcome, hooper!")).toHaveCount(0);
+    await expect(page.getByText("Jordan").first()).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem("s_onboarded"))).toBe("1");
+  });
+
   test("signed-in boot with squad notifications renders nav badge", async ({ page }) => {
     test.skip(!supabaseAuthStorageKey(), "VITE_SUPABASE_URL must match the built bundle");
 

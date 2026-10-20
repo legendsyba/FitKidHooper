@@ -14,16 +14,10 @@ import {
 import { checkLegendsAccess, rememberLegendsAccess } from "../lib/legendsAccess.js";
 import { calcAge } from "../lib/periodStats.js";
 import { needsParentConsent } from "../lib/parentConsent.js";
-import { POSITIONS } from "../lib/identity.js";
-import PlayerPicker from "./PlayerPicker.jsx";
 import DateOfBirthField from "./DateOfBirthField.jsx";
 import { getHandoff } from "../lib/legendsHandoff.js";
-
-const EXPERIENCE_OPTIONS = [
-  ["beginner", "🌱 Beginner"],
-  ["intermediate", "⚡ Intermediate"],
-  ["advanced", "🔥 Advanced"],
-];
+import { track } from "../lib/analytics.js";
+import { ANALYTICS_EVENTS } from "../lib/analyticsTypes.js";
 
 const GOAL_OPTIONS = [
   ["explosion", "💥 Jump Higher"],
@@ -52,16 +46,18 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
   const authEnabled = isAuthConfigured();
 
   const [step, setStep] = useState(0);
-  /** new = stepped through profile setup; returning = tapped Log in on step 1 */
+  /** new = chose to save their player now; returning = tapped Log in on step 0 */
   const [flow, setFlow] = useState("new");
 
+  /* First run is one screen: a name, optional goals, and straight to Home.
+     Most genuine first visits used to end inside a two-screen form (last
+     name, birthday, experience, position, play-like, then an account block)
+     without a single drill done. Everything else is editable in Me → Edit,
+     and the birthday is asked when the kid saves their player — the one
+     place it changes anything (parent permission under 13). */
   const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [experience, setExperience] = useState("beginner");
   const [goals, setGoals] = useState([]);
-  const [playStyle, setPlayStyle] = useState("any");
-  const [favoritePlayLike, setFavoritePlayLike] = useState("");
 
   const [username, setUsername] = useState(() => getLastUsername());
   const [passcode, setPasscode] = useState("");
@@ -99,6 +95,12 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
   const { min: minDob, max: maxDob } = useMemo(() => dobBounds(), []);
   const normUser = normalizeUsername(username);
   const isReturning = flow === "returning";
+
+  // One event per screen reached, so the drop-off point is visible.
+  const screen = verifyMode ? "verify" : step === 0 ? "welcome" : isReturning ? "log_in" : "save_player";
+  useEffect(() => {
+    track(ANALYTICS_EVENTS.ONBOARDING_STEP, { step: screen });
+  }, [screen]);
   const wantsAccount = authEnabled && !isReturning
     && (normUser || passcode || passcode2 || recoveryEmail.trim());
   // The birthday is collected a step earlier, so by the time the account block
@@ -135,13 +137,8 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
 
   const buildProfilePatch = () => ({
     athleteName: firstName.trim() || "Hooper",
-    lastName: lastName.trim(),
-    dateOfBirth: dateOfBirth || null,
-    experience,
     goals,
-    playStyle,
-    favoritePlayLike: favoritePlayLike.trim(),
-    favoriteAllTime: favoritePlayLike.trim() || "",
+    ...(dateOfBirth ? { dateOfBirth } : {}),
   });
 
   const validateStep0 = () => {
@@ -163,7 +160,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     if (userErr) return userErr;
     if (usernameStatus === "taken") return "That username is taken — try another";
     if (usernameStatus === "checking") return "Still checking username…";
-    if (usernameRevealsRealName(normUser, firstName, lastName)) return "Your Jersey Name can't include your real name — try a nickname or something creative!";
+    if (usernameRevealsRealName(normUser, firstName, "")) return "Your Jersey Name can't include your real name — try a nickname or something creative!";
     if (!/^\d{6}$/.test(passcode)) return "Passcode must be exactly 6 digits";
     if (passcode !== passcode2) return "Passcodes do not match";
     if (!recoveryEmail.trim().includes("@")) {
@@ -181,7 +178,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     setStep(1);
   };
 
-  const goToStep2 = () => {
+  const goToSaveNow = () => {
     const err = validateStep0();
     if (err) { setError(err); return; }
     setError(null);
@@ -189,12 +186,11 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     setStep(1);
   };
 
-  const finishWithoutAccount = () => {
+  // The default path: no birthday, no account — Home, with today's practice.
+  const startTraining = () => {
     const err0 = validateStep0();
     if (err0) { setError(err0); return; }
-    const err2 = validateStep2Profile();
-    if (err2) { setError(err2); return; }
-    onComplete?.({ settings: buildProfilePatch(), finalize: true });
+    onComplete?.({ settings: buildProfilePatch(), finalize: true, via: "guest" });
   };
 
   const handleSignIn = async (e) => {
@@ -208,14 +204,12 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     setBusy(true);
     try {
       await signInWithUsername({ username: normUser, passcode });
-      const namePatch = firstName.trim()
-        ? { athleteName: firstName.trim(), lastName: lastName.trim() }
-        : {};
+      const namePatch = firstName.trim() ? { athleteName: firstName.trim() } : {};
       if (Object.keys(namePatch).length) {
         onComplete?.({ settings: namePatch, finalize: false });
       }
       await onAuthSuccess?.();
-      onComplete?.({ settings: {}, finalize: true });
+      onComplete?.({ settings: {}, finalize: true, via: "log_in" });
     } catch (err) {
       setError(err.message || "Sign-in failed");
     } finally {
@@ -228,7 +222,8 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     setError(null);
     const err0 = validateStep0();
     if (err0) { setError(err0); return; }
-    const err2 = validateStep2Profile();
+    // The birthday decides who signs off on the account, so only an account needs it.
+    const err2 = wantsAccount ? validateStep2Profile() : null;
     if (err2) { setError(err2); return; }
     const accountErr = validateSignupAccount();
     if (accountErr) { setError(accountErr); return; }
@@ -237,7 +232,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     onComplete?.({ settings: patch, finalize: false });
 
     if (!wantsAccount) {
-      onComplete?.({ settings: patch, finalize: true });
+      onComplete?.({ settings: patch, finalize: true, via: "guest" });
       return;
     }
 
@@ -274,7 +269,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
         setError(null);
       } else {
         await onAuthSuccess?.();
-        onComplete?.({ settings: patch, finalize: true });
+        onComplete?.({ settings: patch, finalize: true, via: "account" });
       }
     } catch (err) {
       setError(err.message || "Could not create account");
@@ -296,7 +291,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
         try { await recordParentalConsent({ parentEmail: pendingEmail }); } catch { /* non-fatal */ }
       }
       await onAuthSuccess?.();
-      onComplete?.({ settings: buildProfilePatch(), finalize: true });
+      onComplete?.({ settings: buildProfilePatch(), finalize: true, via: "account" });
       setVerifyMode(false);
     } catch (err) {
       setError(err.message || "Verification failed");
@@ -311,8 +306,6 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     color: "#fff", outline: "none", marginBottom: 10,
   };
   const labelStyle = { fontSize: 11, color: "#64748b", fontWeight: 600, marginBottom: 6, display: "block" };
-  const sectionStyle = { fontFamily: "'DM Mono',monospace", fontSize: 9, letterSpacing: "0.16em",
-    color: "#475569", textTransform: "uppercase", margin: "16px 0 10px" };
   const btnPrimary = { width: "100%", background: P, border: "none", borderRadius: 12, padding: 14,
     fontSize: 15, fontWeight: 800, color: "#000", cursor: busy ? "default" : "pointer", opacity: busy ? 0.7 : 1 };
   const chip = (active) => ({
@@ -339,20 +332,6 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
         {children}
       </div>
     </div>
-  );
-
-  const playLikeBlock = (
-    <>
-      <div style={sectionStyle}>Your game</div>
-      <label style={labelStyle}>Who do you play like?</label>
-      <PlayerPicker
-        value={favoritePlayLike}
-        onChange={setFavoritePlayLike}
-        pool="both"
-        placeholder="e.g. Steph Curry"
-        accent={P}
-      />
-    </>
   );
 
   if (verifyMode) {
@@ -384,17 +363,15 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
           Welcome, hooper!
         </h2>
         <p style={{ textAlign: "center", color: "#64748b", fontSize: 12, marginBottom: 16, lineHeight: 1.45 }}>
-          Let's get to know you.
+          Tell us your name and let&apos;s get to work.
         </p>
 
-        <label style={labelStyle}>First name *</label>
+        <label style={labelStyle}>First name</label>
         <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter") startTraining(); }}
           placeholder="First name" autoFocus style={inputStyle} />
-        <label style={labelStyle}>Last name</label>
-        <input type="text" value={lastName} onChange={e => setLastName(e.target.value)}
-          placeholder="Last name (optional)" style={inputStyle} />
 
-        <div style={labelStyle}>My goals <span style={{ fontWeight: 400 }}>(pick up to 3)</span></div>
+        <div style={labelStyle}>What do you want to get better at? <span style={{ fontWeight: 400 }}>(optional, up to 3)</span></div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
           {GOAL_OPTIONS.map(([val, lbl]) => (
             <button key={val} type="button" onClick={() => toggleGoal(val)} style={chip(goals.includes(val))}>
@@ -405,15 +382,24 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
 
         {error && <div style={{ fontSize: 11, color: "#f87171", marginBottom: 10, lineHeight: 1.45 }}>{error}</div>}
 
-        <button type="button" onClick={goToStep2} disabled={busy} style={btnPrimary}>
-          Next →
+        <button type="button" onClick={startTraining} disabled={busy} style={btnPrimary}>
+          Let&apos;s train →
         </button>
         {authEnabled && (
-          <button type="button" onClick={goToLogin} disabled={busy}
-            style={{ width: "100%", marginTop: 10, padding: 12, borderRadius: 12, cursor: "pointer",
-              background: "transparent", border: `1.5px solid ${P}55`, color: P, fontSize: 13, fontWeight: 800 }}>
-            Log in
-          </button>
+          <>
+            <button type="button" onClick={goToLogin} disabled={busy}
+              style={{ width: "100%", marginTop: 10, padding: 12, borderRadius: 12, cursor: "pointer",
+                background: "transparent", border: `1.5px solid ${P}55`, color: P, fontSize: 13, fontWeight: 800 }}>
+              I already have a player — Log in
+            </button>
+            {/* Arriving from the Legends parent portal means a grown-up is right
+                there with a verified email — the one moment saving first is easy. */}
+            <button type="button" onClick={goToSaveNow} disabled={busy}
+              style={{ width: "100%", background: "transparent", border: "none", color: handoff ? P : "#64748b",
+                fontSize: 11.5, fontWeight: 700, cursor: "pointer", marginTop: 8, padding: 8 }}>
+              {handoff ? "💾 Save my player with Legends" : "Save my player first"}
+            </button>
+          </>
         )}
       </>,
     );
@@ -471,10 +457,10 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
         ← Back
       </button>
       <h2 style={{ fontSize: 20, fontWeight: 800, color: "var(--fkh-text)", margin: "0 0 4px" }}>
-        Almost there, {firstName.trim() || "hooper"}!
+        Save your player, {firstName.trim() || "hooper"}
       </h2>
       <p style={{ color: "#64748b", fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>
-        A few more details — you can edit all of this in Settings later.
+        Keep your streak, badges &amp; XP, play with friends, and never lose your progress.
       </p>
 
       <label style={labelStyle}>Birthday *</label>
@@ -487,32 +473,8 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
         </div>
       )}
 
-      <div style={labelStyle}>Experience</div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-        {EXPERIENCE_OPTIONS.map(([val, lbl]) => (
-          <button key={val} type="button" onClick={() => setExperience(val)}
-            style={{ ...chip(experience === val), flex: 1, padding: "8px 4px" }}>{lbl}</button>
-        ))}
-      </div>
-
-      <div style={labelStyle}>Position</div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
-        {POSITIONS.map(pos => (
-          <button key={pos.id} type="button" onClick={() => setPlayStyle(pos.id)}
-            style={{ ...chip(playStyle === pos.id), flex: 1, padding: "8px 4px", fontSize: 10 }}>
-            {pos.emoji} {pos.label}
-          </button>
-        ))}
-      </div>
-
-      {playLikeBlock}
-
       {authEnabled && (
         <>
-          <div style={sectionStyle}>💾 Save your player</div>
-          <p style={{ fontSize: 11, color: "#64748b", margin: "0 0 10px", lineHeight: 1.45 }}>
-            Optional — keep your streak, badges &amp; XP, play with friends, and never lose your progress.
-          </p>
           <label style={labelStyle}>Jersey Name</label>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
             <span style={{ color: "#64748b", fontSize: 16, fontWeight: 700 }}>@</span>
@@ -586,10 +548,10 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
       {error && <div style={{ fontSize: 11, color: "#f87171", marginBottom: 10, lineHeight: 1.45 }}>{error}</div>}
 
       <button type="submit" disabled={busy} style={btnPrimary}>
-        {busy ? "…" : wantsAccount ? "💾 Save My Player" : "Finish setup 🏀"}
+        {busy ? "…" : wantsAccount ? "💾 Save My Player" : "Start training 🏀"}
       </button>
       {authEnabled && (
-        <button type="button" onClick={finishWithoutAccount} disabled={busy}
+        <button type="button" onClick={startTraining} disabled={busy}
           style={{ width: "100%", background: "transparent", border: "none", color: "#64748b",
             fontSize: 11, fontWeight: 700, cursor: "pointer", marginTop: 10, padding: 8 }}>
           I&apos;ll save later

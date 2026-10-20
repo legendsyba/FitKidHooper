@@ -156,7 +156,7 @@ export function generateCustomMissionWorkout({
 }) {
   const focusOpt = BUILD_FOCUS_OPTIONS.find(f => f.id === focusId) || BUILD_FOCUS_OPTIONS[0];
   const intensity = INTENSITY[intensityId] || INTENSITY.medium;
-  const age = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth) || 11));
+  const age = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth) || 9)); // unknown age → youngest, most careful
   const rule = AGE_RULES[age] || AGE_RULES[11];
   const pRank = DIFF_RANK[settings.experience || "beginner"] ?? 0;
   const goals = settings.goals || [];

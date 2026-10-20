@@ -11,6 +11,10 @@ export const ANALYTICS_EVENTS = {
      states behind those two chip rows. */
   PROGRAMS_SECTION_VIEW: "programs_section_view",
   SCREEN_VIEW: "screen_view",
+  /* Which onboarding screen a new kid reached ({ step }). Most genuine first
+     visits ended inside onboarding with nothing recorded, so there was no way
+     to tell which screen lost them. */
+  ONBOARDING_STEP: "onboarding_step",
   ONBOARDING_COMPLETE: "onboarding_complete",
   ONBOARDING_TOUR_COMPLETE: "onboarding_tour_complete",
   FIRST_EXERCISE_COMPLETE: "first_exercise_complete",

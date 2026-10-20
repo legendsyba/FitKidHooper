@@ -11,6 +11,8 @@ import {
   usernameRevealsRealName,
 } from "../lib/auth.js";
 import { checkLegendsAccess, rememberLegendsAccess } from "../lib/legendsAccess.js";
+import { calcAge, needsParentConsent } from "../lib/periodStats.js";
+import DateOfBirthField from "./DateOfBirthField.jsx";
 
 const inputStyle = (P) => ({
   width: "100%", boxSizing: "border-box", padding: "12px 14px", borderRadius: 10,
@@ -30,8 +32,13 @@ const btnGhost = (P) => ({
   fontSize: 12, fontWeight: 700, cursor: "pointer",
 });
 
-export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent = true, firstName = "", lastName = "" }) {
+export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent: consentFromProfile = true, firstName = "", lastName = "", askBirthday = false, onBirthday }) {
   const [mode, setMode] = useState(initialMode);
+  /* Onboarding no longer asks for a birthday, so a kid saving their player
+     may not have one yet. It decides who signs off on the account, so it is
+     asked here, and the form follows it as soon as it is entered. */
+  const [dob, setDob] = useState("");
+  const parentConsent = askBirthday && dob ? needsParentConsent(dob) : consentFromProfile;
   const [username, setUsername] = useState(getLastUsername());
   const [passcode, setPasscode] = useState("");
   const [passcode2, setPasscode2] = useState("");
@@ -45,6 +52,9 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
   const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
   const configured = isAuthConfigured();
+  const today = new Date();
+  const dobMax = new Date(today.getFullYear() - 5, today.getMonth(), today.getDate()).toLocaleDateString("en-CA");
+  const dobMin = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate()).toLocaleDateString("en-CA");
 
   // In the athlete app, creating an account means a kid saving their player —
   // so it collects a PARENT's email + consent (COPPA). Admin sign-in passes
@@ -75,6 +85,11 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
 
   const handleSignUp = async e => {
     e.preventDefault();
+    if (askBirthday) {
+      const age = calcAge(dob);
+      if (!dob) { setStatus("Enter your birthday first"); return; }
+      if (age < 5 || age > 100) { setStatus("Check that birthday — it doesn't look right"); return; }
+    }
     if (passcode !== passcode2) {
       setStatus("Passcodes do not match");
       return;
@@ -98,6 +113,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
       setStatus("Add your first name in Me → Progress → Edit first — a grown-up needs to know who they're approving.");
       return;
     }
+    if (askBirthday) onBirthday?.(dob);
     setBusy(true);
     setStatus(null);
     try {
@@ -254,6 +270,13 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
           </form>
         ) : mode === "signup" ? (
           <form onSubmit={handleSignUp}>
+            {askBirthday && (
+              <>
+                <div style={{ fontSize: 11, color: "var(--fkh-text-muted)", fontWeight: 600, marginBottom: 6 }}>Birthday</div>
+                <DateOfBirthField value={dob} onChange={setDob} min={dobMin} max={dobMax} P={P}
+                  selectStyle={{ ...inputStyle(P), marginBottom: 0, colorScheme: "dark" }} />
+              </>
+            )}
             <input
               value={username}
               onChange={e => setUsername(e.target.value)}
