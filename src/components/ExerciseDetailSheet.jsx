@@ -406,7 +406,7 @@ function ExerciseSetTracker({
 export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF, isDone, onToggle, onClose, onNext, completed, favored, onToggleFav, navLabel,
   programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach,
   sessionList, isSessionExerciseDone, totalXP, hasPendingCelebration, sessionXpEarned,
-  isSignedIn, onSavePlayer }) {
+  isSignedIn, onSavePlayer, missionDone = true }) {
   useWakeLock(true);
 
   /* Practice session summary — only meaningful for a real multi-exercise
@@ -1033,9 +1033,17 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
             display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
             padding:"32px 28px", textAlign:"center" }}>
             <div style={{ fontSize:56, marginBottom:12, animation:"fkh-bounce 0.6s ease-out 0.1s both" }}>🎉</div>
-            <div style={{ fontSize:22, fontWeight:800, color:"var(--fkh-text)", marginBottom:18 }}>
-              Today's Practice Complete
+            {/* Only "complete" when today's mission is. Finishing one of two
+                due program sessions used to say so while Home still had a
+                practice waiting. */}
+            <div style={{ fontSize:22, fontWeight:800, color:"var(--fkh-text)", marginBottom:missionDone ? 18 : 6 }}>
+              {missionDone ? "Today's Practice Complete" : "Session Complete"}
             </div>
+            {!missionDone && (
+              <div style={{ fontSize:13, color:"var(--fkh-text-muted)", marginBottom:18 }}>
+                Today&apos;s mission has one more part — it&apos;s waiting on Home.
+              </div>
+            )}
             <div style={{ display:"flex", flexDirection:"column", gap:10, width:"100%", maxWidth:320, marginBottom:22 }}>
               {streak >= 2 && (
                 <div style={{ padding:"10px 14px", borderRadius:12, background:"rgba(249,115,22,0.1)",
@@ -1078,9 +1086,11 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               </>
             ) : (
               <>
-                <div style={{ fontSize:13, color:"var(--fkh-text-muted)", marginBottom:22 }}>
-                  See you tomorrow. 🏀
-                </div>
+                {missionDone && (
+                  <div style={{ fontSize:13, color:"var(--fkh-text-muted)", marginBottom:22 }}>
+                    See you tomorrow. 🏀
+                  </div>
+                )}
                 <button onClick={onClose}
                   style={{ padding:"13px 28px", borderRadius:12, border:"none", background:color,
                     color:"#000", fontSize:14, fontWeight:800, cursor:"pointer" }}>

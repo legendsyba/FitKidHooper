@@ -286,7 +286,13 @@ export default function TodayView({
     if (nextMissionTask.type === "program") {
       return { label: `Continue ${nextMissionTask.kindLabel || "session"}`, run: () => startProgramSession(nextMissionTask) };
     }
-    const exList = (nextMissionTask.exercises || []).map(id => allExercises[id]).filter(Boolean);
+    /* One practice, one list: every required drill task in today's mission,
+       not just the next one. Starting only the next task ran a 3-drill list,
+       celebrated "Today's Practice Complete", then sent the kid back to Home
+       to "Continue Practice 3/5". The list opens at the first unfinished drill. */
+    const drillTasks = mission.tasks.filter(t => t.required && t.type !== "program" && t.exercises?.length);
+    const exIds = [...new Set((drillTasks.length ? drillTasks : [nextMissionTask]).flatMap(t => t.exercises || []))];
+    const exList = exIds.map(id => allExercises[id]).filter(Boolean);
     if (!exList.length) return null;
     // Progress already made today (even on a different task) means this is a
     // resume, not a fresh start — the label should say so.

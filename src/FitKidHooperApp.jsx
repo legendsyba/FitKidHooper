@@ -3294,7 +3294,7 @@ export default function FitKidHooperApp() {
       favored={isFav("exercises",activeExercise.id)}
       onToggleFav={()=>toggleFav("exercises",activeExercise.id)}
       totalXP={xpData.total}
-      {...detailSheetProps}/>
+      {...detailSheetProps} missionDone={requiredTasksDone}/>
   ) : null;
 
   const renderBottomNav = () => (
@@ -3666,7 +3666,7 @@ export default function FitKidHooperApp() {
           onToggleFav={()=>toggleFav("exercises",activeExercise.id)}
           navLabel={activeCat&&CATS[activeCat]?`${CATS[activeCat].emoji} ${CATS[activeCat].label}`:undefined}
           totalXP={xpData.total}
-          {...detailSheetProps}/>}
+          {...detailSheetProps} missionDone={requiredTasksDone}/>}
         {renderBottomNav()}
       </div>
     );
@@ -3694,7 +3694,7 @@ export default function FitKidHooperApp() {
           favored={isFav("exercises",activeExercise.id)}
           onToggleFav={()=>toggleFav("exercises",activeExercise.id)}
           totalXP={xpData.total}
-          {...detailSheetProps}/>}
+          {...detailSheetProps} missionDone={requiredTasksDone}/>}
 
         {/* Header */}
         <div style={{ padding:"20px 18px 14px" }}>
@@ -4100,7 +4100,7 @@ export default function FitKidHooperApp() {
         favored={isFav("exercises",activeExercise.id)}
         onToggleFav={()=>toggleFav("exercises",activeExercise.id)}
         totalXP={xpData.total}
-        {...detailSheetProps}/>}
+        {...detailSheetProps} missionDone={requiredTasksDone}/>}
       {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]}
         onDismiss={()=>setCelebrationQueue(q=>q.slice(1))}/>}
       {renderMissionOverlays()}
