@@ -24,12 +24,29 @@ export function isProgramExerciseDone(progProgress, programId, week, sessionIdx,
   return mark.t >= anchor;
 }
 
-export function isProgramSessionComplete(prog, progProgress, week, sessionIdx) {
+/**
+ * Drill ids that make up a session for this athlete. When a program is rebuilt, the old
+ * drill list stays on the session as `was`; anyone who already finished it under that list
+ * keeps it finished. Computed, not migrated, because progress also arrives from cloud sync.
+ */
+export function programSessionExerciseIds(prog, progProgress, week, sessionIdx) {
   const session = prog.weeks.find(w => w.week === week)?.sessions[sessionIdx];
-  if (!session) return false;
-  return session.exercises.every(exId =>
+  if (!session) return [];
+  const allDone = ids => ids.every(exId => isProgramExerciseDone(progProgress, prog.id, week, sessionIdx, exId));
+  if (session.was && !allDone(session.exercises) && allDone(session.was)) return session.was;
+  return session.exercises;
+}
+
+export function isProgramSessionComplete(prog, progProgress, week, sessionIdx) {
+  const ids = programSessionExerciseIds(prog, progProgress, week, sessionIdx);
+  return ids.length > 0 && ids.every(exId =>
     isProgramExerciseDone(progProgress, prog.id, week, sessionIdx, exId)
   );
+}
+
+/** Sets × reps for a drill in this program week, overriding the drill's default. */
+export function programDose(prog, week, sessionIdx, exId) {
+  return prog?.weeks.find(w => w.week === week)?.sessions[sessionIdx]?.dose?.[exId] ?? null;
 }
 
 export function countProgramSessionsDone(prog, progProgress) {
@@ -112,11 +129,10 @@ export function programSessionScheduleDays(sessionCount) {
 }
 
 export function getProgramSessionCompletionDate(programProgress, program, programId, week, sessionIdx) {
-  const session = program.weeks.find(w => w.week === week)?.sessions[sessionIdx];
-  if (!session || !isProgramSessionComplete(program, programProgress, week, sessionIdx)) return null;
+  if (!isProgramSessionComplete(program, programProgress, week, sessionIdx)) return null;
   const slotData = programProgress?.[programId]?.[programSessionSlot(week, sessionIdx)] || {};
   let maxDate = null;
-  for (const exId of session.exercises) {
+  for (const exId of programSessionExerciseIds(program, programProgress, week, sessionIdx)) {
     const mark = readProgramExerciseMark(slotData[exId]);
     if (!mark) return null;
     if (!maxDate || mark.d > maxDate) maxDate = mark.d;

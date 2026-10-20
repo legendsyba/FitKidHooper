@@ -119,6 +119,7 @@ import ProgramWeekStrip from "./components/ProgramWeekStrip.jsx";
 import { CHALLENGES_DEF, getChallengeProgress, buildPersonalChallenges } from "./lib/personalChallenges.js";
 import {
   programSessionSlot,
+  programDose,
   programEnrollmentAnchor,
   isProgramExerciseDone,
   isProgramSessionComplete,
@@ -2426,7 +2427,11 @@ export default function FitKidHooperApp() {
   }, [completed, programProgress, today]);
 
   const openDetail = useCallback((ex, list = [], context = null, practiceSource = null) => {
-    const enrich = e => ({ ...e, _cat:e._cat||"speed", meta:e.meta||EXERCISE_META[e.id]||{} });
+    const prog = context?.programId ? PROGRAMS.find(p => p.id === context.programId) : null;
+    const enrich = e => {
+      const dose = prog ? programDose(prog, context.week, context.sessionIdx, e.id) : null;
+      return { ...e, ...(dose ? { sets: dose } : {}), _cat:e._cat||"speed", meta:e.meta||EXERCISE_META[e.id]||{} };
+    };
     const enrichedList = list.map(enrich);
     setActiveExercise(enrich(ex));
     setDetailList(enrichedList);

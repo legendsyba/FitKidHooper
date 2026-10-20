@@ -14,7 +14,10 @@ import {
   programWeekDayIndex,
   programCompletionCount,
   freshProgramEntry,
+  programSessionExerciseIds,
+  programDose,
 } from "../lib/programProgress.js";
+import { parseExerciseSets } from "../lib/exerciseSession.js";
 import {
   readCustomWorkouts,
   saveCustomWorkout,
@@ -74,6 +77,32 @@ function TrainerCredit({ prog, size = 16 }) {
       <span style={{ fontSize:9,fontWeight:800,letterSpacing:"0.05em",color:"var(--fkh-text)" }}>{prog.trainer}</span>
     </span>
   );
+}
+
+/** "3x10 each leg" → "3 × 10 each leg" — easier to read at a glance. */
+const formatDose = (sets) => (sets || "").replace(/^(\d+)\s*x\s*/i, "$1 × ");
+
+/**
+ * What got harder since last week, in words a kid gets instantly: "+1 set", "more reps",
+ * "longer", or "NEW" for a drill that wasn't in last week. Null when nothing went up.
+ */
+function doseChangeLabel(prog, weekNum, exId, sets, allExercises) {
+  if (weekNum <= 1) return null;
+  const prevSessions = prog.weeks.find(w => w.week === weekNum - 1)?.sessions || [];
+  const prevIdx = prevSessions.findIndex(s => s.exercises.includes(exId));
+  if (prevIdx < 0) return "NEW";
+  const cur = parseExerciseSets(sets);
+  const prev = parseExerciseSets(programDose(prog, weekNum - 1, prevIdx, exId) ?? allExercises[exId]?.sets);
+  if (!cur || !prev) return null;
+  if (cur.count > prev.count) {
+    const n = cur.count - prev.count;
+    return `+${n} set${n > 1 ? "s" : ""}`;
+  }
+  const top = d => d.maxValue ?? d.value ?? 0;
+  if (cur.count === prev.count && (cur.value > prev.value || top(cur) > top(prev))) {
+    return cur.type === "time" ? "longer" : "more reps";
+  }
+  return null;
 }
 
 /** Day number (1-indexed) an enrolled athlete is on in a daily program. */
@@ -541,17 +570,28 @@ export default function ProgramsView({
                         {sDone && <span style={{ marginLeft:"auto",fontSize:10,color:"#22c55e",fontWeight:700 }}>✓ Done</span>}
                       </div>
                       <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
-                        {session.exercises.map(exId => {
-                          const ex = allExercises[exId];
-                          if (!ex) return null;
+                        {(() => {
+                          const ids = enrollment
+                            ? programSessionExerciseIds(prog, programProgress, week.week, si)
+                            : session.exercises;
+                          /* Finished under a program's previous version: show what they actually did. */
+                          const legacy = ids !== session.exercises;
+                          const withDose = id => {
+                            const dose = legacy ? null : programDose(prog, week.week, si, id);
+                            return { ...allExercises[id], ...(dose ? { sets: dose } : {}) };
+                          };
+                          return ids.map(exId => {
+                          if (!allExercises[exId]) return null;
+                          const ex = withDose(exId);
+                          const change = session.dose && !legacy ? doseChangeLabel(prog, week.week, exId, ex.sets, allExercises) : null;
                           const done = enrollment
                             ? isProgramExerciseDone(programProgress, prog.id, week.week, si, exId)
                             : !!completed[`${todayKey()}-${exId}`];
                           const sessionExList = withSessionWarmup(
-                            session.exercises.map(id => ({ ...allExercises[id], _cat:allExercises[id]?._cat, meta:allExercises[id]?.meta || exerciseMeta[id] || {} })).filter(Boolean),
+                            ids.filter(id => allExercises[id]).map(id => ({ ...withDose(id), meta:allExercises[id].meta || exerciseMeta[id] || {} })),
                             workouts,
                             exerciseMeta,
-                            { categories: session.exercises.map(id => allExercises[id]?._cat).filter(Boolean) },
+                            { categories: ids.map(id => allExercises[id]?._cat).filter(Boolean) },
                           );
                           const pCtx = enrollment ? { programId: prog.id, week: week.week, sessionIdx: si } : null;
                           return (
@@ -570,10 +610,18 @@ export default function ProgramsView({
                                 {done?"✓":""}
                               </button>
                               <span style={{ flex:1,fontSize:12,fontWeight:600,color:done?"#22c55e":"var(--fkh-text)",lineHeight:1.3 }}>{ex.name}</span>
-                              <span style={{ fontSize:9,color:"#475569" }}>{ex.sets}</span>
+                              {change && (
+                                <span style={{ fontSize:9,padding:"2px 6px",borderRadius:99,background:"rgba(34,197,94,0.14)",color:"#22c55e",fontWeight:800,flexShrink:0,whiteSpace:"nowrap" }}>
+                                  {change === "NEW" ? "NEW" : `⬆ ${change}`}
+                                </span>
+                              )}
+                              <span style={{ fontSize:session.dose && !legacy ? 11 : 9,fontWeight:session.dose && !legacy ? 700 : 400,color:session.dose && !legacy ? "var(--fkh-text-muted)" : "#475569",flexShrink:0,whiteSpace:"nowrap" }}>
+                                {formatDose(ex.sets)}
+                              </span>
                             </div>
                           );
-                        })}
+                        });
+                        })()}
                       </div>
                     </div>
                   );
