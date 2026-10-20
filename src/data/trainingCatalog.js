@@ -2732,6 +2732,42 @@ const PROGRAMS = [
     ],
   },
 
+  /* Level 2 of Bodyweight Beast. Still no equipment, but the work shifts to one leg at a
+     time, landings that must stick before jumps get bigger, and reactive plyos — every drill
+     here is rated 10+, which is why the floor moves up from 9. Locked until Level 1 is done. */
+  {
+    id:"bodyweight-beast-2", name:"Bodyweight Beast II", emoji:"🦍", color:"#16a34a",
+    badgeId:"pgm-bodyweight-2", advancedOf:"bodyweight-beast", level:2,
+    duration:4, daysPerWeek:3, ageRange:[10,15],
+    desc:"You beat Level 1 — now it gets real. Four weeks of single-leg strength, stick-the-landing power, and full-speed circuits. Still no equipment, still anywhere.",
+    weeks:[
+      { week:1, goal:"Own single-leg strength — slow, controlled reps on one leg at a time.",
+        sessions:[
+          { day:"Session 1", focus:"Single-Leg Strength", exercises:["split-sq","walk-lunge","side-plank"] },
+          { day:"Session 2", focus:"Push & Core",         exercises:["push-shoulder-taps","tricep-dips","hollow-hold"] },
+          { day:"Session 3", focus:"Crawl & Hold",        exercises:["bear-crawl","wall-sit","v-ups"] },
+        ]},
+      { week:2, goal:"Land like a pro — stick every jump before you try to jump bigger.",
+        sessions:[
+          { day:"Session 1", focus:"Landing Control",     exercises:["snap-downs","broad-jump-stick","split-sq"] },
+          { day:"Session 2", focus:"Upper Power",         exercises:["pushup","push-shoulder-taps","plank-jacks"] },
+          { day:"Session 3", focus:"Lateral Power",       exercises:["lateral-bounds-pjf","skater-jumps","side-plank"] },
+        ]},
+      { week:3, goal:"Add speed — reactive hops and quick-off-the-floor jumps.",
+        sessions:[
+          { day:"Session 1", focus:"Reactive Legs",       exercises:["single-leg-hops","tuck-jumps","walk-lunge"] },
+          { day:"Session 2", focus:"Push & Core",         exercises:["pushup","tricep-dips","hollow-hold"] },
+          { day:"Session 3", focus:"Beast Engine",        exercises:["burpees","frog-jumps","mountain-climbers"] },
+        ]},
+      { week:4, goal:"Beast mode — strength, power, and engine at full speed.",
+        sessions:[
+          { day:"Session 1", focus:"Power Legs",          exercises:["jump-lunge","tuck-jumps","broad-jump-stick"] },
+          { day:"Session 2", focus:"Upper Grind",         exercises:["push-shoulder-taps","tricep-dips","v-ups"] },
+          { day:"Session 3", focus:"Final Beast Circuit", exercises:["burpees","bear-crawl","single-leg-hops"] },
+        ]},
+    ],
+  },
+
   {
     id:"own-the-glass", name:"Own the Glass", emoji:"🪃", color:"#22c55e",
     badgeId:"pgm-own-the-glass", duration:3, daysPerWeek:3, ageRange:[9,17],
@@ -2960,6 +2996,7 @@ const PROGRAM_WEEK_TIERS = {
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 2, 3],
+  "bodyweight-beast-2":   [2, 2, 3, 3],
   "own-the-glass":        [1, 2, 3],
   "lockdown-defender":    [1, 2, 2, 3],
   "passing-fundamentals": [1, 1, 2],

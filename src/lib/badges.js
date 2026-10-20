@@ -40,6 +40,7 @@ export const BADGES_DEF = [
   { id:"pgm-first-step",     cat:"program", name:"First Step Elite",  emoji:"⚡", desc:"Complete First Step Explosion",              color:"#f43f5e" },
   { id:"pgm-complete-hooper",cat:"program", name:"Complete Hooper",   emoji:"🏆", desc:"Complete the Complete Hooper program",       color:"#f59e0b" },
   { id:"pgm-bodyweight",     cat:"program", name:"Bodyweight Beast",  emoji:"💪", desc:"Complete the Bodyweight Beast program",      color:"#22c55e" },
+  { id:"pgm-bodyweight-2",   cat:"program", name:"Beast Mode",        emoji:"🦍", desc:"Complete Bodyweight Beast II",              color:"#16a34a" },
   { id:"pgm-own-the-glass",  cat:"program", name:"Glass Cleaner",     emoji:"🪃", desc:"Complete the Own the Glass program",          color:"#22c55e" },
   { id:"pgm-step-back-legends", cat:"program", name:"Step Back Legend", emoji:"↩️", desc:"Complete the Step Back Legends program",   color:"#7c3aed" },
   { id:"pgm-lockdown-defender", cat:"program", name:"Lockdown Defender", emoji:"🛡️", desc:"Complete the Lockdown Defender program",    color:"#0ea5e9" },

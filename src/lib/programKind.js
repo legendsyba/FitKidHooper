@@ -2,6 +2,7 @@
 export const PROGRAM_KIND = {
   "jump-higher": "strength",
   "bodyweight-beast": "strength",
+  "bodyweight-beast-2": "strength",
   "guard-handles": "skill",
   "become-shooter": "skill",
   "first-step-explosion": "skill",

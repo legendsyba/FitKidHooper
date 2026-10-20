@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { pathTagForProgram, suggestNextProgram } from "../lib/achievements.js";
+import { pathTagForProgram, suggestNextProgram, isProgramLocked } from "../lib/achievements.js";
 import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
 import { shareProgram } from "../lib/programShare.js";
@@ -313,6 +313,8 @@ export default function ProgramsView({
         : null;
       const isComplete = schedStatus?.kind === "programComplete";
       const timesFinished = programCompletionCount(prog, programProgress);
+      const locked = !enrollment && isProgramLocked(prog, programs, earnedBadges);
+      const baseProg = prog.advancedOf ? programs.find(p => p.id === prog.advancedOf) : null;
       const nextProg = isComplete ? suggestNextProgram(prog.id, programs, enrolledPrograms, earnedBadges) : null;
 
       return (
@@ -411,6 +413,11 @@ export default function ProgramsView({
                   Leave Program
                 </button>
               </>
+            ) : locked ? (
+              <button onClick={() => setSelectedProgram(baseProg.id)}
+                style={{ width:"100%",padding:"13px",borderRadius:12,border:`1px dashed ${prog.color}55`,background:`${prog.color}0a`,color:"var(--fkh-text-muted)",fontSize:13,fontWeight:700,cursor:"pointer",marginBottom:18 }}>
+                🔒 Finish {baseProg.name} to unlock Level {prog.level}
+              </button>
             ) : enrollment
               ? <button onClick={() => { if (window.confirm("Leave this program? Your exercise progress is kept.")) unenrollProg(prog.id); }}
                   style={{ width:"100%",padding:"11px",borderRadius:10,border:`1px solid ${prog.color}30`,background:"transparent",color:"#64748b",fontSize:12,fontWeight:600,cursor:"pointer",marginBottom:18 }}>
@@ -424,7 +431,7 @@ export default function ProgramsView({
 
             {isComplete && nextProg && (
               <div style={{ marginBottom:18,padding:"13px 14px",borderRadius:12,background:`${nextProg.color}0c`,border:`1px solid ${nextProg.color}33` }}>
-                <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>Up Next</div>
+                <div style={{ fontSize:10,fontWeight:800,color:nextProg.color,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8 }}>{nextProg.advancedOf === prog.id ? "⬆️ Level Up" : "Up Next"}</div>
                 <div style={{ display:"flex",alignItems:"center",gap:10 }}>
                   <ProgramIcon prog={nextProg} size={40} />
                   <div style={{ flex:1,minWidth:0 }}>
@@ -650,6 +657,9 @@ export default function ProgramsView({
           <div style={{ flex:1,minWidth:0 }}>
             <div style={{ display:"flex",alignItems:"center",gap:6,marginBottom:3,flexWrap:"wrap" }}>
               <span style={{ fontSize:14,fontWeight:800,color:"var(--fkh-text)" }}>{prog.name}</span>
+              {prog.level && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,border:`1px solid ${prog.color}66`,color:prog.color,fontWeight:800 }}>
+                {isProgramLocked(prog, programs, earnedBadges) ? "🔒 " : ""}LEVEL {prog.level}
+              </span>}
               {enrolled && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:prog.color,color:"#fff",fontWeight:700 }}>ENROLLED</span>}
               {completedBadge && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:"rgba(34,197,94,0.2)",color:"#22c55e",fontWeight:700 }}>✓ DONE</span>}
               <TrainerCredit prog={prog} />

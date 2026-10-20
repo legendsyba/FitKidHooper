@@ -861,6 +861,13 @@ export function pathTagForProgram(programId) {
   return track ? track.archetype : null;
 }
 
+/** An advanced level stays locked until its base program's badge is earned. */
+export function isProgramLocked(prog, programs, earnedBadges) {
+  if (!prog.advancedOf) return false;
+  const base = programs.find(p => p.id === prog.advancedOf);
+  return !!base && !earnedBadges.includes(base.badgeId);
+}
+
 /**
  * What to try next after finishing a program. Pulls from the mastery tracks that
  * list this program (same skill family), falling back to any featured program,
@@ -868,10 +875,15 @@ export function pathTagForProgram(programId) {
  */
 export function suggestNextProgram(programId, programs, enrolledPrograms, earnedBadges) {
   const isAvailable = (p) =>
-    p.id !== programId && !enrolledPrograms[p.id] && !earnedBadges.includes(p.badgeId);
+    p.id !== programId && !enrolledPrograms[p.id] && !earnedBadges.includes(p.badgeId)
+    && !isProgramLocked(p, programs, earnedBadges);
 
+  const levelUp = programs.find(p => p.advancedOf === programId && isAvailable(p));
+  if (levelUp) return levelUp;
+
+  const familyId = programs.find(p => p.id === programId)?.advancedOf ?? programId;
   const relatedIds = MASTERY_TRACKS
-    .filter(t => (t.relatedProgramIds || []).includes(programId))
+    .filter(t => (t.relatedProgramIds || []).includes(familyId))
     .flatMap(t => t.relatedProgramIds);
   for (const id of relatedIds) {
     const p = programs.find(p => p.id === id);
