@@ -160,10 +160,10 @@ const W_STRENGTH_EXTRA = [
     desc:"Walk with a dumbbell in each hand, standing as tall as possible. Builds grip, core, and posture simultaneously.",
     cues:["Stand TALL — do not lean to either side","Shoulders packed down — do not shrug","Normal gait — heel to toe","Single dumbbell suitcase carry challenges anti-lateral bending"],
     videoId:"DxUNi119Qzs", videoChannel:"PureGym", videoTitle:"Dumbbell Farmer Carry — How To" },
-  { id:"jump-rope",   name:"Jump Rope",                 tag:"Bonus Conditioning",sets:"5x1 min", rest:"30 s",
-    desc:"The most underrated athletic training tool. Builds foot speed, coordination, rhythm, and calf strength simultaneously.",
-    cues:["Land on balls of feet — not flat-footed","Small quick jumps — just enough clearance","Wrists do the work — arms stay at sides","Progress to alternating feet then double unders"],
-    videoId:"xVM5s3DdE24", videoChannel:"The Spot Athletics", videoTitle:"Youth Speed and Agility Training — Ages 8-10" },
+  { id:"jump-rope",   name:"Jump Rope: Basic Bounce",   tag:"Bonus Conditioning",sets:"5x30 s", rest:"30 s",
+    desc:"Both feet together, small steady bounces. The first rope skill and the base for every trick after it — builds foot speed, rhythm, and calf strength.",
+    cues:["Land on the balls of your feet — quiet landings","Tiny jumps — just enough to clear the rope","Wrists turn the rope, elbows stay by your sides","Trip? Smile, reset, and go again"],
+    videoId:"53Da1uyST48", videoChannel:"Eddie Jumps", videoTitle:"Skipping For Beginners: Quick Start & Basic Bounce" },
 ];
 
 const W_EXPLOSION = [
@@ -358,6 +358,44 @@ const W_CONDITIONING = [
     desc:"Do a push-up, then tap each shoulder alternately while in the top position. Adds anti-rotation challenge to the push-up.",
     cues:["Hips do not rotate — resist the rotation","Wide stance helps — feet hip-width or wider","Slow on the taps — control beats speed","Full push-up between each set of taps"],
     videoId:"kF9X6PKVysc", videoChannel:"Live Lean TV Daily Exercises", videoTitle:"Push-Up Shoulder Taps — Proper Form" },
+  /* ── Jump rope skills, in the order kids learn them. Videos are title-matched tutorials
+     from jump-rope teaching channels, checked public + embeddable via the YouTube API. ── */
+  { id:"rope-side-swing", name:"Rope Side Swing", tag:"Jump Rope", sets:"2x30 s", rest:"20 s",
+    desc:"Hold both handles together and swing the rope beside you, left then right, without jumping. Teaches rhythm and rope control — and it's your rest move between jumping sets.",
+    cues:["Handles together, hands in front","Swing from the wrists, not the shoulders","Let your knees bounce to the beat","Keep the rope smooth — no slapping the floor"],
+    videoId:"SU3N4QkhJms", videoChannel:"Jump Rope Mom", videoTitle:"How To Jump Rope Side Swing Tutorial in 3 minutes" },
+  { id:"rope-alt-foot", name:"Rope Alternate Foot Step", tag:"Jump Rope", sets:"3x20 s", rest:"30 s",
+    desc:"Step over the rope one foot at a time, like jogging in place. Quicker than the basic bounce and easier on the calves.",
+    cues:["Light, quick steps — one foot per turn","Stay on the balls of your feet","Knees soft, not high","Same wrist turn as the basic bounce"],
+    videoId:"Wcm5kHJCCSw", videoChannel:"Matt Kane", videoTitle:"Matt Kane on How To Jump Rope: The Alternate Foot Step" },
+  { id:"rope-boxer-skip", name:"Rope Boxer Skip", tag:"Jump Rope", sets:"3x30 s", rest:"30 s",
+    desc:"Shift your weight side to side, taking two small hops on each foot. The relaxed rhythm boxers use to jump for minutes — great for light, balanced feet.",
+    cues:["Two small bounces on one foot, then switch","The other foot just taps the floor","Stay relaxed — this should feel easy","Hips stay quiet, feet do the work"],
+    videoId:"1-KvIEU03yc", videoChannel:"Jump Rope Dudes", videoTitle:"Learn The Jump Rope Boxer Skip In 5 Easy Steps" },
+  { id:"rope-side-to-side", name:"Rope Side to Side", tag:"Jump Rope", sets:"3x20 s", rest:"30 s",
+    desc:"Basic bounce, but hop a few inches left, then right, on every turn — like a skier. Builds the quick side-to-side feet you use on defense.",
+    cues:["Small hops — a few inches each way","Feet stay together","Eyes up, chest tall","Land soft, then go right back"],
+    videoId:"c0EH5Ioj7TI", videoChannel:"Crossrope Jump Ropes", videoTitle:"Jump Rope Tutorial - Side to Side and Front to Back Jumps" },
+  { id:"rope-forward-back", name:"Rope Forward & Back", tag:"Jump Rope", sets:"3x20 s", rest:"30 s",
+    desc:"Basic bounce, but hop a little forward, then a little back, on each turn — the \"bell\" jump. Trains balance moving in and out.",
+    cues:["Tiny hops forward and back","Feet together the whole time","Keep the rope turning at the same speed","Stay tall — don't lean"],
+    videoId:"PcXBqL99Qc8", videoChannel:"Jump Rope Canada", videoTitle:"JUMP ROPE Beginner Program - Bell" },
+  { id:"rope-high-knees", name:"Rope High Knees", tag:"Jump Rope", sets:"3x20 s", rest:"30 s",
+    desc:"Alternate foot step with your knees driving up to hip height. Harder on the heart and legs — short sets.",
+    cues:["Knees up toward your hips","Quick feet — don't slow the rope","Stand tall, arms relaxed","Shorter sets, full effort"],
+    videoId:"MII0QvoM9M8", videoChannel:"Crossrope Jump Ropes", videoTitle:"Jump Rope Exercise Tutorial - High Knees [Crossrope]" },
+  { id:"rope-criss-cross", name:"Rope Criss-Cross", tag:"Jump Rope", sets:"4x20 s", rest:"30 s",
+    desc:"From the basic bounce, cross your arms in front as the rope comes over, jump through the loop, then uncross. Your first real rope trick.",
+    cues:["Cross at the waist, not the chest","Push the handles out to the sides when crossed","Jump through, then open your arms","Practice one cross at a time first"],
+    videoId:"BUouJzDSpJQ", videoChannel:"Jump Rope Dudes", videoTitle:"Criss Cross Jump Rope Tutorial" },
+  { id:"rope-speed-step", name:"Rope Speed Step", tag:"Jump Rope", sets:"6x15 s", rest:"30 s",
+    desc:"The alternate foot step as fast as you can go for a short burst. Short sets, full rest — fast feet, not tired feet.",
+    cues:["Short burst, then rest — quality first","Tiny steps, fast wrists","Stay on the balls of your feet","Stop when your form breaks"],
+    videoId:"nXvcpxhi4pY", videoChannel:"NorCal Strength and Conditioning", videoTitle:"Jump Rope  Speed Step" },
+  { id:"rope-double-under", name:"Rope Double Under", tag:"Jump Rope", sets:"5x3", rest:"45 s",
+    desc:"One slightly higher jump while the rope passes under twice. Start with single-single-double, then string them together.",
+    cues:["Jump a little higher, not a lot","Fast flick of the wrists — not big arms","Stay tall, feet together, land soft","Single, single, double — build up slowly"],
+    videoId:"pQRnSYfliEc", videoChannel:"Jump Rope Dudes", videoTitle:"Learn The Jump Rope Double Under In 5 EASY Steps" },
 ];
 
 const W_COORDINATION = [
@@ -2184,6 +2222,15 @@ const EXERCISE_META = {
   "jumping-jacks":       { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"low",    movementType:"conditioning", bodyFocus:["full-body"],                       basketballTransfer:["conditioning","warmup"],    equipment:"none",         spaceRequired:"small",      ageRange:[9,14],  estimatedDuration:60,  funScore:6, workoutRole:["warmup"] },
   "squat-jacks":         { difficulty:"intermediate", impactLevel:"high",   intensityLevel:"high",   movementType:"elastic",      bodyFocus:["legs","glutes"],                   basketballTransfer:["jumping","conditioning"],   equipment:"none",         spaceRequired:"small",      ageRange:[10,14], estimatedDuration:90,  funScore:7, workoutRole:["finisher"] },
   "push-shoulder-taps":  { difficulty:"intermediate", impactLevel:"low",    intensityLevel:"medium", movementType:"strength",     bodyFocus:["chest","shoulders","core"],        basketballTransfer:["strength","stability"],     equipment:"none",         spaceRequired:"small",      ageRange:[9,14],  estimatedDuration:90,  funScore:5, workoutRole:["main"] },
+  "rope-side-swing":   { difficulty:"beginner", impactLevel:"low", intensityLevel:"low", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:60, funScore:6, workoutRole:["warmup","main"] },
+  "rope-alt-foot":     { difficulty:"beginner", impactLevel:"medium", intensityLevel:"medium", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:7, workoutRole:["warmup","main"] },
+  "rope-boxer-skip":   { difficulty:"beginner", impactLevel:"medium", intensityLevel:"medium", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:7, workoutRole:["main"] },
+  "rope-side-to-side": { difficulty:"beginner", impactLevel:"medium", intensityLevel:"medium", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:7, workoutRole:["main"] },
+  "rope-forward-back": { difficulty:"beginner", impactLevel:"medium", intensityLevel:"medium", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:7, workoutRole:["main"] },
+  "rope-high-knees":   { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"high", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:7, workoutRole:["main"] },
+  "rope-criss-cross":  { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"medium", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[10,17], estimatedDuration:90, funScore:9, workoutRole:["main"] },
+  "rope-speed-step":   { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"high", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[10,17], estimatedDuration:90, funScore:8, workoutRole:["main"] },
+  "rope-double-under": { difficulty:"advanced", impactLevel:"high", intensityLevel:"high", movementType:"conditioning", bodyFocus:["calves","ankles","coordination"], basketballTransfer:["footwork","conditioning"], equipment:"jump_rope", spaceRequired:"small", ageRange:[10,17], estimatedDuration:90, funScore:10, workoutRole:["main"] },
   /* ─── COORDINATION ─── */
   "carioca":             { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"low",    movementType:"coordination", bodyFocus:["hips","feet","ankles"],            basketballTransfer:["defense","footwork"],       equipment:"none",         spaceRequired:"large",      ageRange:[9,14],  estimatedDuration:90,  funScore:7, workoutRole:["warmup"] },
   "lateral-carioca":     { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"low",    movementType:"coordination", bodyFocus:["hips","feet","ankles"],            basketballTransfer:["defense","footwork"],       equipment:"none",         spaceRequired:"medium",     ageRange:[9,14],  estimatedDuration:90,  funScore:7, workoutRole:["warmup"] },
@@ -2836,6 +2883,101 @@ const PROGRAMS = [
     ],
   },
 
+  /* Jump rope, Levels 1–2. Skill order (bounce → alternate foot → side/front → high knees →
+     criss-cross → double unders) and volume follow jump-rope coaching guidance: short
+     work/rest intervals, novices starting around 1–2 min of total jumping and building
+     slowly, rest days between, calf/ankle strength against shin splints. Total jumping per
+     session rises ≤ 25% a week (checked in verify-programs). Side swings don't jump — they
+     are the built-in rest. Owning a rope (starting either level) also turns every other
+     program's warm-up into rope work. */
+  {
+    id:"jump-rope-basics", name:"Jump Rope Basics", emoji:"🪢", color:"#ec4899",
+    badgeId:"pgm-jump-rope", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["jump_rope"],
+    desc:"Learn to jump rope the right way: the basic bounce, alternate feet, side to side, front and back, high knees. Faster feet and better rhythm for the court. Needs a jump rope.",
+    weeks:[
+      { week:1, goal:"Find your rhythm: tiny bounces, wrists turn the rope. Side swings are your rest.",
+        sessions:[
+          { day:"Session 1", focus:"Find the Rhythm", exercises:["rope-side-swing","jump-rope","sl-hold"],
+            dose:{ "rope-side-swing":"2x30 s", "jump-rope":"4x20 s", "sl-hold":"2x20 s each leg" } },
+          { day:"Session 2", focus:"Bounce & Hold", exercises:["jump-rope","rope-side-swing","wall-sit"],
+            dose:{ "jump-rope":"5x20 s", "rope-side-swing":"2x30 s", "wall-sit":"2x30 s" } },
+          { day:"Session 3", focus:"Bounce Longer", exercises:["jump-rope","rope-side-swing","sl-hold"],
+            dose:{ "jump-rope":"4x30 s", "rope-side-swing":"2x30 s", "sl-hold":"2x20 s each leg" } },
+        ]},
+      { week:2, goal:"New step: alternate feet, like jogging over the rope.",
+        sessions:[
+          { day:"Session 1", focus:"Alternate Feet", exercises:["jump-rope","rope-alt-foot","sl-hold"],
+            dose:{ "jump-rope":"3x20 s", "rope-alt-foot":"3x20 s", "sl-hold":"2x30 s each leg" } },
+          { day:"Session 2", focus:"Easy Feet", exercises:["rope-alt-foot","rope-side-swing","wall-sit"],
+            dose:{ "rope-alt-foot":"4x20 s", "rope-side-swing":"2x30 s", "wall-sit":"2x30 s" } },
+          { day:"Session 3", focus:"Mix It", exercises:["jump-rope","rope-alt-foot","sl-hold"],
+            dose:{ "jump-rope":"3x25 s", "rope-alt-foot":"3x20 s", "sl-hold":"2x30 s each leg" } },
+        ]},
+      { week:3, goal:"Move the bounce: side to side, then front and back.",
+        sessions:[
+          { day:"Session 1", focus:"Side to Side", exercises:["rope-alt-foot","rope-side-to-side","sl-hold"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-side-to-side":"4x20 s", "sl-hold":"3x30 s each leg" } },
+          { day:"Session 2", focus:"Front & Back", exercises:["rope-side-swing","rope-forward-back","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-forward-back":"4x20 s", "wall-sit":"3x30 s" } },
+          { day:"Session 3", focus:"All Directions", exercises:["rope-side-swing","rope-side-to-side","rope-forward-back"],
+            dose:{ "rope-side-swing":"1x30 s", "rope-side-to-side":"3x25 s", "rope-forward-back":"3x25 s" } },
+        ]},
+      { week:4, goal:"Freestyle week: high knees, then string your steps together.",
+        sessions:[
+          { day:"Session 1", focus:"High Knees", exercises:["rope-alt-foot","rope-high-knees","sl-hold"],
+            dose:{ "rope-alt-foot":"3x30 s", "rope-high-knees":"3x20 s", "sl-hold":"3x30 s each leg" } },
+          { day:"Session 2", focus:"Skier Feet", exercises:["rope-side-swing","rope-side-to-side","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-side-to-side":"3x30 s", "wall-sit":"3x40 s" } },
+          { day:"Session 3", focus:"Freestyle Finish", exercises:["jump-rope","rope-alt-foot","rope-high-knees"],
+            dose:{ "jump-rope":"3x30 s", "rope-alt-foot":"1x30 s", "rope-high-knees":"2x20 s" } },
+        ]},
+    ],
+  },
+
+  {
+    id:"jump-rope-speed", name:"Jump Rope Speed", emoji:"⚡", color:"#db2777",
+    badgeId:"pgm-jump-rope-2", advancedOf:"jump-rope-basics", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["jump_rope"],
+    desc:"You've got the basics — now the tricks. Criss-cross, the boxer skip, speed bursts, and double unders. Needs a jump rope.",
+    weeks:[
+      { week:1, goal:"Your first trick: the criss-cross. Plus the boxer skip for easy rhythm.",
+        sessions:[
+          { day:"Session 1", focus:"Cross It", exercises:["rope-alt-foot","rope-criss-cross","sl-hold"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-criss-cross":"4x15 s", "sl-hold":"3x30 s each leg" } },
+          { day:"Session 2", focus:"Boxer Rhythm", exercises:["rope-side-swing","rope-boxer-skip","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-boxer-skip":"4x30 s", "wall-sit":"3x40 s" } },
+          { day:"Session 3", focus:"Cross & Skip", exercises:["rope-alt-foot","rope-criss-cross","rope-boxer-skip"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-criss-cross":"4x20 s", "rope-boxer-skip":"2x30 s" } },
+        ]},
+      { week:2, goal:"Speed: fast feet in short bursts. Rest fully between them.",
+        sessions:[
+          { day:"Session 1", focus:"Fast Feet", exercises:["rope-alt-foot","rope-speed-step","sl-hold"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-speed-step":"6x15 s", "sl-hold":"3x30 s each leg" } },
+          { day:"Session 2", focus:"Boxer Rhythm", exercises:["rope-side-swing","rope-boxer-skip","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-boxer-skip":"4x30 s", "wall-sit":"3x40 s" } },
+          { day:"Session 3", focus:"Cross & Burst", exercises:["rope-alt-foot","rope-criss-cross","rope-speed-step"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-criss-cross":"5x20 s", "rope-speed-step":"4x15 s" } },
+        ]},
+      { week:3, goal:"Double unders: one slightly bigger jump, two fast turns. Single, single, double.",
+        sessions:[
+          { day:"Session 1", focus:"Double Unders", exercises:["rope-alt-foot","rope-double-under","jump-rope"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-double-under":"5x3", "jump-rope":"3x30 s" } },
+          { day:"Session 2", focus:"Fast Feet", exercises:["rope-side-swing","rope-speed-step","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-speed-step":"6x15 s", "wall-sit":"3x45 s" } },
+          { day:"Session 3", focus:"Doubles & Crosses", exercises:["rope-alt-foot","rope-double-under","rope-criss-cross"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-double-under":"5x4", "rope-criss-cross":"5x30 s" } },
+        ]},
+      { week:4, goal:"Show it off: your best double unders, crosses, and speed.",
+        sessions:[
+          { day:"Session 1", focus:"Doubles & Boxer", exercises:["rope-alt-foot","rope-double-under","rope-boxer-skip"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-double-under":"6x4", "rope-boxer-skip":"4x30 s" } },
+          { day:"Session 2", focus:"Fast Feet", exercises:["rope-side-swing","rope-speed-step","wall-sit"],
+            dose:{ "rope-side-swing":"2x30 s", "rope-speed-step":"8x15 s", "wall-sit":"3x45 s" } },
+          { day:"Session 3", focus:"Show It Off", exercises:["rope-alt-foot","rope-criss-cross","rope-double-under"],
+            dose:{ "rope-alt-foot":"2x30 s", "rope-criss-cross":"4x30 s", "rope-double-under":"6x5" } },
+        ]},
+    ],
+  },
+
   {
     id:"own-the-glass", name:"Own the Glass", emoji:"🪃", color:"#22c55e",
     badgeId:"pgm-own-the-glass", duration:3, daysPerWeek:3, ageRange:[10,17], equipment:["basketball + hoop"],
@@ -3089,6 +3231,8 @@ const PROGRAM_WEEK_TIERS = {
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],
   "bodyweight-beast-2":   [2, 2, 3, 3],
+  "jump-rope-basics":     [1, 1, 2, 2],
+  "jump-rope-speed":      [2, 2, 3, 3],
   "own-the-glass":        [1, 2, 3],
   "lockdown-defender":    [1, 2, 2, 3],
   "passing-fundamentals": [1, 1, 2],

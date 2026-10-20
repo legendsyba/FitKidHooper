@@ -347,7 +347,7 @@ export const MASTERY_TRACKS = [
   {
     id: "skywalker", name: "Athleticism", emoji: "💥", archetype: "Above the Rim",
     theme: "Play above the rim — rise with the greatest leapers the game has seen.",
-    relatedProgramIds: ["jump-higher", "first-step-explosion", "bodyweight-beast"],
+    relatedProgramIds: ["jump-higher", "first-step-explosion", "bodyweight-beast", "jump-rope-basics"],
     favoritePlayerKeys: ["carter","vince","richardson","jrich","wilkins","dominique","lavine","griffin","lebron","james","ja","morant","dunk","westbrook","zion","hops"],
     stages: [
       { id: "skywalker-1", name: "Springs", emoji: "🌀", flavor: "Off the floor in a hurry.",

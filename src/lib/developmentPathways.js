@@ -153,7 +153,7 @@ export const DEVELOPMENT_PATHWAYS = [
     phases: [
       {
         tier: 1,
-        programIds: ["bodyweight-beast"],
+        programIds: ["bodyweight-beast", "jump-rope-basics"],
         skillTargets: [],
         areaWeights: { athleticism: 0.7, footwork: 0.15, defense: 0.15 },
       },
