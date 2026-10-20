@@ -39,16 +39,46 @@ Deno.serve(async (req) => {
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: rows, error } = await supabase.from("parent_reengagement_queue").select("*").limit(200);
   if (error) return json({ ok: false, error: error.message }, 500);
+  /* Legends' bounce/spam list. The shared Resend account's webhook records
+     suppressions only in the Legends database, so a parent whose address
+     bounced a Legends email would otherwise still get ours. Asked once per run
+     (legendsyba.com/api/fkh/email-suppressions). If Legends can't be reached
+     the run goes ahead — FKH's own last-email check below still applies. */
+  const suppressedByLegends = new Set<string>();
+  let legendsChecked = false;
+  const LEGENDS_SECRET = Deno.env.get("LEGENDS_SERVER_SECRET");
+  if (LEGENDS_SECRET && rows?.length) {
+    try {
+      const res = await fetch("https://www.legendsyba.com/api/fkh/email-suppressions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LEGENDS_SECRET}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ emails: rows.map((r: any) => r.parent_email) }),
+      });
+      if (res.ok) {
+        for (const e of (await res.json())?.suppressed ?? []) suppressedByLegends.add(String(e).toLowerCase());
+        legendsChecked = true;
+      }
+    } catch { /* unreachable — proceed */ }
+  }
+  const isSuppressed = (r: any) => suppressedByLegends.has(String(r.parent_email || "").trim().toLowerCase());
+
   if (payload.dry_run) {
     return json({
-      ok: true, dry_run: true, candidates: rows?.length ?? 0, has_reply_to: Boolean(REPLY_TO),
-      would_email: (rows ?? []).map((r: any) => ({ athlete: r.athlete_name, days_inactive: r.days_inactive, ever_trained: r.ever_trained })),
+      ok: true, dry_run: true, candidates: rows?.length ?? 0, has_reply_to: Boolean(REPLY_TO), legends_checked: legendsChecked,
+      would_email: (rows ?? []).map((r: any) => ({ athlete: r.athlete_name, days_inactive: r.days_inactive, ever_trained: r.ever_trained, suppressed: isSuppressed(r) })),
     });
   }
 
   const appUrl = "https://app.legendsyba.com/";
   let sent = 0, failed = 0, suppressed = 0;
   for (const r of rows ?? []) {
+    if (isSuppressed(r)) {
+      await supabase.from("parental_consent")
+        .update({ reengagement_opt_out_at: new Date().toISOString() })
+        .eq("athlete_id", r.athlete_id);
+      suppressed++;
+      continue;
+    }
     // The Resend account is shared with Legends YBA: if our last email to this
     // parent bounced or was marked spam, stop for good instead of sending again.
     if (r.last_reengagement_email_id) {
@@ -111,5 +141,5 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ ok: true, candidates: rows?.length ?? 0, sent, failed, suppressed });
+  return json({ ok: true, candidates: rows?.length ?? 0, sent, failed, suppressed, legends_checked: legendsChecked });
 });
