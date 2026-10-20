@@ -6,7 +6,7 @@
  * 2. Programs with per-week doses are held to youth guidance (NSCA 2009 youth resistance
  *    training; beginner plyometric volume 50–80 landings): every drill dosed, no drill
  *    rated older than the program's age floor, no undeclared equipment, ≤ 80 landings a
- *    session, and never two jump sessions back to back.
+ *    session, and at least 48 h between jump days.
  * 3. Progress logic: rebuilt sessions keep old completions, finishing retires a program
  *    into history, and the Home next-step card survives union merges from cloud sync.
  */
@@ -30,7 +30,8 @@ const assert = (cond, msg) => { if (!cond) failures.push(msg); };
 const exercise = (id) => (Array.isArray(ALL_EXERCISES) ? ALL_EXERCISES.find(e => e.id === id) : ALL_EXERCISES[id]);
 
 const LANDING_LIMIT = 80;
-const MIN_HOURS_BETWEEN_JUMP_DAYS = 72;
+/* Founder's call (2026-10-20), within youth guidance of 48–72 h between plyometric days. */
+const MIN_HOURS_BETWEEN_JUMP_DAYS = 48;
 const CONTACTS_PER_SECOND = 2;
 /* Jumps a kid lands from: plyometric and landing drills, plus rebounding and burpees,
    which jump every rep but are typed "athletic"/"conditioning". Sprints, slides, layup
