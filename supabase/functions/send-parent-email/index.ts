@@ -7,6 +7,9 @@
 //   2. FKH_FROM_EMAIL  — a verified Resend sender, e.g. "Fit Kid Hooper <coach@yourdomain>"
 //   3. consented parents in parent_reengagement_queue (empty today)
 // Without the key it no-ops cleanly and reports skipped:"no RESEND_API_KEY".
+//
+// Runs weekly from pg_cron (fkh-parent-reengagement, see parent_reengagement.sql).
+// { dry_run: true } lists who WOULD be emailed (no addresses) without sending.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -27,6 +30,8 @@ Deno.serve(async (req) => {
 
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
   const FROM = Deno.env.get("FKH_FROM_EMAIL");
+  // Same reply-to as the consent email, so "reply to stop" reaches a person.
+  const REPLY_TO = Deno.env.get("FKH_BROADCAST_REPLY") || undefined;
   if (!RESEND_API_KEY || !FROM) {
     return json({ ok: true, sent: 0, skipped: "email not configured (RESEND_API_KEY / FKH_FROM_EMAIL)" });
   }
@@ -34,20 +39,49 @@ Deno.serve(async (req) => {
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
   const { data: rows, error } = await supabase.from("parent_reengagement_queue").select("*").limit(200);
   if (error) return json({ ok: false, error: error.message }, 500);
+  if (payload.dry_run) {
+    return json({
+      ok: true, dry_run: true, candidates: rows?.length ?? 0, has_reply_to: Boolean(REPLY_TO),
+      would_email: (rows ?? []).map((r: any) => ({ athlete: r.athlete_name, days_inactive: r.days_inactive, ever_trained: r.ever_trained })),
+    });
+  }
 
   const appUrl = "https://app.legendsyba.com/";
-  let sent = 0, failed = 0;
+  let sent = 0, failed = 0, suppressed = 0;
   for (const r of rows ?? []) {
-    const name = r.athlete_name || "your athlete";
+    // The Resend account is shared with Legends YBA: if our last email to this
+    // parent bounced or was marked spam, stop for good instead of sending again.
+    if (r.last_reengagement_email_id) {
+      try {
+        const prev = await fetch(`https://api.resend.com/emails/${encodeURIComponent(r.last_reengagement_email_id)}`, {
+          headers: { Authorization: `Bearer ${RESEND_API_KEY}` },
+        });
+        const last = prev.ok ? (await prev.json())?.last_event : null;
+        if (last === "bounced" || last === "complained") {
+          await supabase.from("parental_consent")
+            .update({ reengagement_opt_out_at: new Date().toISOString() })
+            .eq("athlete_id", r.athlete_id);
+          suppressed++;
+          continue;
+        }
+      } catch { /* lookup failed — fall through and send as usual */ }
+    }
+    const plainName = r.athlete_name || "your athlete";
+    // The name is what the kid typed — never put it into HTML unescaped.
+    const name = String(plainName).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
     const html = `
       <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;color:#0f172a">
         <h2 style="color:#f97316;margin:0 0 8px">🏀 ${name} is missing their reps</h2>
-        <p>It's been about ${r.days_inactive} days since ${name} last trained on Fit Kid Hooper.
-           A quick 5-minute session keeps their streak — and their momentum — alive.</p>
+        <p>${r.ever_trained
+          ? `It's been about ${r.days_inactive} days since ${name} last trained on Fit Kid Hooper.
+           A quick 5-minute session keeps their streak — and their momentum — alive.`
+          : `${name} joined Fit Kid Hooper ${r.days_inactive} days ago but hasn't done a practice yet.
+           The first one takes about 5 minutes — today's is ready and waiting.`}</p>
         <p><a href="${appUrl}" style="display:inline-block;background:#f97316;color:#000;font-weight:800;
-           text-decoration:none;padding:12px 20px;border-radius:10px">Get back to training →</a></p>
+           text-decoration:none;padding:12px 20px;border-radius:10px">${r.ever_trained ? "Get back to training" : "Start training"} →</a></p>
         <p style="font-size:12px;color:#64748b">You're receiving this because you're the parent/guardian on
-           ${name}'s Fit Kid Hooper account (Legends Youth Basketball).</p>
+           ${name}'s Fit Kid Hooper account (Legends Youth Basketball). At most once every two weeks —
+           reply "stop" and we won't send these again.</p>
       </div>`;
     try {
       const res = await fetch("https://api.resend.com/emails", {
@@ -56,14 +90,18 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           from: FROM,
           to: r.parent_email,
-          subject: `${name} hasn't trained in ${r.days_inactive} days 🏀`,
+          ...(REPLY_TO ? { reply_to: REPLY_TO } : {}),
+          subject: r.ever_trained
+            ? `${plainName} hasn't trained in ${r.days_inactive} days 🏀`
+            : `${plainName}'s first practice is waiting 🏀`,
           html,
         }),
       });
       if (res.ok) {
         sent++;
+        const { id } = await res.json().catch(() => ({}));
         await supabase.from("parental_consent")
-          .update({ last_reengagement_email_at: new Date().toISOString() })
+          .update({ last_reengagement_email_at: new Date().toISOString(), last_reengagement_email_id: id ?? null })
           .eq("athlete_id", r.athlete_id);
       } else {
         failed++;
@@ -73,5 +111,5 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ ok: true, candidates: rows?.length ?? 0, sent, failed });
+  return json({ ok: true, candidates: rows?.length ?? 0, sent, failed, suppressed });
 });
