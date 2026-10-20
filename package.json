@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run verify:imports && npm run verify:settings-merge && vite build",
+    "build": "npm run verify:imports && npm run verify:settings-merge && npm run verify:programs && vite build",
     "lint": "eslint .",
     "verify:imports": "node scripts/verify-imports.mjs",
     "verify:settings-merge": "node scripts/verify-settings-merge.mjs",
+    "verify:programs": "node scripts/verify-programs.mjs",
     "verify:schema": "node scripts/verify-schema.mjs",
     "verify:lint-budget": "node scripts/verify-lint-budget.mjs",
     "verify:smoke": "playwright test",

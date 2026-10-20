@@ -2510,32 +2510,62 @@ const ALL_EXERCISES = Object.fromEntries(
 const PROGRAMS = [
   {
     id:"jump-higher", name:"Jump Higher", emoji:"⬆️", color:"#f97316",
-    badgeId:"pgm-jump-higher", duration:4, daysPerWeek:3, ageRange:[9,17],
-    desc:"A 4-week plyometric plan to add inches to your vertical and build explosive first-step power.",
+    badgeId:"pgm-jump-higher", duration:4, daysPerWeek:3, ageRange:[10,17],
+    desc:"A 4-week jump plan: learn to bounce and land, then add tuck jumps and one-leg hops. Two jump days and one strength day a week. No equipment.",
+    /* Rebuilt to youth plyometric guidance: a 4-week program means beginners the whole
+       way, so 50–80 landings max (kept ≤ 60), jumps on Sessions 1 and 3 only (72 h+ apart)
+       with a strength day between, landing skill before intensity, and nothing rated
+       advanced/11+ or needing a box. The old plan had drop jumps in week 1, ~156 landings a
+       session, and three follow-the-video full workouts stacked on other drills. 9-year-olds
+       start with Bodyweight Beast. `was` = the pre-rebuild drill list. */
     weeks:[
-      { week:1, goal:"Build ankle stiffness and landing control — the foundation of every jump.",
+      { week:1, goal:"Learn to bounce and land. Stick every landing before you try to go higher.",
         sessions:[
-          { day:"Session 1", focus:"Elasticity Foundation",  exercises:["pogo-jumps","lateral-line-hops","depth-drop"] },
-          { day:"Session 2", focus:"Single-Leg Control",     exercises:["sl-hold","sl-squat","sl-stick-landing"] },
-          { day:"Session 3", focus:"Power Introduction",     exercises:["squat-jumps","snap-downs","broad-jump-stick"] },
+          { day:"Session 1", focus:"Bounce & Land",   exercises:["pogo-jumps","snap-downs","squat-jumps"],
+            dose:{ "pogo-jumps":"2x10", "snap-downs":"2x6", "squat-jumps":"2x4" },
+            was:["pogo-jumps","lateral-line-hops","depth-drop"] },
+          { day:"Session 2", focus:"Leg Strength",    exercises:["sl-hold","split-sq","glute-bridge"],
+            dose:{ "sl-hold":"2x20 s each leg", "split-sq":"2x6 each leg", "glute-bridge":"2x12" },
+            was:["sl-hold","sl-squat","sl-stick-landing"] },
+          { day:"Session 3", focus:"Jump & Stick",    exercises:["broad-jump-stick","lateral-line-hops","jump-stop-hold"],
+            dose:{ "broad-jump-stick":"2x4", "lateral-line-hops":"2x8 s", "jump-stop-hold":"2x5" },
+            was:["squat-jumps","snap-downs","broad-jump-stick"] },
         ]},
-      { week:2, goal:"Develop horizontal and lateral power while reinforcing landing mechanics.",
+      { week:2, goal:"Same jumps, one more set. Spend less time on the ground each bounce.",
         sessions:[
-          { day:"Session 1", focus:"Reactive Elasticity",    exercises:["reactive-pogos","lateral-line-hops","single-leg-hops"] },
-          { day:"Session 2", focus:"Lateral Power",          exercises:["lateral-bounds-pjf","lat-skater-hops","lateral-stick-landing"] },
-          { day:"Session 3", focus:"Power Development",      exercises:["tuck-jumps","broad-jump-stick-dec","pogo-tutorial"] },
+          { day:"Session 1", focus:"Bounce & Land",   exercises:["pogo-jumps","snap-downs","squat-jumps"],
+            dose:{ "pogo-jumps":"3x10", "snap-downs":"3x6", "squat-jumps":"3x4" },
+            was:["reactive-pogos","lateral-line-hops","single-leg-hops"] },
+          { day:"Session 2", focus:"Leg Strength",    exercises:["sl-hold","split-sq","glute-bridge"],
+            dose:{ "sl-hold":"3x20 s each leg", "split-sq":"3x6 each leg", "glute-bridge":"3x12" },
+            was:["lateral-bounds-pjf","lat-skater-hops","lateral-stick-landing"] },
+          { day:"Session 3", focus:"Jump & Stick",    exercises:["broad-jump-stick","lateral-line-hops","jump-stop-hold"],
+            dose:{ "broad-jump-stick":"3x4", "lateral-line-hops":"3x6 s", "jump-stop-hold":"2x5" },
+            was:["tuck-jumps","broad-jump-stick-dec","pogo-tutorial"] },
         ]},
-      { week:3, goal:"Reactive power and stretch-shortening cycle training — where vertical gains come from.",
+      { week:3, goal:"New jumps: tuck jumps and one-leg hops. Small, quick, and land soft.",
         sessions:[
-          { day:"Session 1", focus:"Reactive Training",      exercises:["drop-jump","pogo-to-tuck","single-leg-pogo"] },
-          { day:"Session 2", focus:"Combo Power",            exercises:["power-bounds-series","broad-bounds-sprint","lat-skater-hops"] },
-          { day:"Session 3", focus:"Full Plyometric",        exercises:["vj-progression","snap-down-prog","lateral-bounds-pjf"] },
+          { day:"Session 1", focus:"Go Vertical",     exercises:["reactive-pogos","tuck-jumps","squat-jumps"],
+            dose:{ "reactive-pogos":"2x10", "tuck-jumps":"2x4", "squat-jumps":"3x5" },
+            was:["drop-jump","pogo-to-tuck","single-leg-pogo"] },
+          { day:"Session 2", focus:"Leg Strength",    exercises:["sl-hold","split-sq","wall-sit"],
+            dose:{ "sl-hold":"3x30 s each leg", "split-sq":"3x8 each leg", "wall-sit":"3x40 s" },
+            was:["power-bounds-series","broad-bounds-sprint","lat-skater-hops"] },
+          { day:"Session 3", focus:"Side & One Leg",  exercises:["lateral-bounds-pjf","single-leg-hops","broad-jump-stick"],
+            dose:{ "lateral-bounds-pjf":"2x5 each side", "single-leg-hops":"2x4 each leg", "broad-jump-stick":"3x4" },
+            was:["vj-progression","snap-down-prog","lateral-bounds-pjf"] },
         ]},
-      { week:4, goal:"Peak power expression — max effort on every rep. Measure your vertical this week.",
+      { week:4, goal:"Peak week — your highest, best jumps. Measure your vertical this week.",
         sessions:[
-          { day:"Session 1", focus:"Max Vertical",           exercises:["drop-jump","squat-jumps","pogo-to-tuck"] },
-          { day:"Session 2", focus:"Full Expression",        exercises:["full-plyo-workout","single-leg-pogo","broad-bounds-sprint"] },
-          { day:"Session 3", focus:"Peak Performance",       exercises:["dunk-training","vj-progression","lateral-line-hops"] },
+          { day:"Session 1", focus:"Go Vertical",     exercises:["reactive-pogos","tuck-jumps","squat-jumps"],
+            dose:{ "reactive-pogos":"3x10", "tuck-jumps":"3x4", "squat-jumps":"3x5" },
+            was:["drop-jump","squat-jumps","pogo-to-tuck"] },
+          { day:"Session 2", focus:"Leg Strength",    exercises:["sl-hold","split-sq","wall-sit"],
+            dose:{ "sl-hold":"3x30 s each leg", "split-sq":"3x10 each leg", "wall-sit":"3x45 s" },
+            was:["full-plyo-workout","single-leg-pogo","broad-bounds-sprint"] },
+          { day:"Session 3", focus:"Side & One Leg",  exercises:["lateral-bounds-pjf","single-leg-hops","power-bounds-series"],
+            dose:{ "lateral-bounds-pjf":"3x5 each side", "single-leg-hops":"3x4 each leg", "power-bounds-series":"2x3" },
+            was:["dunk-training","vj-progression","lateral-line-hops"] },
         ]},
     ],
   },
@@ -3025,7 +3055,7 @@ const PROGRAMS = [
    consistently against the Legend paths' rarity. Indexed by week (0-based). Data only — a future
    UI can badge each week ("Tier 1 · Foundation") from this; nothing renders it yet. */
 const PROGRAM_WEEK_TIERS = {
-  "jump-higher":          [1, 2, 2, 3],
+  "jump-higher":          [1, 1, 2, 3],
   "guard-handles":        [1, 2, 2, 3],
   "step-back-legends":    [2, 3],
   "become-shooter":       [1, 2, 2, 3],
