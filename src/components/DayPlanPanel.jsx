@@ -3,9 +3,9 @@
  * Warm-up drills are part of each session (not a separate card kids skip).
  */
 import {
-  pickSessionWarmupExercises,
   withSessionWarmup,
   categoriesFromExercises,
+  isWarmupExercise,
 } from "../lib/sessionWarmup.js";
 
 export default function DayPlanPanel({
@@ -105,12 +105,12 @@ export default function DayPlanPanel({
           {plan.programSessions.map(({ program, week, session, sessionIdx, done }) => {
             const exList = sessionExercises(session);
             const sessionCats = categoriesFromExercises(exList, allExercises);
-            const warmupExs = workouts
-              ? pickSessionWarmupExercises(workouts, exerciseMeta, { categories: sessionCats })
-              : [];
             const fullSessionList = workouts
               ? withSessionWarmup(exList, workouts, exerciseMeta, { categories: sessionCats })
               : exList;
+            /* Show the warm-up this session will actually run — none when it already opens
+               with one (e.g. a rope session starting on an easy rope drill). */
+            const warmupExs = fullSessionList.filter(isWarmupExercise);
             return (
               <div key={program.id} style={{
                 marginBottom: 8, padding: "10px 12px", borderRadius: 12,

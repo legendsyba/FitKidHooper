@@ -10,7 +10,8 @@
  * 3. Progress logic: rebuilt sessions keep old completions, finishing retires a program
  *    into history, and the Home next-step card survives union merges from cloud sync.
  */
-import { PROGRAMS, ALL_EXERCISES, EXERCISE_META } from "../src/data/trainingCatalog.js";
+import { PROGRAMS, ALL_EXERCISES, EXERCISE_META, WORKOUTS } from "../src/data/trainingCatalog.js";
+import { pickSessionWarmupExercises, withSessionWarmup } from "../src/lib/sessionWarmup.js";
 import { BADGES_DEF, getEarnedBadges } from "../src/lib/badges.js";
 import { parseExerciseSets } from "../src/lib/exerciseSession.js";
 import { mergeSaveValue } from "../src/lib/persistMerge.js";
@@ -80,6 +81,50 @@ for (const prog of PROGRAMS) {
     assert(hours >= MIN_HOURS_BETWEEN_JUMP_DAYS, `${tag}: ${jumpDays[i - 1].at} → ${jumpDays[i].at} only ${hours} h apart (min ${MIN_HOURS_BETWEEN_JUMP_DAYS})`);
   }
 }
+
+/* ── 2b: jump rope volume ── rope is high-frequency, low-amplitude jumping (not counted as
+   landings above). Shin splints come from doing too much too soon, so: ≤ 5 min of actual
+   jumping a session, the heaviest session of a week ≤ 25% above the week before (Level 2's
+   first week vs Level 1's last too), and every session opens with an easy (warm-up-role) rope drill
+   so the warm-up builder doesn't stack extra rope on top. */
+const ROPE_SECONDS_LIMIT = 300;
+const ROPE_WEEKLY_GROWTH = 1.25;
+const ropeSeconds = (id, sets) => {
+  const m = EXERCISE_META[id] || {};
+  if (m.equipment !== "jump_rope" || m.impactLevel === "low") return 0;
+  const p = parseExerciseSets(sets);
+  return p?.value ? p.count * p.value : 0;
+};
+const ropeWeekPeaks = (prog) => prog.weeks.map(w =>
+  Math.max(...w.sessions.map(s => s.exercises.reduce((t, id) => t + ropeSeconds(id, s.dose?.[id] ?? exercise(id)?.sets), 0))));
+for (const prog of PROGRAMS.filter(p => (p.equipment || []).includes("jump_rope"))) {
+  const peaks = ropeWeekPeaks(prog);
+  peaks.forEach((sec, wi) => assert(sec <= ROPE_SECONDS_LIMIT, `${prog.id} w${wi + 1}: ${sec} s of rope jumping in a session (limit ${ROPE_SECONDS_LIMIT})`));
+  const base = prog.advancedOf && PROGRAMS.find(p => p.id === prog.advancedOf);
+  const prior = [...(base ? [ropeWeekPeaks(base).at(-1)] : []), ...peaks];
+  for (let i = 1; i < prior.length; i++) {
+    assert(prior[i] <= prior[i - 1] * ROPE_WEEKLY_GROWTH, `${prog.id}: rope volume jumps ${prior[i - 1]} → ${prior[i]} s week to week (max +25%)`);
+  }
+  prog.weeks.forEach(w => w.sessions.forEach((s, si) => {
+    const first = EXERCISE_META[s.exercises[0]] || {};
+    assert(first.equipment === "jump_rope" && (first.workoutRole || []).includes("warmup"),
+      `${prog.id} w${w.week}s${si + 1}: must open with an easy rope drill (bounce, side swing or alternate foot)`);
+  }));
+}
+
+/* No session starts cold on a jump: the session as launched (warm-up included) must open
+   with something other than a landing drill. */
+for (const prog of PROGRAMS) {
+  prog.weeks.forEach(w => w.sessions.forEach((s, si) => {
+    const list = s.exercises.map(id => ({ ...exercise(id), meta: EXERCISE_META[id] || {} }));
+    const launched = withSessionWarmup(list, WORKOUTS, EXERCISE_META, { hasRope: false });
+    assert(!isLandingDrill(launched[0]?.id), `${prog.id} w${w.week}s${si + 1}: starts cold on ${launched[0]?.id} (no warm-up)`);
+  }));
+}
+
+const warmIds = (hasRope) => pickSessionWarmupExercises(WORKOUTS, EXERCISE_META, { categories: ["strength"], hasRope });
+assert(!warmIds(false).some(w => EXERCISE_META[w.id]?.equipment === "jump_rope"), "kids without a rope must not get rope warm-ups");
+assert(warmIds(true)[0]?.id === "jump-rope" && warmIds(true)[0].sets === "2x30 s", "rope owners' warm-up should open with 2x30 s of rope");
 
 /* ── 3: progress logic ── */
 const T0 = Date.now() - 30 * 86400000;
