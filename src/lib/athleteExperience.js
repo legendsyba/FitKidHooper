@@ -4,8 +4,14 @@
  */
 
 export const FIRST_EXERCISE_KEY = "fkh-analytics-first-exercise";
-/** Fired on window the moment a device records its first finished drill. */
-export const FIRST_EXERCISE_EVENT = "fkh-first-exercise";
+/** Fired on window when a whole practice is finished: today's mission or a
+ *  program session. "Finished a practice" is the moment for asks that are not
+ *  training (install the app), never halfway through one. */
+export const PRACTICE_DONE_EVENT = "fkh-practice-done";
+
+export function announcePracticeDone() {
+  try { window.dispatchEvent(new Event(PRACTICE_DONE_EVENT)); } catch { /* non-browser */ }
+}
 
 /** True when the athlete has never completed a drill on this device. */
 export function isNewAthlete() {

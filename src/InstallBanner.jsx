@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { athleteHasPriorUsage, FIRST_EXERCISE_EVENT } from './lib/athleteExperience.js'
+import { athleteHasPriorUsage, PRACTICE_DONE_EVENT } from './lib/athleteExperience.js'
 
 const DISMISSED_KEY = 'fkh-install-dismissed'
 
@@ -20,15 +20,16 @@ export default function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(() => window._installPrompt || null)
   const [show, setShow] = useState(false)
 
-  /* Not before the first drill. A brand-new kid lands on Home with one job —
-     start today's practice — and this was the first thing covering it. Once a
-     drill is done, asking to keep the app is earned. */
+  /* Not before the first practice. A brand-new kid lands on Home with one job —
+     start today's practice — and this was the first thing covering it. It waits
+     for a whole practice (not one drill, which left it stacked on Home with the
+     badge and tour mid-session), or for a later visit by a kid who has trained. */
   const [hasTrained, setHasTrained] = useState(() => athleteHasPriorUsage())
   useEffect(() => {
     if (hasTrained) return
     const onFirst = () => setHasTrained(true)
-    window.addEventListener(FIRST_EXERCISE_EVENT, onFirst)
-    return () => window.removeEventListener(FIRST_EXERCISE_EVENT, onFirst)
+    window.addEventListener(PRACTICE_DONE_EVENT, onFirst)
+    return () => window.removeEventListener(PRACTICE_DONE_EVENT, onFirst)
   }, [hasTrained])
 
   useEffect(() => {

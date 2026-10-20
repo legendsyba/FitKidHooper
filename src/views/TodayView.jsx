@@ -199,13 +199,21 @@ export default function TodayView({
     };
   }, [hasTodayPlan, todayPlan, allExercises, exerciseMeta, cats]);
 
+  /* Resume where the kid left off. Both starts opened list[0] every time, so
+     "Continue Practice — up next: Crossovers" reopened the drill they had just
+     finished and they had to find Next themselves. */
+  const firstUndone = (list, ctx) => list.find(e =>
+    !completed[`${today}-${e.id}`]
+    && !(ctx && isProgramExerciseDone(programProgress, ctx.programId, ctx.week, ctx.sessionIdx, e.id))
+  ) || list[0];
+
   const startExerciseList = (exercises, practiceSource = "mission") => {
     const list = withSessionWarmup(
       (exercises || []).map(e => ({ ...e, meta: e.meta || exerciseMeta[e.id] || {} })),
       workouts,
       exerciseMeta,
     );
-    if (list[0]) openDetail(list[0], list, null, practiceSource);
+    if (list[0]) openDetail(firstUndone(list, null), list, null, practiceSource);
   };
 
   const startProgramSession = (task) => {
@@ -218,7 +226,7 @@ export default function TodayView({
     const list = withSessionWarmup(base, workouts, exerciseMeta, {
       categories: categoriesFromExercises(base, allExercises),
     });
-    if (list[0]) openDetail(list[0], list, ctx, "program");
+    if (list[0]) openDetail(firstUndone(list, ctx), list, ctx, "program");
   };
 
   const openProgramExercise = (task, exId) => {
@@ -243,6 +251,7 @@ export default function TodayView({
   const totalReq = reqTasks.reduce((s, t) => { const { target } = getMissionTaskProgress(t, completed, today, programProgress); return s + target; }, 0);
   const doneReq = reqTasks.reduce((s, t) => { const { cur, target } = getMissionTaskProgress(t, completed, today, programProgress); return s + Math.min(cur, target); }, 0);
   const overallPct = totalReq > 0 ? doneReq / totalReq : 0;
+  const midPractice = doneReq > 0 && doneReq < totalReq;
 
   // Single "one obvious action" entry point — follows dailyAction.primaryCTA's
   // existing precedence (program session beats mission) rather than inventing
@@ -411,11 +420,12 @@ export default function TodayView({
         </button>
       )}
 
-      {/* Only one onboarding nudge at a time — tour takes priority over the
-          notification prompt so they never stack and eat the top of Today. */}
-      {showTourPrompt ? (
-        <TourPromptBanner P={P} onStartTour={onStartTour} onOpenGuide={onOpenGuide} onDismiss={onDismissTourPrompt} />
-      ) : showGuestSavePrompt ? (
+      {/* One nudge at a time, and none halfway through today's practice — after
+          a first drill the badge, the tour and this all landed at once while the
+          kid still had drills to do. Saving the player leads: it is the only way
+          a parent email exists to bring a kid back, and the tour is always in
+          the Guide. */}
+      {midPractice ? null : showGuestSavePrompt ? (
         <GuestSaveBanner
           P={P}
           xpTotal={guestSaveXp}
@@ -423,6 +433,8 @@ export default function TodayView({
           onSave={onSavePlayer}
           onDismiss={onDismissGuestSavePrompt}
         />
+      ) : showTourPrompt ? (
+        <TourPromptBanner P={P} onStartTour={onStartTour} onOpenGuide={onOpenGuide} onDismiss={onDismissTourPrompt} />
       ) : showNotificationPrompt && (
         <NotificationPromptBanner
           P={P}

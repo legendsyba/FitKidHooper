@@ -14,6 +14,7 @@ import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
+import { announcePracticeDone } from "../lib/athleteExperience.js";
 
 function ExerciseSetTracker({
   exercise, color, SF,
@@ -429,6 +430,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
     if (hasPendingCelebration) setCompletePending(true);
     else setShowComplete(true);
   };
+  // The kid has just been told their practice is done — the moment, not a
+  // drill earlier, for asks like installing the app.
+  useEffect(() => { if (showComplete) announcePracticeDone(); }, [showComplete]);
   useEffect(() => {
     if (completePending && !hasPendingCelebration) {
       setShowComplete(true);
