@@ -267,7 +267,7 @@ export const MASTERY_TRACKS = [
   {
     id: "lockdown", name: "Defense", emoji: "🛡️", archetype: "The Lockdown",
     theme: "Nobody scores on you twice. Follow the path of the greatest stoppers.",
-    relatedProgramIds: ["lockdown-defender", "complete-hooper", "bodyweight-beast"],
+    relatedProgramIds: ["lockdown-defender", "complete-hooper", "bodyweight-beast", "band-strength"],
     favoritePlayerKeys: ["payton","glove","pippen","jordan","mj","kawhi","leonard","garnett","kg","rodman","mutombo","wallace","defense","stopper"],
     stages: [
       { id: "lockdown-1", name: "Ball Hawk", emoji: "🐝", flavor: "You're a problem out there.",

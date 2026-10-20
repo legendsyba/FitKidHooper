@@ -157,16 +157,26 @@ for (const prog of PROGRAMS) {
   }));
 }
 
-/* Rope drills live only in the jumprope category, and nothing that builds a workout for
-   any kid (schedule days, quick templates, mission focuses) draws from it. */
+/* Opt-in gear categories: drills needing a rope or bands live only in their own category,
+   and nothing that builds a workout for every kid (schedule days, quick templates, mission
+   focuses) draws from them — a kid without the gear must never be handed those drills. */
+const OPT_IN = [
+  { cat: "jumprope", gear: ["jump_rope"] },
+  { cat: "bands", gear: ["mini_band", "long_band"] },
+];
 for (const [cat, list] of Object.entries(WORKOUTS)) {
   for (const ex of list) {
-    if (EXERCISE_META[ex.id]?.equipment === "jump_rope") assert(cat === "jumprope", `${ex.id} needs a rope but sits in ${cat}`);
+    const items = drillGearItems(EXERCISE_META[ex.id]?.equipment);
+    for (const { cat: home, gear } of OPT_IN) {
+      if (items.some(g => gear.includes(g))) assert(cat === home, `${ex.id} needs ${gear.join("/")} but sits in ${cat}`);
+    }
   }
 }
-for (const day of SCHEDULE) assert(!(day.cats || []).includes("jumprope"), `schedule ${day.day} pulls rope drills for every kid`);
-for (const [key, t] of Object.entries(WORKOUT_TEMPLATES)) assert(!(t.cats || []).includes("jumprope"), `template ${key} pulls rope drills for every kid`);
-for (const f of BUILD_FOCUS_OPTIONS) assert(!(f.cats || []).includes("jumprope"), `mission focus ${f.id} pulls rope drills for every kid`);
+for (const { cat } of OPT_IN) {
+  for (const day of SCHEDULE) assert(!(day.cats || []).includes(cat), `schedule ${day.day} pulls ${cat} drills for every kid`);
+  for (const [key, t] of Object.entries(WORKOUT_TEMPLATES)) assert(!(t.cats || []).includes(cat), `template ${key} pulls ${cat} drills for every kid`);
+  for (const f of BUILD_FOCUS_OPTIONS) assert(!(f.cats || []).includes(cat), `mission focus ${f.id} pulls ${cat} drills for every kid`);
+}
 
 const warmIds = (hasRope) => pickSessionWarmupExercises(WORKOUTS, EXERCISE_META, { categories: ["strength"], hasRope });
 assert(!warmIds(false).some(w => EXERCISE_META[w.id]?.equipment === "jump_rope"), "kids without a rope must not get rope warm-ups");

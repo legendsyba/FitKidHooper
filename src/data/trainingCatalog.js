@@ -209,6 +209,61 @@ const W_JUMP_ROPE = [
     videoId:"pQRnSYfliEc", videoChannel:"Jump Rope Dudes", videoTitle:"Learn The Jump Rope Double Under In 5 EASY Steps" },
 ];
 
+/* ── Resistance bands. Own category (like jump rope) so missions and schedule days never
+   hand band drills to a kid without bands. Mini band for hips; long loop band for the rest.
+   Videos are title-matched tutorials, mostly sports-medicine and physical-therapy channels,
+   checked public + embeddable via the YouTube API. ── */
+const W_BANDS = [
+  { id:"band-lateral-walk", name:"Band Lateral Walk", tag:"Hips", sets:"3x8 each side", rest:"30 s",
+    desc:"Mini band just above the knees, sink into a half squat, and step sideways — keep tension the whole way. Builds the hip strength behind every defensive slide.",
+    cues:["Stay low — half squat the whole time","Toes forward, knees push out against the band","Small steps, never let the feet touch","Chest up, don't bounce"],
+    trainer:"Ohio State Wexner Medical Center", videoId:"6eoK_yxY8Ak", videoChannel:"Ohio State Wexner Medical Center", videoTitle:"Lateral band walks | Ohio State Sports Medicine" },
+  { id:"band-monster-walk", name:"Band Monster Walk", tag:"Hips", sets:"3x8 each way", rest:"30 s",
+    desc:"Mini band above the knees, half squat, and walk forward and back in wide diagonal steps. Strengthens the hips that keep your knees safe when you land and cut.",
+    cues:["Wide stance, knees out","Step out on a diagonal, not straight ahead","Stay low and slow","Feel it on the side of your hips"],
+    trainer:"MedStar Health", videoId:"snbNxUIUQPc", videoChannel:"MedStar Health", videoTitle:"Monster Walk Exercise Demonstration" },
+  { id:"band-glute-bridge", name:"Banded Glute Bridge", tag:"Hips", sets:"3x12", rest:"30 s",
+    desc:"Lie on your back, mini band above the knees, and drive your hips up while pushing your knees out. Glute strength for jumping and first steps.",
+    cues:["Push knees out against the band","Squeeze your glutes at the top — hold 1 second","Ribs down, don't arch your back","Lower slow"],
+    trainer:"Kraken Exercise Library", videoId:"3zxDZE2z3rE", videoChannel:"Kraken Exercise Library", videoTitle:"Banded Glute Bridge" },
+  { id:"band-clamshell", name:"Banded Clamshell", tag:"Hips", sets:"3x12 each side", rest:"30 s",
+    desc:"Lie on your side with knees bent and a mini band above the knees, then open the top knee like a clamshell. Small move, big job: it trains the hip muscle that keeps knees from caving in.",
+    cues:["Feet stay together","Hips stacked — don't roll back","Open slow, close slower","Only the knee moves"],
+    trainer:"Rehab My Patient", videoId:"4T2P_-MV9g0", videoChannel:"Rehab My Patient", videoTitle:"How to do a Clam with an Exercise Band" },
+  { id:"band-squat", name:"Band Squat", tag:"Legs", sets:"3x12", rest:"45 s",
+    desc:"Stand on a long band with the ends at your shoulders and squat. The band gets harder as you stand — strength for jumping and landing.",
+    cues:["Feet shoulder-width on the band","Sit back and down, chest up","Knees follow your toes","Drive up through your whole foot"],
+    trainer:"Get Healthy U - with Chris Freytag", videoId:"duP-UZsfOaQ", videoChannel:"Get Healthy U - with Chris Freytag", videoTitle:"How To Do Resistance Band Squat" },
+  { id:"band-rdl", name:"Band Romanian Deadlift", tag:"Legs", sets:"3x12", rest:"45 s",
+    desc:"Stand on a long band, hinge at the hips with a flat back, then stand tall. Trains the hamstrings and glutes that power sprinting and protect them from pulls.",
+    cues:["Push your hips back, not down","Back flat, chest proud","Slight bend in the knees","Squeeze glutes to stand up"],
+    trainer:"Clear Cut Fitness", videoId:"NaKsZos0bIY", videoChannel:"Clear Cut Fitness", videoTitle:"Resistance Band Romanian Deadlifts (RDL)" },
+  { id:"band-pull-apart", name:"Band Pull-Apart", tag:"Upper Body", sets:"3x12", rest:"30 s",
+    desc:"Hold a long band in front at shoulder height and pull it apart until it touches your chest. Builds the upper back and shoulders shooters need.",
+    cues:["Arms straight, soft elbows","Squeeze shoulder blades together","Don't shrug","Control it back in"],
+    trainer:"Hinge Health", videoId:"bYsgk9SrJ48", videoChannel:"Hinge Health", videoTitle:"How to Do Band Pull Aparts: A Guide from Physical Therapists" },
+  { id:"band-row", name:"Band Seated Row", tag:"Upper Body", sets:"3x12", rest:"45 s",
+    desc:"Sit with legs straight, loop a long band around your feet, and row your hands to your ribs. Back strength for rebounding and holding position.",
+    cues:["Sit tall — don't lean back","Elbows close to your sides","Squeeze shoulder blades at the end","Slow on the way back"],
+    trainer:"Vive Health", videoId:"ovn27-bSHj4", videoChannel:"Vive Health", videoTitle:"Seated Rows with Resistance Bands" },
+  { id:"band-press", name:"Band Chest Press", tag:"Upper Body", sets:"3x10", rest:"45 s",
+    desc:"Wrap a long band behind your upper back, hold the ends, and press straight forward. A push-up's partner for chest and arm strength.",
+    cues:["Band across your shoulder blades","Press straight out at chest height","Don't let the band pull your elbows back fast","Core tight, stand tall"],
+    trainer:"Live Lean TV Daily Exercises", videoId:"6-86jEAXA08", videoChannel:"Live Lean TV Daily Exercises", videoTitle:"How To: Standing Resistance Band Chest Press" },
+  { id:"band-pallof", name:"Band Pallof Press", tag:"Core", sets:"3x8 each side", rest:"30 s",
+    desc:"Anchor a long band at chest height, stand sideways, and press it straight out without letting it twist you. Core strength that keeps you strong through contact.",
+    cues:["Stand side-on to the anchor","Press straight out from your chest","Don't let it turn you — fight the twist","Hold 2 seconds out"],
+    trainer:"TurnFit - Vancouver Personal Trainers", videoId:"y1fOBVtANdM", videoChannel:"TurnFit - Vancouver Personal Trainers", videoTitle:"How to do a Standing Banded Pallof Press" },
+  { id:"band-ankle", name:"Band Ankle Strength", tag:"Ankles", sets:"2x15 each way", rest:"20 s",
+    desc:"Seated, loop a band around your foot and point, pull back, turn in, and turn out against it. Strong ankles mean fewer rolled ankles.",
+    cues:["Move only at the ankle","Slow and controlled both ways","Full range — all four directions","Both feet"],
+    trainer:"Feel Good Life with Coach Todd", videoId:"bg__BCXOkWQ", videoChannel:"Feel Good Life with Coach Todd", videoTitle:"How to Strengthen All of the Ankle Muscles with One Resistance Band" },
+  { id:"band-external-rotation", name:"Band Shoulder Rotation", tag:"Shoulders", sets:"2x12 each side", rest:"20 s",
+    desc:"Elbow tucked at your side and bent to 90°, rotate your forearm out against a long band. Keeps shooting shoulders healthy.",
+    cues:["Elbow glued to your side","Only the forearm swings out","Slow out, slower back","Light band — this is control, not power"],
+    trainer:"Gear Up Physical Therapy and Wellness", videoId:"dS9ORQCnWsE", videoChannel:"Gear Up Physical Therapy and Wellness", videoTitle:"Shoulder External Rotation with Resistance Band" },
+];
+
 const W_EXPLOSION = [
   { id:"pogo-jumps", name:"Pogo Jumps", tag:"Elasticity", sets:"3x20 reps", rest:"60 s",
     desc:"Two-foot rapid ground contacts — minimal time on the floor. Trains ankle stiffness and elasticity that powers your first step.",
@@ -2094,6 +2149,7 @@ const WORKOUTS = {
   explosion:    W_EXPLOSION,
   conditioning: W_CONDITIONING,
   jumprope:     W_JUMP_ROPE,
+  bands:        W_BANDS,
   coordination: W_COORDINATION,
   deceleration: W_DECELERATION,
   athletic:     W_ATHLETIC,
@@ -2500,6 +2556,19 @@ const EXERCISE_META = {
   "gh-snatch":             { equipment:"basketball" },
   "gh-cross-behind":       { equipment:"basketball" },
   "gh-hang-hesi-cross":    { equipment:"basketball" },
+  /* Resistance bands */
+  "band-lateral-walk":     { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"mini_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-monster-walk":     { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"mini_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-glute-bridge":     { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"mini_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-clamshell":        { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"mini_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-squat":            { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["main"] },
+  "band-rdl":              { difficulty:"intermediate", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["main"] },
+  "band-pull-apart":       { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-row":              { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["main"] },
+  "band-press":            { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["main"] },
+  "band-pallof":           { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band + anchor", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["main"] },
+  "band-ankle":            { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
+  "band-external-rotation": { difficulty:"beginner", impactLevel:"low", intensityLevel:"medium", movementType:"strength", bodyFocus:["hips","core"], basketballTransfer:["strength","stability"], equipment:"long_band", spaceRequired:"small", ageRange:[9,17], estimatedDuration:90, funScore:5, workoutRole:["warmup","main"] },
 };
 
 /* Cross-list existing agility/movement drills that transfer to on-ball defense into the Defense
@@ -3090,6 +3159,54 @@ const PROGRAMS = [
     ],
   },
 
+  /* Band Strength. NSCA youth guidance: start light at 1–2 sets of 10–15, add sets, then
+     reps, then load — here, a tougher band in week 4. Low impact, so it pairs with any jump
+     or skill program. Gear: a mini band and a long loop band; only the Pallof press needs
+     an anchor. Each session opens on a hip/shoulder activation drill. */
+  {
+    id:"band-strength", name:"Band Strength", emoji:"🎗️", color:"#8b5cf6",
+    badgeId:"pgm-band-strength", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["mini_band","long_band"], equipmentFew:["anchor"],
+    desc:"Get stronger anywhere with two cheap bands: hips and legs for slides and jumps, back and shoulders for shooting, core for contact. Low impact — pairs with any program.",
+    weeks:[
+      { week:1, goal:"Learn each move with a light band. Smooth reps, full control.",
+        sessions:[
+          { day:"Session 1", focus:"Hips & Legs", exercises:["band-lateral-walk","band-squat","band-glute-bridge"],
+            dose:{ "band-lateral-walk":"2x8 each side", "band-squat":"2x12", "band-glute-bridge":"2x12" } },
+          { day:"Session 2", focus:"Upper Body & Core", exercises:["band-pull-apart","band-row","band-pallof"],
+            dose:{ "band-pull-apart":"2x12", "band-row":"2x12", "band-pallof":"2x8 each side" } },
+          { day:"Session 3", focus:"Athlete Body", exercises:["band-monster-walk","band-rdl","band-external-rotation"],
+            dose:{ "band-monster-walk":"2x8 each way", "band-rdl":"2x12", "band-external-rotation":"2x10 each side" } },
+        ]},
+      { week:2, goal:"Same moves, one more set.",
+        sessions:[
+          { day:"Session 1", focus:"Hips & Legs", exercises:["band-lateral-walk","band-squat","band-glute-bridge"],
+            dose:{ "band-lateral-walk":"3x8 each side", "band-squat":"3x12", "band-glute-bridge":"3x12" } },
+          { day:"Session 2", focus:"Upper Body & Core", exercises:["band-pull-apart","band-row","band-pallof"],
+            dose:{ "band-pull-apart":"3x12", "band-row":"3x12", "band-pallof":"3x8 each side" } },
+          { day:"Session 3", focus:"Athlete Body", exercises:["band-monster-walk","band-rdl","band-external-rotation"],
+            dose:{ "band-monster-walk":"3x8 each way", "band-rdl":"3x12", "band-external-rotation":"3x10 each side" } },
+        ]},
+      { week:3, goal:"More reps, plus three new moves for knees, ankles, and chest.",
+        sessions:[
+          { day:"Session 1", focus:"Hips & Legs", exercises:["band-lateral-walk","band-squat","band-clamshell"],
+            dose:{ "band-lateral-walk":"3x10 each side", "band-squat":"3x15", "band-clamshell":"3x12 each side" } },
+          { day:"Session 2", focus:"Upper Body & Core", exercises:["band-pull-apart","band-row","band-press"],
+            dose:{ "band-pull-apart":"3x15", "band-row":"3x15", "band-press":"3x10" } },
+          { day:"Session 3", focus:"Athlete Body", exercises:["band-monster-walk","band-rdl","band-ankle"],
+            dose:{ "band-monster-walk":"3x10 each way", "band-rdl":"3x15", "band-ankle":"2x15 each way" } },
+        ]},
+      { week:4, goal:"Stronger week: grab a tougher band (or slow every rep to 3 seconds down).",
+        sessions:[
+          { day:"Session 1", focus:"Hips & Legs", exercises:["band-glute-bridge","band-squat","band-lateral-walk"],
+            dose:{ "band-glute-bridge":"3x15", "band-squat":"3x12", "band-lateral-walk":"3x10 each side" } },
+          { day:"Session 2", focus:"Upper Body & Core", exercises:["band-pull-apart","band-row","band-pallof"],
+            dose:{ "band-pull-apart":"3x15", "band-row":"3x12", "band-pallof":"3x10 each side" } },
+          { day:"Session 3", focus:"Athlete Body", exercises:["band-monster-walk","band-rdl","band-press"],
+            dose:{ "band-monster-walk":"3x10 each way", "band-rdl":"3x12", "band-press":"3x12" } },
+        ]},
+    ],
+  },
+
   {
     id:"own-the-glass", name:"Own the Glass", emoji:"🪃", color:"#22c55e",
     badgeId:"pgm-own-the-glass", duration:3, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
@@ -3347,6 +3464,7 @@ const PROGRAM_WEEK_TIERS = {
   "bodyweight-beast-2":   [2, 2, 3, 3],
   "jump-rope-basics":     [1, 1, 2, 2],
   "jump-rope-speed":      [2, 2, 3, 3],
+  "band-strength":        [1, 1, 2, 2],
   "own-the-glass":        [1, 2, 3],
   "lockdown-defender":    [1, 2, 2, 3],
   "passing-fundamentals": [1, 1, 2],

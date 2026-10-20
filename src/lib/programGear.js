@@ -11,6 +11,9 @@ const GEAR_LABELS = {
   partner: "🤝 Partner",
   dumbbells: "🏋️ Dumbbells",
   bosu: "BOSU ball",
+  mini_band: "🟠 Mini band",
+  long_band: "🟢 Long band",
+  anchor: "🚪 Pole or door anchor",
 };
 
 /* Drill data spells gear several ways ("basketball_x2", "2 basketballs", "basketball + hoop");
@@ -18,6 +21,7 @@ const GEAR_LABELS = {
 const GEAR_ALIASES = {
   basketball: "basketball", hoop: "hoop", wall: "wall", cones: "cones", box: "box", partner: "partner",
   jump_rope: "jump_rope", dumbbells: "dumbbells", bosu: "bosu", chair: "chair",
+  mini_band: "mini_band", long_band: "long_band", anchor: "anchor",
   basketball_x2: "two_basketballs", "2 basketballs": "two_basketballs",
   tennis_ball: "tennis_ball", "tennis ball": "tennis_ball", "full court": "hoop",
 };
