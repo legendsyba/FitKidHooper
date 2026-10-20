@@ -2776,10 +2776,12 @@ export default function FitKidHooperApp() {
     for (const programId of Object.keys(enrolledPrograms)) {
       const prog = PROGRAMS.find(p => p.id === programId);
       if (!prog) continue;
+      const meta = programProgress?.[programId]?._meta || {};
+      const runInfo = { runStartedAt: meta.enrollmentStartedAt || 0, run: (meta.completions?.length || 0) + 1 };
       for (const week of prog.weeks) {
         for (let si = 0; si < week.sessions.length; si++) {
           if (isProgramSessionComplete(prog, programProgress, week.week, si)) {
-            trackProgramSessionIfNew(programId, week.week, si);
+            trackProgramSessionIfNew(programId, week.week, si, runInfo);
           }
         }
       }

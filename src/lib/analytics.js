@@ -346,16 +346,25 @@ export function trackChallengeIfNew(challengeId, isComplete) {
   track(ANALYTICS_EVENTS.CHALLENGE_COMPLETE, { challenge_id: challengeId });
 }
 
-export function trackProgramSessionIfNew(programId, week, sessionIdx) {
-  const key = `${programId}:${week}:${sessionIdx}`;
+/**
+ * Once per session per run of a program. Keyed on the run (its enrollment start) so a
+ * restarted program counts again; `run` is 1 for the first time through. Keys from before
+ * runs were tracked (`program:week:session`) still count for run 1, so upgrading doesn't
+ * re-send sessions that were already recorded.
+ */
+export function trackProgramSessionIfNew(programId, week, sessionIdx, { runStartedAt = 0, run = 1 } = {}) {
+  const key = `${programId}@${runStartedAt}:${week}:${sessionIdx}`;
+  const legacyKey = `${programId}:${week}:${sessionIdx}`;
   const tracked = readJsonSet(TRACKED_PROGRAM_SESSIONS_KEY);
   if (tracked.has(key)) return;
   tracked.add(key);
   writeJsonSet(TRACKED_PROGRAM_SESSIONS_KEY, tracked);
+  if (run === 1 && tracked.has(legacyKey)) return;
   track(ANALYTICS_EVENTS.PROGRAM_SESSION_COMPLETE, {
     program_id: programId,
     week,
     session_idx: sessionIdx,
+    run,
   });
 }
 
