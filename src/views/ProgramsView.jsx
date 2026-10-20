@@ -543,6 +543,11 @@ export default function ProgramsView({
 
                 {(isUnlocked || !enrollment) && week.sessions.map((session, si) => {
                   const sDone = showMarks && sessionDone(week.week, si);
+                  const ids = showMarks
+                    ? programSessionExerciseIds(prog, programProgress, week.week, si)
+                    : session.exercises;
+                  /* Finished under a program's previous version: show what they actually did. */
+                  const legacy = ids !== session.exercises;
                   return (
                     <div key={si} style={{ margin:"0 12px 10px",borderRadius:10,
                       background:sDone ? "rgba(34,197,94,0.06)" : "rgba(255,255,255,0.04)",
@@ -550,16 +555,13 @@ export default function ProgramsView({
                       padding:"11px 13px" }}>
                       <div style={{ display:"flex",alignItems:"center",gap:8,marginBottom:9 }}>
                         <span style={{ fontSize:12,fontWeight:700,color:sDone?"#22c55e":prog.color }}>{session.day}</span>
-                        <span style={{ fontSize:10,color:"#64748b" }}>· {session.focus}</span>
+                        {legacy
+                          ? <span style={{ fontSize:10,color:"#64748b" }}>· earlier version</span>
+                          : <span style={{ fontSize:10,color:"#64748b" }}>· {session.focus}</span>}
                         {sDone && <span style={{ marginLeft:"auto",fontSize:10,color:"#22c55e",fontWeight:700 }}>✓ Done</span>}
                       </div>
                       <div style={{ display:"flex",flexDirection:"column",gap:6 }}>
                         {(() => {
-                          const ids = showMarks
-                            ? programSessionExerciseIds(prog, programProgress, week.week, si)
-                            : session.exercises;
-                          /* Finished under a program's previous version: show what they actually did. */
-                          const legacy = ids !== session.exercises;
                           const withDose = id => {
                             const dose = legacy ? null : programDose(prog, week.week, si, id);
                             return { ...allExercises[id], ...(dose ? { sets: dose } : {}) };
