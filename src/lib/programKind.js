@@ -3,6 +3,7 @@ export const PROGRAM_KIND = {
   "jump-higher": "strength",
   "jump-higher-2": "strength",
   "bodyweight-beast": "strength",
+  "in-season-hooper": "strength",
   "bodyweight-beast-2": "strength",
   "jump-rope-basics": "strength",
   "jump-rope-speed": "strength",
