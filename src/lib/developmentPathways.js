@@ -159,13 +159,13 @@ export const DEVELOPMENT_PATHWAYS = [
       },
       {
         tier: 2,
-        programIds: ["jump-higher", "first-step-explosion"],
+        programIds: ["jump-higher", "first-step-explosion", "in-season-hooper"],
         skillTargets: ["speed_gather"],
         areaWeights: { athleticism: 0.8, finishing: 0.1, defense: 0.1 },
       },
       {
         tier: 3,
-        programIds: ["first-step-explosion", "complete-hooper"],
+        programIds: ["first-step-explosion", "complete-hooper", "in-season-hooper"],
         skillTargets: ["pro_hop", "euro"],
         areaWeights: { athleticism: 0.6, finishing: 0.2, handles: 0.1, defense: 0.1 },
       },

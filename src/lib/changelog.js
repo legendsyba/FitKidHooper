@@ -3,16 +3,15 @@
  */
 import { athleteHasPriorUsage } from "./athleteExperience.js";
 
-export const RELEASE_ID = "2026.08.1";
+export const RELEASE_ID = "2026.11.1";
 
 export const WHATS_NEW = {
   id: RELEASE_ID,
-  headline: "August update — train with real coaches",
+  headline: "November update — train through the season",
   items: [
-    { emoji: "🔥", text: "Cramer 29 Day Challenge — 29 days in a row with Coach Cramer, one short video every day. No rest days, that's the challenge (Programs)" },
-    { emoji: "🌊", text: "Smooth Handles — four weeks with 2nd To None. Pocket dribble, glide-and-drop, then finishes and pull-ups at game pace" },
-    { emoji: "🏀", text: "Every drill in both programs is filmed with the actual coach — no stock clips" },
-    { emoji: "🤲", text: "29 new ball handling drills added to the drill library, so you can train them on their own too" },
+    { emoji: "🏀", text: "In-Season Hooper — 8 weeks, 4 short sessions a week: 2 strength, 2 speed & jumps, built to fit around practice and games (Programs)" },
+    { emoji: "📈", text: "Same moves every week, the dose steps up — 2×8 to 4×8, more sprints, a few more jumps" },
+    { emoji: "🧊", text: "Rest days built in, with the Recovery Day workout between sessions" },
   ],
 };
 

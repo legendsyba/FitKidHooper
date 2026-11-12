@@ -42,6 +42,7 @@ export const BADGES_DEF = [
   { id:"pgm-become-shooter", cat:"program", name:"Pure Shooter",      emoji:"🎯", desc:"Complete Become a Shooter",                  color:"#8b5cf6" },
   { id:"pgm-first-step",     cat:"program", name:"First Step Elite",  emoji:"⚡", desc:"Complete First Step Explosion",              color:"#f43f5e" },
   { id:"pgm-complete-hooper",cat:"program", name:"Complete Hooper",   emoji:"🏆", desc:"Complete the Complete Hooper program",       color:"#f59e0b" },
+  { id:"pgm-in-season",      cat:"program", name:"In-Season Hooper", emoji:"🏀", desc:"Finish the 8-week In-Season Hooper program", color:"#f97316" },
   { id:"pgm-bodyweight",     cat:"program", name:"Bodyweight Beast",  emoji:"💪", desc:"Complete the Bodyweight Beast program",      color:"#22c55e" },
   { id:"pgm-bodyweight-2",   cat:"program", name:"Beast Mode",        emoji:"🦍", desc:"Complete Bodyweight Beast II",              color:"#16a34a" },
   { id:"pgm-jump-rope",      cat:"program", name:"Rope Rhythm",       emoji:"🪢", desc:"Complete Jump Rope Basics",                  color:"#ec4899" },
