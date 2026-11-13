@@ -292,7 +292,7 @@ const W_EXPLOSION = [
   { id:"squat-jumps", name:"Squat Jumps", tag:"Power", sets:"3x8", rest:"90 s",
     desc:"Squat to parallel, explode up as high as possible, land soft. Classic vertical power builder.",
     cues:["Full squat before each jump","Maximum effort every rep — jump as HIGH as possible","Land quiet — absorb through the legs","Reset fully before next rep"],
-    trainer:"Howcast", videoId:"U4s4mEQ5VqU", videoStart:15, videoEnd:134, videoChannel:"Howcast", videoTitle:"How to Do a Squat Jump | Boot Camp Workout" },
+    trainer:"Howcast", videoId:"U4s4mEQ5VqU", videoChannel:"Howcast", videoTitle:"How to Do a Squat Jump | Boot Camp Workout" },
   { id:"tuck-jumps", name:"Tuck Jumps", tag:"Power", sets:"3x6", rest:"90 s",
     desc:"Jump and pull knees to chest at the top. Builds explosive power and body control in the air.",
     cues:["Explode UP first — height before tuck","Pull knees fast at peak","Land and immediately soften","Arms drive the jump — not just legs"],
@@ -308,7 +308,7 @@ const W_EXPLOSION = [
   { id:"lateral-line-hops", name:"Lateral Line Hops", tag:"Elasticity", sets:"3x20 s", rest:"45 s",
     desc:"Rapid two-foot hops side to side over a line on the floor. Trains foot speed, lateral quickness, and ankle elasticity.",
     cues:["Stay on balls of feet — fast contacts","Keep feet together","Hips stay level — no side lean","Go as fast as you can maintain rhythm"],
-    trainer:"HASfit", videoId:"dZKEw4zDL_c", videoStart:16, videoEnd:75, videoChannel:"HASfit", videoTitle:"Lateral Jumps - HASfit Agility Exercises - Performance Training - Quickness Speed Workouts" },
+    trainer:"HASfit", videoId:"dZKEw4zDL_c", videoChannel:"HASfit", videoTitle:"Lateral Jumps - HASfit Agility Exercises - Performance Training - Quickness Speed Workouts" },
   { id:"pogo-tutorial",     name:"Pogo Jump Tutorial",             tag:"Technique",  sets:"2x20 reps", rest:"60 s",
     desc:"Step-by-step pogo jump form breakdown. Master the technique before adding speed or volume.",
     cues:["Minimal knee bend — ankles do the work","Arms stay at sides, small pumps","Think bounce, not jump","Heels barely touch the ground"],
@@ -384,7 +384,7 @@ const W_HANDLES = [
     sets:"10 min dedicated left hand", rest:"N/A",
     desc:"Dominant hand OFF. The single most impactful thing a 10-year-old can do to become a skilled ball handler.",
     cues:["Start with simple stationary pound dribbles — master before moving","No using the strong hand as a crutch","Dribble while watching TV or walking around","Patience — it will feel terrible before it feels okay"],
-    trainer:"Get Handles Basketball", videoId:"O4x_AQVZ_nI", videoStart:1, videoEnd:120, videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Weak Hand Workout: Dribbling & Layups" },
+    trainer:"Get Handles Basketball", videoId:"O4x_AQVZ_nI", videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Weak Hand Workout: Dribbling & Layups" },
   { id:"two-ball",       name:"Two Ball Dribbling",            tag:"Coordination",
     sets:"3x45s each drill", rest:"20 s",
     desc:"Both hands simultaneously — simultaneous pound, alternating, staggered. Fastest way to develop ambidexterity.",
@@ -399,7 +399,7 @@ const W_HANDLES = [
     sets:"3x45s", rest:"20 s",
     desc:"Tyler Relph advanced two-ball combo: simultaneous dribble while performing specific hand movement patterns. Trains hand independence.",
     cues:["Each hand has its own rhythm — do not sync them","Keep both balls at the same height","If you lose one, reset — do not try to save a bad rep"],
-    trainer:"Tyler Relph · Hoop Dynamic", videoId:"fR6O8m48sg0", videoStart:5, videoEnd:120, videoChannel:"Tyler Relph's Hoop Dynamic", trusted:true, videoTitle:"Advanced Two Ball Drill — Tyler Relph" },
+    trainer:"Tyler Relph · Hoop Dynamic", videoId:"fR6O8m48sg0", videoChannel:"Tyler Relph's Hoop Dynamic", trusted:true, videoTitle:"Advanced Two Ball Drill — Tyler Relph" },
 ];
 
 const W_CONDITIONING = [
@@ -746,7 +746,7 @@ const W_BALL_HANDLING = [
     progressionTrack:"Step 3 — Advanced Stationary Moves",
     desc:"Dribble the ball through the legs while stationary or on the move. Protects the ball from a reaching defender and sets up combo moves.",
     cues:["Wide stance — ball needs space to fit through","Lead with the receiving hand reaching across","Don't rush — clean slow reps beat sloppy fast","Build to walking, then running"],
-    trainer:"HandleLife", videoId:"Y7PjqLcIhXw", videoStart:13, videoEnd:91, videoChannel:"HandleLife", videoTitle:"Basics 101: Between Your Legs Dribble" },
+    trainer:"HandleLife", videoId:"Y7PjqLcIhXw", videoChannel:"HandleLife", videoTitle:"Basics 101: Between Your Legs Dribble" },
 
   { id:"bh-in-out",       name:"In & Out Dribble",        tag:"Basic Moves",     difficulty:"beginner",     ageRange:[9,14],  funScore:7,  estimatedDuration:90,
     sets:"3x20 reps each hand", rest:"20 s",
@@ -754,7 +754,7 @@ const W_BALL_HANDLING = [
     progressionTrack:"Step 2 — Basic Move Package",
     desc:"Attack toward the defender, dip the ball inside as if crossing, then pull it back out in the original direction. The sell makes this move — not the hands.",
     cues:["Sell with your eyes AND shoulder — look where you are faking","Dip the ball inside sharply — half-measure fakes do not work","Snap back out of it: change of pace — slow to FAST","Stay low throughout"],
-    trainer:"Cramer Basketball", videoId:"LMy9MUEd0Q0", videoStart:5, videoEnd:146, videoChannel:"Cramer Basketball", trusted:true, videoTitle:"V Dribble Series — Cramer Basketball" },
+    trainer:"Cramer Basketball", videoId:"LMy9MUEd0Q0", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"V Dribble Series — Cramer Basketball" },
 
   { id:"bh-retreat",      name:"Retreat Dribble",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 reps each direction", rest:"30 s",
@@ -1228,7 +1228,7 @@ const W_GAME_HANDLES = [
     progressionTrack:"Step 2 — Attacking Moves",
     desc:"Drive hard, then slow to near-stop to freeze the defender, then explode out of the pause. Defenders can't react to bursts they didn't see coming — changing pace is the most deceptive weapon a ball-handler has.",
     cues:["Drive hard first — the slowdown is only valuable after you've shown speed","Stay LOW during the hesitation — don't rise up","Explode out of the pause — don't just jog","Eyes on the rim to sell the threat"],
-    trainer:"Howcast", videoId:"0Wwv5nDpL6k", videoStart:3, videoEnd:150, videoChannel:"Howcast", videoTitle:"How to Do a Change-of-Pace Dribble | Basketball Moves" },
+    trainer:"Howcast", videoId:"0Wwv5nDpL6k", videoChannel:"Howcast", videoTitle:"How to Do a Change-of-Pace Dribble | Basketball Moves" },
 
   { id:"gh-cross-btl",     name:"Crossover + Between-the-Legs",tag:"Foundation",  difficulty:"beginner",     ageRange:[9,14],  funScore:8,  estimatedDuration:90,
     sets:"3×45 s", rest:"20 s",
@@ -1635,7 +1635,8 @@ const W_REBOUNDING = [
   { id:"reb-power", name:"Power Rebound Finish", tag:"Finishing", setup:"solo",
     sets:"3x8", rest:"30 s",
     desc:"Rebound a miss off the glass and go straight back up strong with two feet. Putbacks win games.",
-    cues:["Two feet, two hands","Chin it — don't bring it down","Go up strong and tall","Finish high off the glass"] },
+    cues:["Two feet, two hands","Chin it — don't bring it down","Go up strong and tall","Finish high off the glass"],
+    trainer:"Kevin Melson", videoId:"YzhHbFUVBO0", videoStart:28, videoEnd:72, videoChannel:"Kevin Melson", videoTitle:"Offensive Rebound Putback Drill" },
 ];
 
 /* ── Partner & Games (needs a teammate/defender — opt-in, not in solo missions) ── */
