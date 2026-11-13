@@ -12,6 +12,8 @@ import { BENEFIT_MAP, ALL_EXERCISES } from "../data/trainingCatalog.js";
 import { getChainForExercise, getChainStatus } from "../lib/progressionChains.js";
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
+import { clipFor, isClipToolEnabled } from "../lib/videoClips.js";
+import ClipEditor from "./ClipEditor.jsx";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
 import { announcePracticeDone } from "../lib/athleteExperience.js";
@@ -474,6 +476,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
 
   /* Video player ─────────────────────────────────────────── */
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [clipMode, setClipMode] = useState(false);
+  const clipToolEnabled = useMemo(() => isClipToolEnabled(), []);
+  const canClip = clipToolEnabled && !!exercise.videoId && exercise.videoSource !== "fkh";
   /* Adjust during render: via an effect the previous drill's player stays
      mounted for a frame after moving to the next exercise. */
   const [playingFor, setPlayingFor] = useState(exercise?.id);
@@ -604,7 +609,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
         <div style={{ flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch" }}>
 
           {/* Video — inline player or thumbnail tap-to-play (only when a video exists) */}
-          {(exercise.videoId || exercise.videoSource === "fkh") && (videoPlaying ? (
+          {(exercise.videoId || exercise.videoSource === "fkh") && (clipMode ? (
+            <ClipEditor exercise={exercise} color={color} onClose={() => setClipMode(false)} />
+          ) : videoPlaying ? (
             /* ── Active Player ── */
             <div style={{ position:"relative",background:"#000",aspectRatio:"16/9",overflow:"hidden" }}>
               {exercise.videoSource === "fkh" ? (
@@ -617,7 +624,7 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               ) : (
                 /* YouTube iframe embed */
                 <iframe
-                  src={youtubeEmbedUrl(exercise.videoId, { start: exercise.videoStart, end: exercise.videoEnd })}
+                  src={youtubeEmbedUrl(exercise.videoId, clipFor(exercise) || {})}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   title={exercise.videoTitle || exercise.name}
@@ -632,6 +639,16 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                   fontSize:11,cursor:"pointer",fontWeight:700,lineHeight:1.4,zIndex:10 }}>
                 ✕ Close
               </button>
+              {canClip && (
+                <button
+                  onClick={() => { setVideoPlaying(false); setClipMode(true); }}
+                  aria-label="Clip this video"
+                  style={{ position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.65)",
+                    border:"none",color:"#fff",borderRadius:6,padding:"5px 11px",
+                    fontSize:11,cursor:"pointer",fontWeight:700,lineHeight:1.4,zIndex:10 }}>
+                  ✂ Clip
+                </button>
+              )}
             </div>
           ) : exercise.videoSource === "fkh" ? (
             /* ── FKH Thumbnail (tap to play inline) ── */
