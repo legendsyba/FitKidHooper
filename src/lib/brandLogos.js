@@ -21,6 +21,7 @@
  */
 import cramerMark from "../assets/brands/cramer-basketball-mark.png";
 import secondToNone from "../assets/brands/2nd-to-none.png";
+import hoopStudy from "../assets/brands/hoopstudy.png";
 
 const BRAND_LOGOS = {
   "cramer-basketball": {
@@ -35,6 +36,14 @@ const BRAND_LOGOS = {
     style: "boxed",
     /* Self-contained badge artwork — one square asset serves every size. */
     mark: secondToNone,
+  },
+  "hoopstudy": {
+    name: "HoopStudy",
+    style: "boxed",
+    /* Official "#HOOPSTUDY" channel wordmark on white — renders in a rounded tile.
+       Source for the In-Season Hooper program (adapted from HoopStudy's 8-week
+       in-season plan by Adam Menner). */
+    mark: hoopStudy,
   },
 };
 

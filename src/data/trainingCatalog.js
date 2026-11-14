@@ -2710,6 +2710,8 @@ const PROGRAMS = [
  "emoji": "🏀",
  "color": "#f97316",
  "badgeId": "pgm-in-season",
+ "trainer": "HoopStudy",
+ "brandLogo": "hoopstudy",
  "duration": 8,
  "daysPerWeek": 4,
  "ageRange": [
