@@ -4243,6 +4243,7 @@ export default function FitKidHooperApp() {
       >
         <TodayView
         settings={settings}
+        onSkillCheck={() => setShowSkillCheck(true)}
         P={P}
         S={S}
         ST={ST}

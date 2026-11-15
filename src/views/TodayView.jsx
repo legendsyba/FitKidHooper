@@ -48,6 +48,7 @@ function loadHomeOpen() {
 
 export default function TodayView({
   settings,
+  onSkillCheck,
   P,
   S,
   ST,
@@ -752,6 +753,26 @@ export default function TodayView({
           </button>
         );
       })()}
+
+      {/* Until a kid is classified, nudge the skill check so their plan matches their LEVEL, not
+          their age. Hides once any per-skill level is set (self-check or a coach). */}
+      {onSkillCheck && (!settings.skillLevels || Object.keys(settings.skillLevels).length === 0) && (
+        <button type="button" onClick={onSkillCheck}
+          style={{ display:"block", width:"calc(100% - 40px)", margin:"0 20px 14px", textAlign:"left",
+            padding:"13px 15px", borderRadius:14, cursor:"pointer", border:`1.5px solid ${P}`, background:`${P}14` }}>
+          <div style={{ fontFamily:"'DM Mono',monospace", fontSize:9.5, letterSpacing:"0.16em",
+            textTransform:"uppercase", fontWeight:800, color:P, marginBottom:5 }}>
+            Skill check
+          </div>
+          <div style={{ fontSize:13, fontWeight:700, color:"var(--fkh-text)", lineHeight:1.3 }}>
+            🏀 Take a 2-minute skill check
+          </div>
+          <div style={{ fontSize:11, color:"#64748b", marginTop:4, lineHeight:1.45 }}>
+            Answer a few quick questions and your plan meets you at your level — not your age.
+          </div>
+          <div style={{ fontSize:11.5, fontWeight:800, color:P, marginTop:8 }}>Start →</div>
+        </button>
+      )}
 
       {/* New on Today. Shot logging is the daily habit with the lowest
           friction, so it gets a home on the home screen instead of living
