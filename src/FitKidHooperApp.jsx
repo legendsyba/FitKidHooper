@@ -25,6 +25,7 @@ import { LEVELS, getLevel } from "./lib/levels.js";
 import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
 import { applyDrillSwaps, recordDrillSwap, evolveFromSwaps } from "./lib/drillSwap.js";
 import { recommendProgram } from "./lib/programRecommend.js";
+import { CATEGORY_TO_AREA } from "./lib/skillGraph.js";
 import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
@@ -824,8 +825,13 @@ function generateDailyMission(todayStr, settings, completed, enrolledPrograms, p
   if (tasks.length===0) {
     const bbCats = ["ballhandling","footwork","finishing","game_handles","shooting_lab","footwork_lab","shootingdrills","passing","rebounding"];
     const daySeed = new Date(todayStr+"T12:00:00").getDay();
-    const underworked = bbCats.find(c=>!recentCats.has(c));
-    const fallbackCat = underworked || bbCats[daySeed % bbCats.length];
+    // Lead an un-enrolled kid's daily mission with their WEAKEST skill (among categories not worked
+    // in the last few days), so the daily hook trains their biggest gap — same idea as the program
+    // recommender — instead of a blind recency/day rotation. Falls back to the old rotation.
+    const weakestCat = (cats) => cats.slice().sort((a, b) =>
+      (levels[CATEGORY_TO_AREA[a]] ?? 9) - (levels[CATEGORY_TO_AREA[b]] ?? 9))[0];
+    const fresh = bbCats.filter(c => !recentCats.has(c));
+    const fallbackCat = weakestCat(fresh.length ? fresh : bbCats) || bbCats[daySeed % bbCats.length];
     const catExs = atLevel(fallbackCat, 3);
     const catInfo = CATS[fallbackCat]||{label:fallbackCat,emoji:"🏀"};
     title = `${catInfo.emoji} ${catInfo.label} Day`;
