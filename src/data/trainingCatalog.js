@@ -3616,36 +3616,72 @@ const PROGRAMS = [
 
   /* Finishing was the one core skill with no program of its own, so a kid the recommender scored
      weakest at finishing (the founder's "12-year-old who can't make layups") had nowhere to send
-     them. Built entirely from finishing drills already vetted in the catalog — layup foundation →
-     both hands & angles → finishing footwork → craft & contact through a defender. No new videos. */
+     them. Built from finishing drills already vetted in the catalog — layup foundation → both hands
+     & angles → finishing footwork → craft & contact. No new videos. The hardest advanced moves
+     (wrong-foot, swing-step) live in the II so a raw beginner isn't walled off in week 4. */
   {
     id:"finish-at-rim", name:"Finish at the Rim", emoji:"🪣", color:"#10b981",
     badgeId:"pgm-finish-rim", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
-    desc:"Stop losing layups at the rim. Build both hands, the footwork to gather on the move, and the craft to finish through a defender.",
+    desc:"Stop losing layups at the rim. Build both hands, the footwork to gather on the move, and the craft to finish through contact.",
     weeks:[
       { week:1, goal:"Layup foundation — soft touch off both hands, balanced and under control.",
         sessions:[
-          { day:"Session 1", focus:"Both-Hand Layups",   exercises:["fin-mikan","tn-side-hand-layup","fin-power-layup"] },
-          { day:"Session 2", focus:"Power & Balance",     exercises:["fs-power-finish","fin-power-layup","fin-mikan"] },
-          { day:"Session 3", focus:"Touch Around the Rim", exercises:["fin-mikan","tn-side-hand-layup","fs-power-finish"] },
+          { day:"Session 1", focus:"Both-Hand Layups",     exercises:["fin-mikan","tn-side-hand-layup","fin-power-layup"] },
+          { day:"Session 2", focus:"Power & Balance",      exercises:["fs-power-finish","fin-power-layup","fin-mikan"] },
+          { day:"Session 3", focus:"Soft Touch & Reverse", exercises:["tn-side-hand-layup","fs-power-finish","fin-rev-mikan"] },
         ]},
       { week:2, goal:"Both hands and angles — reverses, scoops, and off-hand finishes from either side.",
         sessions:[
-          { day:"Session 1", focus:"Reverse & Scoop",     exercises:["fin-rev-mikan","fin-reverse","relph-scoop"] },
-          { day:"Session 2", focus:"Off-Hand Finishes",   exercises:["tn-glide-ballside-finish","fin-reverse","relph-scoop"] },
-          { day:"Session 3", focus:"Angle Control",        exercises:["tn-glide-low-inside","fin-rev-mikan","sackmann-finish"] },
+          { day:"Session 1", focus:"Reverse & Scoop",     exercises:["fin-reverse","relph-scoop","fin-rev-mikan"] },
+          { day:"Session 2", focus:"Off-Hand Finishes",   exercises:["tn-glide-ballside-finish","fin-reverse","sackmann-finish"] },
+          { day:"Session 3", focus:"Angle Control",        exercises:["tn-glide-low-inside","relph-scoop","fs-speed-gather"] },
         ]},
-      { week:3, goal:"Finishing footwork — gather on the move with euros, hop steps, and speed gathers.",
+      { week:3, goal:"Finishing footwork — gather on the move with euros, hop steps, and the pro hop.",
         sessions:[
           { day:"Session 1", focus:"Gather Steps",        exercises:["fin-euro","fs-speed-gather","sackmann-finish"] },
-          { day:"Session 2", focus:"Hop & Pro Hop",       exercises:["fs-hop-step","fin-pro-hop","fs-speed-gather"] },
+          { day:"Session 2", focus:"Hop & Pro Hop",       exercises:["fs-hop-step","fin-pro-hop","tn-glide-low-inside"] },
           { day:"Session 3", focus:"Decide on the Move",  exercises:["fin-euro","fs-hop-step","tn-glide-ballside-finish"] },
         ]},
-      { week:4, goal:"Craft & contact — floaters, wrong-foot finishes, and scoring through a defender.",
+      { week:4, goal:"Craft & contact — floaters and scoring through a defender at game speed.",
         sessions:[
-          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-power-layup","fs-low-pickup"] },
-          { day:"Session 2", focus:"Floaters & Craft",    exercises:["fin-floater","fin-wrong-foot","relph-scoop"] },
-          { day:"Session 3", focus:"Game Finishes",       exercises:["fin-floater","fs-contact-finish","tn-glide-swing-outside"] },
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-power-layup","tn-glide-low-inside"] },
+          { day:"Session 2", focus:"Floaters & Craft",    exercises:["fin-floater","relph-scoop","fin-euro"] },
+          { day:"Session 3", focus:"Game Finishes",       exercises:["fin-floater","fs-contact-finish","tn-glide-ballside-finish"] },
+        ]},
+    ],
+  },
+
+  /* Level 2 of Finish at the Rim: the advanced guard-finishing toolkit — pro hop, low pickup (SGA
+     gather), wrong-foot, swing-step both hands, floaters and finishing through contact at game
+     speed. An advanced finisher (self-check tier 3) routes here instead of the foundational I. */
+  {
+    id:"finish-at-rim-2", name:"Finish at the Rim II", emoji:"🔥", color:"#059669",
+    badgeId:"pgm-finish-rim-2", advancedOf:"finish-at-rim", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
+    desc:"Finish like a guard who gets to the rim at will: pro hops, the low SGA gather, wrong-foot layups, swing-step finishes off both hands, floaters, and scoring through contact at game speed.",
+    weeks:[
+      { week:1, goal:"Advanced gathers — pro hop, the low pickup, and ball-side footwork on the move.",
+        sessions:[
+          { day:"Session 1", focus:"Euro & Hop Craft",    exercises:["fin-euro","fs-hop-step","fin-pro-hop"] },
+          { day:"Session 2", focus:"Low Gather",          exercises:["fs-low-pickup","fin-pro-hop","tn-glide-ballside-finish"] },
+          { day:"Session 3", focus:"Swing Finishes",      exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fs-low-pickup"] },
+        ]},
+      { week:2, goal:"Off-foot and deception — wrong-foot layups, floaters, and swing-step both hands.",
+        sessions:[
+          { day:"Session 1", focus:"Wrong Foot",          exercises:["fin-wrong-foot","fs-hop-step","tn-glide-swing-inside"] },
+          { day:"Session 2", focus:"Floaters",            exercises:["fin-floater","fin-wrong-foot","fs-low-pickup"] },
+          { day:"Session 3", focus:"Swing & Finish",      exercises:["tn-glide-swing-outside","tn-glide-swing-inside","fin-pro-hop"] },
+        ]},
+      { week:3, goal:"Contact and craft — finish through a body and combine moves into finishes.",
+        sessions:[
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-wrong-foot","fin-floater"] },
+          { day:"Session 2", focus:"Craft Combos",        exercises:["fin-floater","fs-contact-finish","tn-glide-swing-outside"] },
+          { day:"Session 3", focus:"Game Speed",          exercises:["fs-low-pickup","fin-pro-hop","fs-contact-finish"] },
+        ]},
+      { week:4, goal:"Elite game finishes — put the whole package together at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"Finish Package",      exercises:["fin-wrong-foot","fin-floater","fs-contact-finish"] },
+          { day:"Session 2", focus:"Both-Hand Swings",    exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fs-low-pickup"] },
+          { day:"Session 3", focus:"Compete",             exercises:["fin-floater","fs-contact-finish","fin-pro-hop"] },
         ]},
     ],
   },
@@ -4230,6 +4266,7 @@ const PROGRAM_WEEK_TIERS = {
   "become-shooter":       [1, 2, 2, 3],
   "become-shooter-2":     [2, 2, 3, 3],
   "finish-at-rim":        [1, 2, 2, 3],
+  "finish-at-rim-2":      [2, 3, 3, 3],
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],
