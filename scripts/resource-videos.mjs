@@ -35,11 +35,19 @@ const QUERY = {
   "bh-attack-cross":"attacking crossover dribble move drill", "fw-shot-fake":"shot fake footwork move basketball",
   "fin-euro":"euro step layup tutorial", "fin-wrong-foot":"wrong foot layup tutorial",
   "pm-spin":"post spin move tutorial basketball", "gh-dribble-drive":"dribble drive attack move drill",
+  "bh-combo":"basketball dribbling combo moves drill", "fw-rip-through":"rip through move basketball tutorial",
+  "sh-knee-roll":"form shooting roll ups drill", "fs-power-finish":"two foot power layup finish drill",
+  "slab-corner-3":"corner three point shooting form", "fast-feet":"fast feet footwork quickness drill basketball",
 };
 const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(QUERY);
 
 const PROMO = ["subscribe","link in","my program","day challenge"];
-const HIGHLIGHT = ["highlights","mixtape","mix ","career","1 hour","full game","best plays"];
+const HIGHLIGHT = ["highlights","mixtape","mix ","career","1 hour","full game","best plays",
+  "knocking down","during his","drops ","buzzer","game winner","vs.","scrimmage"];
+// Pure highlight / game-footage channels — their clips are not teaching demos. Exact names for the
+// short ones (so "Jr. NBA" is NOT caught), substring for the distinctive multi-word ones.
+const HILITE_EXACT = ["nba","wnba","espn","fiba","the nba"];
+const HILITE_SUB = ["house of highlights","bleacher report","overtime","ballislife","golden state warriors"];
 const GAMING = ["nba 2k","2k26","2k25","2k24","2k23","gameplay","video game","nba2k","2k mobile","mycareer"];
 const AVOID = ["kakabasketball","no excuse","billy clapper","hoop dreams","clutch & culture","good drill"];
 const PREFERRED = ["cramer","championship productions","hoopstudy","shotmechanics","shot mechanics",
@@ -76,6 +84,7 @@ for (const id of TARGETS) {
     const ch=(m.channel||"").toLowerCase();
     if (has(t,HIGHLIGHT) || has(t,GAMING)) return null;   // not a demo / a video game
     if (has(ch,AVOID)) return null;                        // avoid-list channel
+    if (HILITE_EXACT.includes(ch) || has(ch,HILITE_SUB)) return null; // highlight / game-footage channel
     const mv = moveT.filter(w=>t.includes(w)).length / Math.max(1,moveT.length);
     if (mv < 0.34) return null;
     const sub=subs[m.ch]||0;

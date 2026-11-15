@@ -426,7 +426,7 @@ const W_CONDITIONING = [
   { id:"fast-feet",        name:"Fast Feet Drill",                 tag:"Quickness",      sets:"3x15 s", rest:"30 s",
     desc:"Rapid short steps in place, then react to a signal. Directly trains the foot speed and reaction time needed for defense.",
     cues:["Barely lift feet off the ground — fast touches","Stay low in athletic stance","Weight on balls of feet","React to the signal — do not anticipate"],
-    videoId:"RvYB5qI8Urk", videoChannel:"Basketball Coach Allen", videoTitle:"Fast Feet — Top 5 Foot Speed Drills" },
+    videoId:"F3rxy-oIP_o", videoChannel:"Marcus Rios", videoTitle:"Fast Feet Footwork Drills — Increase Your Foot Speed" },
   { id:"crab-walks",       name:"Crab Walks",                      tag:"Full Body",      sets:"3x20 yards", rest:"30 s",
     desc:"On hands and feet facing up, walk forward and backward. Builds posterior shoulder strength, hip extension, and full-body coordination.",
     cues:["Hips up — not sagging toward the floor","Walk opposite hand and foot together","Eyes up — not at the ground","Keep hips level throughout"],
@@ -828,7 +828,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 3 — Off-The-Dribble Moves",
     desc:"Swing the ball in a low arc from one side of the body to the other to rip through an outstretched defender arm — initiates contact and creates driving lanes.",
     cues:["Ball path goes LOW — through the defender's arms, not over them","Rip with both hands — do not let go with the guide hand until through","Lead with the elbow to clear the path","Immediately attack off the rip — do not reset"],
-    trainer:"Teach Hoops", videoId:"7dxMH7aP6_Y", videoChannel:"Teach Hoops", videoTitle:"Rip Through & Drive — Great Basketball Moves" },
+    trainer:"Keith Poitier", videoId:"L-vOyhoxBmg", videoChannel:"Keith Poitier Performance", videoTitle:"How To Rip Through The Right Way" },
 
   { id:"fw-sweep-go",     name:"Sweep & Go",              tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 each direction", rest:"30 s",
@@ -1095,7 +1095,7 @@ const W_FINISHING_SCHOOL = [
     progressionTrack:"Step 1 — Close-Range Foundation",
     desc:"Jump-stop gather on both feet before going up — adds balance, strength, and the ability to draw contact at the rim. The most reliable finish under pressure for youth players.",
     cues:["Jump stop with both feet simultaneously","Use two-foot power to absorb contact","Keep eyes on the target through the finish","Land in the same spot you took off from"],
-    trainer:"Coach Ashworth", videoId:"YzSXr6uNNVQ", videoChannel:"Coach Ashworth", videoTitle:"Basketball Drill for Better Layups - Play Off Two Feet" },
+    trainer:"ATTACKBball", videoId:"4B_mVfbX1Bo", videoChannel:"ATTACKBball", videoTitle:"2-Foot Power Layups: Finish Through Contact" },
 
   { id:"fs-hop-step",      name:"Hop Step (Pro Hop)",          tag:"Intermediate",difficulty:"intermediate", ageRange:[10,14], funScore:9,  estimatedDuration:120,
     sets:"3×8 each side", rest:"45 s",
