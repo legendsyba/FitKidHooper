@@ -812,7 +812,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 1 — Movement Foundation",
     desc:"Ball cocked at the hip, knees bent, weight on balls of feet — simultaneously threatening to shoot, pass, or drive. Every catch should land here automatically.",
     cues:["Ball at the hip — not the chest, not the shoulder","Knees bent, hips back — ready to explode","Eyes read the defense: gap? shoot. sagging? drive.","Chin stays level — do not look at the ball"],
-    trainer:"Cramer Basketball", videoId:"dg9y9-PuQNE", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"Triple Threat Combo Shot Fake Jab Step — Cramer Basketball" },
+    trainer:"Jr. NBA", videoId:"7WU_lb8t3Gk", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"1-2-3 Triple Threat" },
 
   { id:"fw-jab-series",   name:"Jab Step Series",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3x5 each variation each foot", rest:"30 s",

@@ -38,6 +38,8 @@ const QUERY = {
   "bh-combo":"basketball dribbling combo moves drill", "fw-rip-through":"rip through move basketball tutorial",
   "sh-knee-roll":"form shooting roll ups drill", "fs-power-finish":"two foot power layup finish drill",
   "slab-corner-3":"corner three point shooting form", "fast-feet":"fast feet footwork quickness drill basketball",
+  "fw-triple-threat":"triple threat stance basketball fundamentals youth", "flab-triple-threat":"triple threat position footwork youth drill",
+  "gh-change-pace":"change of pace dribble move youth drill", "bh-in-out":"in and out dribble move tutorial youth",
 };
 const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(QUERY);
 
