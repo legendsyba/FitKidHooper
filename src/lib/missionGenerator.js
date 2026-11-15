@@ -1,4 +1,5 @@
 import { calcAge } from "./periodStats.js";
+import { getSkillLevels, drillAllowed } from "./skillLevels.js";
 
 export const BUILD_FOCUS_OPTIONS = [
   { id: "mission", label: "Today's Mission", emoji: "🎯", desc: "Drills from your daily mission goals" },
@@ -153,12 +154,15 @@ export function generateCustomMissionWorkout({
   mission = null,
   allExercises = {},
   recentIds = [],
+  skillLevels = null,
+  completed = {},
 }) {
   const focusOpt = BUILD_FOCUS_OPTIONS.find(f => f.id === focusId) || BUILD_FOCUS_OPTIONS[0];
   const intensity = INTENSITY[intensityId] || INTENSITY.medium;
   const age = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth) || 9)); // unknown age → youngest, most careful
   const rule = AGE_RULES[age] || AGE_RULES[11];
   const pRank = DIFF_RANK[settings.experience || "beginner"] ?? 0;
+  const levels = skillLevels || getSkillLevels(settings, completed);
   const goals = settings.goals || [];
 
   let cats = focusOpt.cats || [];
@@ -181,11 +185,9 @@ export function generateCustomMissionWorkout({
 
   const boostCats = new Set(cats);
   const scored = pool
-    .filter(ex => {
-      const m = ex.meta;
-      if (m.ageRange && age < m.ageRange[0]) return false;
-      return (DIFF_RANK[m.difficulty] ?? 0) <= pRank + intensity.difficultyBonus + 1;
-    })
+    // Selection is by the kid's PER-SKILL level (skillLevels.js), not their age. Age only keeps a
+    // soft floor on genuinely physical older-kid drills (drillAllowed, option b).
+    .filter(ex => drillAllowed(ex, levels, age, { stretch: intensity.difficultyBonus + 1 }))
     .map(ex => ({
       ...ex,
       _score: scoreExercise(ex, { age, pRank, goals, recentIds, boostCats }),

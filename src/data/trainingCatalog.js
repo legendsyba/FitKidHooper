@@ -292,7 +292,7 @@ const W_EXPLOSION = [
   { id:"squat-jumps", name:"Squat Jumps", tag:"Power", sets:"3x8", rest:"90 s",
     desc:"Squat to parallel, explode up as high as possible, land soft. Classic vertical power builder.",
     cues:["Full squat before each jump","Maximum effort every rep — jump as HIGH as possible","Land quiet — absorb through the legs","Reset fully before next rep"],
-    trainer:"Howcast", videoId:"U4s4mEQ5VqU", videoStart:15, videoEnd:134, videoChannel:"Howcast", videoTitle:"How to Do a Squat Jump | Boot Camp Workout" },
+    trainer:"Howcast", videoId:"U4s4mEQ5VqU", videoChannel:"Howcast", videoTitle:"How to Do a Squat Jump | Boot Camp Workout" },
   { id:"tuck-jumps", name:"Tuck Jumps", tag:"Power", sets:"3x6", rest:"90 s",
     desc:"Jump and pull knees to chest at the top. Builds explosive power and body control in the air.",
     cues:["Explode UP first — height before tuck","Pull knees fast at peak","Land and immediately soften","Arms drive the jump — not just legs"],
@@ -308,7 +308,7 @@ const W_EXPLOSION = [
   { id:"lateral-line-hops", name:"Lateral Line Hops", tag:"Elasticity", sets:"3x20 s", rest:"45 s",
     desc:"Rapid two-foot hops side to side over a line on the floor. Trains foot speed, lateral quickness, and ankle elasticity.",
     cues:["Stay on balls of feet — fast contacts","Keep feet together","Hips stay level — no side lean","Go as fast as you can maintain rhythm"],
-    trainer:"HASfit", videoId:"dZKEw4zDL_c", videoStart:16, videoEnd:75, videoChannel:"HASfit", videoTitle:"Lateral Jumps - HASfit Agility Exercises - Performance Training - Quickness Speed Workouts" },
+    trainer:"HASfit", videoId:"dZKEw4zDL_c", videoChannel:"HASfit", videoTitle:"Lateral Jumps - HASfit Agility Exercises - Performance Training - Quickness Speed Workouts" },
   { id:"pogo-tutorial",     name:"Pogo Jump Tutorial",             tag:"Technique",  sets:"2x20 reps", rest:"60 s",
     desc:"Step-by-step pogo jump form breakdown. Master the technique before adding speed or volume.",
     cues:["Minimal knee bend — ankles do the work","Arms stay at sides, small pumps","Think bounce, not jump","Heels barely touch the ground"],
@@ -384,7 +384,7 @@ const W_HANDLES = [
     sets:"10 min dedicated left hand", rest:"N/A",
     desc:"Dominant hand OFF. The single most impactful thing a 10-year-old can do to become a skilled ball handler.",
     cues:["Start with simple stationary pound dribbles — master before moving","No using the strong hand as a crutch","Dribble while watching TV or walking around","Patience — it will feel terrible before it feels okay"],
-    trainer:"Get Handles Basketball", videoId:"O4x_AQVZ_nI", videoStart:1, videoEnd:120, videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Weak Hand Workout: Dribbling & Layups" },
+    trainer:"Get Handles Basketball", videoId:"O4x_AQVZ_nI", videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Weak Hand Workout: Dribbling & Layups" },
   { id:"two-ball",       name:"Two Ball Dribbling",            tag:"Coordination",
     sets:"3x45s each drill", rest:"20 s",
     desc:"Both hands simultaneously — simultaneous pound, alternating, staggered. Fastest way to develop ambidexterity.",
@@ -399,7 +399,7 @@ const W_HANDLES = [
     sets:"3x45s", rest:"20 s",
     desc:"Tyler Relph advanced two-ball combo: simultaneous dribble while performing specific hand movement patterns. Trains hand independence.",
     cues:["Each hand has its own rhythm — do not sync them","Keep both balls at the same height","If you lose one, reset — do not try to save a bad rep"],
-    trainer:"Tyler Relph · Hoop Dynamic", videoId:"fR6O8m48sg0", videoStart:5, videoEnd:120, videoChannel:"Tyler Relph's Hoop Dynamic", trusted:true, videoTitle:"Advanced Two Ball Drill — Tyler Relph" },
+    trainer:"Tyler Relph · Hoop Dynamic", videoId:"fR6O8m48sg0", videoChannel:"Tyler Relph's Hoop Dynamic", trusted:true, videoTitle:"Advanced Two Ball Drill — Tyler Relph" },
 ];
 
 const W_CONDITIONING = [
@@ -426,7 +426,7 @@ const W_CONDITIONING = [
   { id:"fast-feet",        name:"Fast Feet Drill",                 tag:"Quickness",      sets:"3x15 s", rest:"30 s",
     desc:"Rapid short steps in place, then react to a signal. Directly trains the foot speed and reaction time needed for defense.",
     cues:["Barely lift feet off the ground — fast touches","Stay low in athletic stance","Weight on balls of feet","React to the signal — do not anticipate"],
-    videoId:"RvYB5qI8Urk", videoChannel:"Basketball Coach Allen", videoTitle:"Fast Feet — Top 5 Foot Speed Drills" },
+    videoId:"F3rxy-oIP_o", videoChannel:"Marcus Rios", videoTitle:"Fast Feet Footwork Drills — Increase Your Foot Speed" },
   { id:"crab-walks",       name:"Crab Walks",                      tag:"Full Body",      sets:"3x20 yards", rest:"30 s",
     desc:"On hands and feet facing up, walk forward and backward. Builds posterior shoulder strength, hip extension, and full-body coordination.",
     cues:["Hips up — not sagging toward the floor","Walk opposite hand and foot together","Eyes up — not at the ground","Keep hips level throughout"],
@@ -746,7 +746,7 @@ const W_BALL_HANDLING = [
     progressionTrack:"Step 3 — Advanced Stationary Moves",
     desc:"Dribble the ball through the legs while stationary or on the move. Protects the ball from a reaching defender and sets up combo moves.",
     cues:["Wide stance — ball needs space to fit through","Lead with the receiving hand reaching across","Don't rush — clean slow reps beat sloppy fast","Build to walking, then running"],
-    trainer:"HandleLife", videoId:"Y7PjqLcIhXw", videoStart:13, videoEnd:91, videoChannel:"HandleLife", videoTitle:"Basics 101: Between Your Legs Dribble" },
+    trainer:"HandleLife", videoId:"Y7PjqLcIhXw", videoChannel:"HandleLife", videoTitle:"Basics 101: Between Your Legs Dribble" },
 
   { id:"bh-in-out",       name:"In & Out Dribble",        tag:"Basic Moves",     difficulty:"beginner",     ageRange:[9,14],  funScore:7,  estimatedDuration:90,
     sets:"3x20 reps each hand", rest:"20 s",
@@ -754,7 +754,7 @@ const W_BALL_HANDLING = [
     progressionTrack:"Step 2 — Basic Move Package",
     desc:"Attack toward the defender, dip the ball inside as if crossing, then pull it back out in the original direction. The sell makes this move — not the hands.",
     cues:["Sell with your eyes AND shoulder — look where you are faking","Dip the ball inside sharply — half-measure fakes do not work","Snap back out of it: change of pace — slow to FAST","Stay low throughout"],
-    trainer:"Cramer Basketball", videoId:"LMy9MUEd0Q0", videoStart:5, videoEnd:146, videoChannel:"Cramer Basketball", trusted:true, videoTitle:"V Dribble Series — Cramer Basketball" },
+    trainer:"Cramer Basketball", videoId:"LMy9MUEd0Q0", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"V Dribble Series — Cramer Basketball" },
 
   { id:"bh-retreat",      name:"Retreat Dribble",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 reps each direction", rest:"30 s",
@@ -812,7 +812,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 1 — Movement Foundation",
     desc:"Ball cocked at the hip, knees bent, weight on balls of feet — simultaneously threatening to shoot, pass, or drive. Every catch should land here automatically.",
     cues:["Ball at the hip — not the chest, not the shoulder","Knees bent, hips back — ready to explode","Eyes read the defense: gap? shoot. sagging? drive.","Chin stays level — do not look at the ball"],
-    trainer:"Cramer Basketball", videoId:"dg9y9-PuQNE", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"Triple Threat Combo Shot Fake Jab Step — Cramer Basketball" },
+    trainer:"Jr. NBA", videoId:"7WU_lb8t3Gk", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"1-2-3 Triple Threat" },
 
   { id:"fw-jab-series",   name:"Jab Step Series",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3x5 each variation each foot", rest:"30 s",
@@ -820,7 +820,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 3 — Off-The-Dribble Moves",
     desc:"One aggressive step toward the defender to read their reaction: if they back up, pull back and shoot; if they hold, drive past their foot; if they reach, shoot over the retreat.",
     cues:["Jab step is SHARP and aggressive — tentative jabs get ignored","Read the defender's feet: did they move back? Did they reach?","Jab and go: your first dribble is past their front foot","Jab and shoot: pull back into your shot pocket in one motion"],
-    trainer:"ShotMechanics", videoId:"eE2Vp10Sqko", videoChannel:"ShotMechanics", trusted:true, videoTitle:"Stephen Curry Jab Step Back Move — ShotMechanics" },
+    trainer:"Baller Boot Camp", videoId:"pjV78JTtqI0", videoChannel:"Baller Boot Camp", videoTitle:"How To Triple Threat | Jab Step | Footwork | Offense" },
 
   { id:"fw-rip-through",  name:"Rip Through",             tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 each side", rest:"30 s",
@@ -828,7 +828,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 3 — Off-The-Dribble Moves",
     desc:"Swing the ball in a low arc from one side of the body to the other to rip through an outstretched defender arm — initiates contact and creates driving lanes.",
     cues:["Ball path goes LOW — through the defender's arms, not over them","Rip with both hands — do not let go with the guide hand until through","Lead with the elbow to clear the path","Immediately attack off the rip — do not reset"],
-    trainer:"Teach Hoops", videoId:"7dxMH7aP6_Y", videoChannel:"Teach Hoops", videoTitle:"Rip Through & Drive — Great Basketball Moves" },
+    trainer:"Keith Poitier", videoId:"L-vOyhoxBmg", videoChannel:"Keith Poitier Performance", videoTitle:"How To Rip Through The Right Way" },
 
   { id:"fw-sweep-go",     name:"Sweep & Go",              tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 each direction", rest:"30 s",
@@ -844,7 +844,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 4 — Game Skill Integration",
     desc:"Lift the ball as if shooting to get the defender airborne, then attack past them or rise for a real shot over their recovery. Requires patience — do not rush after the fake.",
     cues:["Sell the shot completely — knees bend, ball rises, eyes go to rim","WAIT for the defender to leave their feet — patient players draw fouls","Attack the moment they land — do not hesitate","Shot fake to drive, shot fake to shoot, shot fake to pass — know all three"],
-    trainer:"Baller Boot Camp", videoId:"CGnkzd9wV6g", videoChannel:"Baller Boot Camp", videoTitle:"How To Use The Shot Fake To SCORE MORE POINTS IN BASKETBALL" },
+    trainer:"Cramer Basketball", videoId:"hUeUh8hxTvQ", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"KOBE BRYANT: Shot Fake Footwork Moves" },
 ];
 
 const W_FINISHING = [
@@ -870,7 +870,7 @@ const W_FINISHING = [
     progressionTrack:"Step 1 — Basket Finishing Foundation",
     desc:"Two-foot gather and two-foot jump to finish — the most reliable finish through contact for young players. Used on drives when defenders are in the lane.",
     cues:["Gather on TWO feet — wide base","Jump straight up — do not lean into the defender","Release the ball at the peak — do not rush","Land in the same spot you took off from"],
-    trainer:"Baller Bootcamp", videoId:"treZvJON-xM", videoChannel:"Baller Boot Camp", videoTitle:"How To Shoot A Power Layup In Basketball" },
+    trainer:"ATTACKBball", videoId:"4B_mVfbX1Bo", videoChannel:"ATTACKBball", videoTitle:"2-Foot Power Layups: Finish Through Contact" },
 
   { id:"fin-reverse",     name:"Reverse Layups",          tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3x10 each side", rest:"30 s",
@@ -894,7 +894,7 @@ const W_FINISHING = [
     progressionTrack:"Step 3 — Advanced Footwork Finishes",
     desc:"Gather the ball on one foot stepping one direction, then take the legal second step in the opposite direction — steps completely around the defender's body.",
     cues:["Gather foot steps BIG in one direction to commit the defender","Second step sweeps HARD in the other direction","Ball is protected throughout — under arm, not extended","Finish soft — this is a touch finish, not power"],
-    trainer:"ShotMechanics", videoId:"-7ONK1hiZ2A", videoChannel:"ShotMechanics", trusted:true, videoTitle:"How To Euro Step The Safe Way — ShotMechanics" },
+    trainer:"Trae Ball", videoId:"9JiRtzyN0OI", videoChannel:"Trae Ball", videoTitle:"How To: EuroStep Tutorial" },
 
   { id:"fin-pro-hop",     name:"Pro Hop Finish",          tag:"Advanced",        difficulty:"advanced",     ageRange:[11,14], funScore:9,  estimatedDuration:120,
     sets:"3x8 each side", rest:"45 s",
@@ -910,7 +910,7 @@ const W_FINISHING = [
     progressionTrack:"Step 5 — Elite Finishing",
     desc:"Finish off the unexpected foot — right-hand layup from the left foot — completely freezes the shot-blocker whose instincts tell them when to jump based on your footwork.",
     cues:["The whole point is surprise — sell the standard footwork first","Jump off the non-dominant foot on the finish","Ball still goes up with the dominant hand — just the take-off foot changes","Film yourself to confirm you are actually switching feet"],
-    trainer:"GetHandles", videoId:"vIfDkyZf52s", videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Why You SHOULD Take Wrong Foot Layups — GetHandles" },
+    trainer:"Dre Baldwin", videoId:"CodVye-uurM", videoChannel:"Dre Baldwin - Work On Your Game", trusted:true, videoTitle:"Wrong-Foot Left Hand Layup — Signature Move Tutorial" },
 ];
 
 const W_SHOOTING_DRILLS = [
@@ -944,7 +944,7 @@ const W_SHOOTING_DRILLS = [
     progressionTrack:"Step 2 — Range Extension",
     desc:"7 classic spots in sequence from right corner to left corner. Make it to move on, miss twice and go back to start (or stay on that spot). The timeless youth shooting game that never gets old.",
     cues:["Set your feet before every single shot — no rush","Each spot has the same form — do not adjust based on angle","Call your score out loud — makes it a competition even solo","Try to beat your personal best number of makes per round"],
-    trainer:"Teach Hoops", videoId:"KCJHGqWZRLU", videoChannel:"Teach Hoops", videoTitle:"Around the World Basketball Shooting Drill — Teach Hoops" },
+    trainer:"Jr. NBA", videoId:"KCYAeuepnNw", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Around The World" },
 
   { id:"sh-ft-routine",   name:"Free Throw Routine",      tag:"Foundation",      difficulty:"beginner",     ageRange:[9,14],  funScore:5,  estimatedDuration:300,
     sets:"Shoot until 10 in a row", rest:"N/A",
@@ -952,7 +952,7 @@ const W_SHOOTING_DRILLS = [
     progressionTrack:"Step 1 — Shooting Foundation",
     desc:"Build and repeat a locked pre-shot routine: same number of dribbles, same ball spin, same breath, then shoot. The routine removes the thinking so the mechanics can execute.",
     cues:["Same routine — EXACTLY the same — every single rep","1 or 2 dribbles max: more is a distraction, not a help","Deep breath out before the shot — releases tension","10 in a row is the standard: 9 then a miss means start over"],
-    trainer:"PGC Basketball", videoId:"0kj_B1za0U0", videoChannel:"PGC Basketball - Point Guard College", trusted:true, videoTitle:"Make More Free Throws — PGC Basketball" },
+    trainer:"Jr. NBA", videoId:"lnuZNZPDvaY", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Fundamentals Of The Free Throw" },
 
   { id:"sh-beat-pro",     name:"Beat The Pro",            tag:"Game",            difficulty:"intermediate", ageRange:[10,14], funScore:10, estimatedDuration:300,
     sets:"5–10 rounds", rest:"Between rounds",
@@ -1058,7 +1058,7 @@ const W_POST_MOVES = [
     progressionTrack:"Step 3 — Post Combo Moves",
     desc:"When the defender is pressing hard into your back, use their pressure against them. Plant the inside foot, reverse pivot explosively to spin away from their body, and attack straight to the basket for a power layup or hook. The spin is a counter move — it only works when the defender is pushing.",
     cues:["Plant foot is your pivot foot — never lift it before the spin is complete","Shoulder leads the spin — get your chest through first, the rest of the body follows","Ball stays tight to your chest during the spin — protect it with both hands, elbows out","Come out of the spin low and in attack mode — don't pop upright before you finish"],
-    trainer:"ShotMechanics", videoId:"Ug3uvtnC8KI", videoChannel:"ShotMechanics", trusted:true, videoTitle:"How To Perfect the Spin Move: Basketball Moves Mastery — ShotMechanics" },
+    trainer:"The Film Room", videoId:"p80SbsoBNOQ", videoChannel:"The Film Room", trusted:true, videoTitle:"Details of the Quick Post Spin" },
 
   { id:"pm-face-up",     name:"Face-Up from the Post",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:150,
     sets:"3×8 each side", rest:"30 s",
@@ -1095,7 +1095,7 @@ const W_FINISHING_SCHOOL = [
     progressionTrack:"Step 1 — Close-Range Foundation",
     desc:"Jump-stop gather on both feet before going up — adds balance, strength, and the ability to draw contact at the rim. The most reliable finish under pressure for youth players.",
     cues:["Jump stop with both feet simultaneously","Use two-foot power to absorb contact","Keep eyes on the target through the finish","Land in the same spot you took off from"],
-    trainer:"Coach Ashworth", videoId:"YzSXr6uNNVQ", videoChannel:"Coach Ashworth", videoTitle:"Basketball Drill for Better Layups - Play Off Two Feet" },
+    trainer:"ATTACKBball", videoId:"4B_mVfbX1Bo", videoChannel:"ATTACKBball", videoTitle:"2-Foot Power Layups: Finish Through Contact" },
 
   { id:"fs-hop-step",      name:"Hop Step (Pro Hop)",          tag:"Intermediate",difficulty:"intermediate", ageRange:[10,14], funScore:9,  estimatedDuration:120,
     sets:"3×8 each side", rest:"45 s",
@@ -1119,7 +1119,7 @@ const W_FINISHING_SCHOOL = [
     progressionTrack:"Step 4 — Advanced Finishes",
     desc:"Pick the ball up early, low, and LONG on the last dribble — the SGA-style gather that eats ground and gets you past the defender before the finish. Change speeds into it: slow, slow, then explode.",
     cues:["Pick it up low and far out front — cover ground on the gather","Change speed INTO the pickup — decelerate, then explode","Long first step off the pickup — shoulder past the defender","Finish soft off two feet or flow into a euro"],
-    trainer:"ILoveBasketball", videoId:"xyKHAcLPWqc", videoChannel:"ILoveBasketballTV", trusted:true, videoTitle:"Dribble Pickups Impossible to Guard — ILoveBasketball" },
+    trainer:"HoopStudy", videoId:"K8H8fELW5sQ", videoChannel:"HoopStudy", trusted:true, videoTitle:"Low Pick-Up Finishing Drill That WORKS" },
 
   { id:"fs-speed-gather",  name:"Speed Gather (One Foot)",     tag:"Foundation",  difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3×6 each side", rest:"30 s",
@@ -1228,7 +1228,7 @@ const W_GAME_HANDLES = [
     progressionTrack:"Step 2 — Attacking Moves",
     desc:"Drive hard, then slow to near-stop to freeze the defender, then explode out of the pause. Defenders can't react to bursts they didn't see coming — changing pace is the most deceptive weapon a ball-handler has.",
     cues:["Drive hard first — the slowdown is only valuable after you've shown speed","Stay LOW during the hesitation — don't rise up","Explode out of the pause — don't just jog","Eyes on the rim to sell the threat"],
-    trainer:"Howcast", videoId:"0Wwv5nDpL6k", videoStart:3, videoEnd:150, videoChannel:"Howcast", videoTitle:"How to Do a Change-of-Pace Dribble | Basketball Moves" },
+    trainer:"Howcast", videoId:"0Wwv5nDpL6k", videoChannel:"Howcast", videoTitle:"How to Do a Change-of-Pace Dribble | Basketball Moves" },
 
   { id:"gh-cross-btl",     name:"Crossover + Between-the-Legs",tag:"Foundation",  difficulty:"beginner",     ageRange:[9,14],  funScore:8,  estimatedDuration:90,
     sets:"3×45 s", rest:"20 s",
@@ -1635,7 +1635,8 @@ const W_REBOUNDING = [
   { id:"reb-power", name:"Power Rebound Finish", tag:"Finishing", setup:"solo",
     sets:"3x8", rest:"30 s",
     desc:"Rebound a miss off the glass and go straight back up strong with two feet. Putbacks win games.",
-    cues:["Two feet, two hands","Chin it — don't bring it down","Go up strong and tall","Finish high off the glass"] },
+    cues:["Two feet, two hands","Chin it — don't bring it down","Go up strong and tall","Finish high off the glass"],
+    trainer:"Kevin Melson", videoId:"YzhHbFUVBO0", videoStart:28, videoEnd:72, videoChannel:"Kevin Melson", videoTitle:"Offensive Rebound Putback Drill" },
 ];
 
 /* ── Partner & Games (needs a teammate/defender — opt-in, not in solo missions) ── */
@@ -2709,6 +2710,8 @@ const PROGRAMS = [
  "emoji": "🏀",
  "color": "#f97316",
  "badgeId": "pgm-in-season",
+ "trainer": "HoopStudy",
+ "brandLogo": "hoopstudy",
  "duration": 8,
  "daysPerWeek": 4,
  "ageRange": [
@@ -3611,6 +3614,109 @@ const PROGRAMS = [
     ],
   },
 
+  /* Finishing was the one core skill with no program of its own, so a kid the recommender scored
+     weakest at finishing (the founder's "12-year-old who can't make layups") had nowhere to send
+     them. Built from finishing drills already vetted in the catalog — layup foundation → both hands
+     & angles → finishing footwork → craft & contact. No new videos. The hardest advanced moves
+     (wrong-foot, swing-step) live in the II so a raw beginner isn't walled off in week 4. */
+  {
+    id:"finish-at-rim", name:"Finish at the Rim", emoji:"🪣", color:"#10b981",
+    badgeId:"pgm-finish-rim", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
+    desc:"Stop losing layups at the rim. Build both hands, the footwork to gather on the move, and the craft to finish through contact.",
+    weeks:[
+      { week:1, goal:"Layup foundation — soft touch off both hands, balanced and under control.",
+        sessions:[
+          { day:"Session 1", focus:"Both-Hand Layups",     exercises:["fin-mikan","tn-side-hand-layup","fin-power-layup"] },
+          { day:"Session 2", focus:"Power & Balance",      exercises:["fs-power-finish","fin-power-layup","fin-mikan"] },
+          { day:"Session 3", focus:"Soft Touch & Reverse", exercises:["tn-side-hand-layup","fs-power-finish","fin-rev-mikan"] },
+        ]},
+      { week:2, goal:"Both hands and angles — reverses, scoops, and off-hand finishes from either side.",
+        sessions:[
+          { day:"Session 1", focus:"Reverse & Scoop",     exercises:["fin-reverse","relph-scoop","fin-rev-mikan"] },
+          { day:"Session 2", focus:"Off-Hand Finishes",   exercises:["tn-glide-ballside-finish","fin-reverse","sackmann-finish"] },
+          { day:"Session 3", focus:"Angle Control",        exercises:["tn-glide-low-inside","relph-scoop","fs-speed-gather"] },
+        ]},
+      { week:3, goal:"Finishing footwork — gather on the move with euros, hop steps, and the pro hop.",
+        sessions:[
+          { day:"Session 1", focus:"Gather Steps",        exercises:["fin-euro","fs-speed-gather","sackmann-finish"] },
+          { day:"Session 2", focus:"Hop & Pro Hop",       exercises:["fs-hop-step","fin-pro-hop","tn-glide-low-inside"] },
+          { day:"Session 3", focus:"Decide on the Move",  exercises:["fin-euro","fs-hop-step","tn-glide-ballside-finish"] },
+        ]},
+      { week:4, goal:"Craft & contact — floaters and scoring through a defender at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-power-layup","tn-glide-low-inside"] },
+          { day:"Session 2", focus:"Floaters & Craft",    exercises:["fin-floater","relph-scoop","fin-euro"] },
+          { day:"Session 3", focus:"Game Finishes",       exercises:["fin-floater","fs-contact-finish","tn-glide-ballside-finish"] },
+        ]},
+    ],
+  },
+
+  /* Level 2 of Finish at the Rim: the advanced guard-finishing toolkit — pro hop, low pickup (SGA
+     gather), wrong-foot, swing-step both hands, floaters and finishing through contact at game
+     speed. An advanced finisher (self-check tier 3) routes here instead of the foundational I. */
+  {
+    id:"finish-at-rim-2", name:"Finish at the Rim II", emoji:"🔥", color:"#059669",
+    badgeId:"pgm-finish-rim-2", advancedOf:"finish-at-rim", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"], equipmentFew:["two_basketballs"],
+    desc:"Finish like a guard who gets to the rim at will: attack off the dribble, pro hops, the low SGA gather, wrong-foot layups, swing-step finishes off both hands, floaters, and scoring through contact at game speed.",
+    weeks:[
+      { week:1, goal:"Attack and gather — turn a live dribble into a gather, pro hop, and low pickup.",
+        sessions:[
+          { day:"Session 1", focus:"Handles to Finish",   exercises:["cr29-d14","fin-euro","fs-hop-step"] },
+          { day:"Session 2", focus:"Pro Hop & Low Gather", exercises:["fin-pro-hop","fs-low-pickup","tn-glide-ballside-finish"] },
+          { day:"Session 3", focus:"Two-Ball Control",    exercises:["cr29-d27","fin-pro-hop","fs-low-pickup"] },
+        ]},
+      { week:2, goal:"Off-foot and deception — wrong-foot layups, floaters, and swing-step both hands.",
+        sessions:[
+          { day:"Session 1", focus:"Wrong Foot",          exercises:["fin-wrong-foot","fs-hop-step","tn-glide-swing-inside"] },
+          { day:"Session 2", focus:"Floaters",            exercises:["fin-floater","fin-wrong-foot","cr29-d14"] },
+          { day:"Session 3", focus:"Swing Both Hands",    exercises:["tn-glide-swing-outside","tn-glide-swing-inside","cr29-d27"] },
+        ]},
+      { week:3, goal:"Contact and craft — finish through a body and combine moves into finishes.",
+        sessions:[
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-wrong-foot","tn-glide-ballside-finish"] },
+          { day:"Session 2", focus:"Craft Combos",        exercises:["fin-floater","fs-contact-finish","tn-glide-swing-outside"] },
+          { day:"Session 3", focus:"Game Speed",          exercises:["fs-low-pickup","fin-pro-hop","cr29-d27"] },
+        ]},
+      { week:4, goal:"Elite game finishes — put the whole package together at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"Finish Package",      exercises:["fin-wrong-foot","fin-floater","fs-contact-finish"] },
+          { day:"Session 2", focus:"Both-Hand Swings",    exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fs-low-pickup"] },
+          { day:"Session 3", focus:"Compete",             exercises:["fin-floater","fs-contact-finish","cr29-d14"] },
+        ]},
+    ],
+  },
+
+  /* Two-ball handling is its own recognizable track, but the catalog's six two-ball drills were
+     scattered across four programs with no home of their own. This strings the full ladder —
+     warmup → combos → wipers → pound-to-pass → two-ball-to-finish — into one focused handles
+     specialty, with 2nd To None pocket-dribble originals woven in so the hands get a breather
+     between two-ball sets. All existing, vetted drills; two are FKH-original coach-filmed clips. */
+  {
+    id:"two-ball-handles", name:"Two-Ball Handles", emoji:"🤹", color:"#6366f1",
+    badgeId:"pgm-two-ball", duration:3, daysPerWeek:3, ageRange:[9,17], equipment:["two_basketballs"], equipmentFew:["basketball","wall","hoop"],
+    desc:"Two balls, both hands, no looking down. Build the coordination and ball control that makes one ball feel easy — then turn it into combos and finishes at game speed.",
+    weeks:[
+      { week:1, goal:"Two-ball control — get both hands alive and keep the dribbles even.",
+        sessions:[
+          { day:"Session 1", focus:"Wake the Hands",    exercises:["tn-2ball-warmup","two-ball","tn-pocket"] },
+          { day:"Session 2", focus:"Both Hands Alive",  exercises:["tn-2ball-warmup","tn-2ball-wipers","two-ball"] },
+          { day:"Session 3", focus:"Control Combos",    exercises:["tn-2ball-wipers","relph-twoball","tn-pocket"] },
+        ]},
+      { week:2, goal:"Two-ball combos — add moves and rhythm while keeping both balls under control.",
+        sessions:[
+          { day:"Session 1", focus:"Combo Moves",       exercises:["relph-twoball","two-ball","tn-2ball-wipers"] },
+          { day:"Session 2", focus:"Pound to Pass",     exercises:["cr29-d18","tn-2ball-warmup","tn-pocket-tween"] },
+          { day:"Session 3", focus:"Add a Move",        exercises:["cr29-d18","relph-twoball","two-ball"] },
+        ]},
+      { week:3, goal:"Two-ball to game — speed it up and turn the handle into a finish.",
+        sessions:[
+          { day:"Session 1", focus:"Speed Up",          exercises:["two-ball","tn-2ball-wipers","cr29-d18"] },
+          { day:"Session 2", focus:"Two-Ball to Finish", exercises:["cr29-d27","cr29-d18","relph-twoball"] },
+          { day:"Session 3", focus:"Compete",           exercises:["cr29-d27","relph-twoball","tn-2ball-warmup"] },
+        ]},
+    ],
+  },
+
   {
     id:"first-step-explosion", name:"First Step Explosion", emoji:"⚡", color:"#f43f5e",
     badgeId:"pgm-first-step", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
@@ -4190,6 +4296,9 @@ const PROGRAM_WEEK_TIERS = {
   "step-back-legends":    [2, 3],
   "become-shooter":       [1, 2, 2, 3],
   "become-shooter-2":     [2, 2, 3, 3],
+  "finish-at-rim":        [1, 2, 2, 3],
+  "finish-at-rim-2":      [2, 3, 3, 3],
+  "two-ball-handles":     [1, 2, 3],
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],

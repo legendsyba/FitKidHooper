@@ -12,6 +12,12 @@ import { BENEFIT_MAP, ALL_EXERCISES } from "../data/trainingCatalog.js";
 import { getChainForExercise, getChainStatus } from "../lib/progressionChains.js";
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
+import { clipFor, isClipToolEnabled } from "../lib/videoClips.js";
+import { drillReplacements } from "../lib/drillSwap.js";
+import { tierLabel, areaLevelProgress, areaOfExercise } from "../lib/skillLevels.js";
+import { SKILL_AREAS } from "../lib/skillGraph.js";
+import { calcAge } from "../lib/periodStats.js";
+import ClipEditor from "./ClipEditor.jsx";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
 import { announcePracticeDone } from "../lib/athleteExperience.js";
@@ -404,7 +410,7 @@ function ExerciseSetTracker({
 
 /* ═══════════════════════ EXERCISE DETAIL SHEET ════════════ */
 export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF, isDone, onToggle, onClose, onNext, completed, favored, onToggleFav, navLabel,
-  programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach,
+  programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach, onSwapDrill,
   sessionList, isSessionExerciseDone, totalXP, hasPendingCelebration, sessionXpEarned,
   isSignedIn, onSavePlayer, missionDone = true }) {
   useWakeLock(true);
@@ -426,6 +432,32 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
 
   const [showComplete, setShowComplete] = useState(false);
   const [completePending, setCompletePending] = useState(false);
+  const [showSwap, setShowSwap] = useState(false);
+  // Same-area, level-appropriate drills this kid could swap in (never a drill already in the session).
+  // Only computed once the picker is open — scanning the catalog on every detail-sheet render is waste.
+  // Age is passed so the age-safety floor (older-kid-only physical drills) still applies to swaps.
+  const swapOptions = useMemo(() => {
+    if (!showSwap || !onSwapDrill || !exercise?.id) return [];
+    return drillReplacements(exercise.id, {
+      settings, completed, age: calcAge(settings?.dateOfBirth),
+      exclude: (sessionList || []).map((e) => e.id),
+      limit: 6,
+    });
+  }, [showSwap, onSwapDrill, exercise?.id, settings, completed, sessionList]);
+
+  // On the session-complete screen, the skill the kid just trained that they're closest to leveling
+  // up — a "1 more finishing drill to reach Intermediate!" tease, timed to the moment they're proud.
+  const skillTease = useMemo(() => {
+    if (!settings || !sessionList?.length) return null;
+    const prog = areaLevelProgress(settings, completed);
+    const touched = new Set(sessionList.map((e) => areaOfExercise(ALL_EXERCISES[e.id] || e)).filter(Boolean));
+    const pool = Object.keys(prog).filter((a) => touched.has(a));
+    const best = (pool.length ? pool : Object.keys(prog))
+      .map((a) => ({ area: a, ...prog[a] }))
+      .filter((p) => !p.maxed && p.remaining > 0 && p.remaining <= 2)
+      .sort((x, y) => x.remaining - y.remaining)[0];
+    return best || null;
+  }, [settings, completed, sessionList]);
   const triggerComplete = () => {
     if (hasPendingCelebration) setCompletePending(true);
     else setShowComplete(true);
@@ -474,6 +506,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
 
   /* Video player ─────────────────────────────────────────── */
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [clipMode, setClipMode] = useState(false);
+  const clipToolEnabled = useMemo(() => isClipToolEnabled(), []);
+  const canClip = clipToolEnabled && !!exercise.videoId && exercise.videoSource !== "fkh";
   /* Adjust during render: via an effect the previous drill's player stays
      mounted for a frame after moving to the next exercise. */
   const [playingFor, setPlayingFor] = useState(exercise?.id);
@@ -604,7 +639,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
         <div style={{ flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch" }}>
 
           {/* Video — inline player or thumbnail tap-to-play (only when a video exists) */}
-          {(exercise.videoId || exercise.videoSource === "fkh") && (videoPlaying ? (
+          {(exercise.videoId || exercise.videoSource === "fkh") && (clipMode ? (
+            <ClipEditor exercise={exercise} color={color} onClose={() => setClipMode(false)} />
+          ) : videoPlaying ? (
             /* ── Active Player ── */
             <div style={{ position:"relative",background:"#000",aspectRatio:"16/9",overflow:"hidden" }}>
               {exercise.videoSource === "fkh" ? (
@@ -617,7 +654,7 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               ) : (
                 /* YouTube iframe embed */
                 <iframe
-                  src={youtubeEmbedUrl(exercise.videoId, { start: exercise.videoStart, end: exercise.videoEnd })}
+                  src={youtubeEmbedUrl(exercise.videoId, clipFor(exercise) || {})}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
                   title={exercise.videoTitle || exercise.name}
@@ -632,6 +669,16 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                   fontSize:11,cursor:"pointer",fontWeight:700,lineHeight:1.4,zIndex:10 }}>
                 ✕ Close
               </button>
+              {canClip && (
+                <button
+                  onClick={() => { setVideoPlaying(false); setClipMode(true); }}
+                  aria-label="Clip this video"
+                  style={{ position:"absolute",top:8,right:8,background:"rgba(0,0,0,0.65)",
+                    border:"none",color:"#fff",borderRadius:6,padding:"5px 11px",
+                    fontSize:11,cursor:"pointer",fontWeight:700,lineHeight:1.4,zIndex:10 }}>
+                  ✂ Clip
+                </button>
+              )}
             </div>
           ) : exercise.videoSource === "fkh" ? (
             /* ── FKH Thumbnail (tap to play inline) ── */
@@ -808,6 +855,18 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                   padding:"11px 14px",cursor:"pointer",textAlign:"left" }}>
                 <span style={{ fontSize:15 }}>🧠</span>
                 <span style={{ fontSize:13,fontWeight:700,color,flex:1 }}>Ask Coach FKH about this drill</span>
+                <span style={{ fontSize:13,fontWeight:700,color }}>→</span>
+              </button>
+            )}
+
+            {/* Swap this drill — a different drill for the same skill, at your level. Sticks going forward. */}
+            {onSwapDrill && (
+              <button type="button" onClick={() => setShowSwap(true)}
+                style={{ display:"flex",alignItems:"center",gap:8,width:"100%",marginBottom:18,
+                  background:`${color}0d`,border:`1px solid ${color}28`,borderRadius:12,
+                  padding:"11px 14px",cursor:"pointer",textAlign:"left" }}>
+                <span style={{ fontSize:15 }}>🔄</span>
+                <span style={{ fontSize:13,fontWeight:700,color,flex:1 }}>Swap for a different drill</span>
                 <span style={{ fontSize:13,fontWeight:700,color }}>→</span>
               </button>
             )}
@@ -1067,6 +1126,12 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                     : `${levelAfter.emoji} ${levelAfter.name} — the top of the mountain`}
                 </div>
               )}
+              {skillTease && (
+                <div style={{ padding:"10px 14px", borderRadius:12, background:`${color}12`, border:`1px solid ${color}30`,
+                  fontSize:13, fontWeight:700, color:"var(--fkh-text)" }}>
+                  {SKILL_AREAS[skillTease.area]?.emoji || "🔥"} {skillTease.remaining} more {SKILL_AREAS[skillTease.area]?.label?.toLowerCase() || skillTease.area} drill{skillTease.remaining > 1 ? "s" : ""} to reach {tierLabel(skillTease.level + 1)}!
+                </div>
+              )}
             </div>
             {!isSignedIn && onSavePlayer ? (
               <>
@@ -1098,6 +1163,47 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                 </button>
               </>
             )}
+          </div>
+        )}
+
+        {/* Swap picker — pick a same-skill drill at your level to use instead. The parent swaps it
+            live and remembers it (settings.drillSwaps) so it sticks in future sessions. */}
+        {showSwap && (
+          <div onClick={() => setShowSwap(false)}
+            style={{ position:"absolute", inset:0, zIndex:6, background:"rgba(0,0,0,0.75)",
+              display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ width:"100%", maxWidth:480, maxHeight:"80%", overflowY:"auto", background:SF || BG,
+                borderRadius:"20px 20px 0 0", padding:"20px 18px 28px" }}>
+              <div style={{ fontSize:18, fontWeight:800, color:"var(--fkh-text)", marginBottom:3 }}>Swap this drill</div>
+              <div style={{ fontSize:12.5, color:"#94a3b8", marginBottom:16 }}>
+                Same skill, at your level. We'll use your pick here and remember it next time.
+              </div>
+              {swapOptions.length === 0 && (
+                <div style={{ fontSize:13, color:"#94a3b8", padding:"8px 2px 2px" }}>
+                  No other drills for this skill at your level yet — keep going with this one!
+                </div>
+              )}
+              <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                {swapOptions.map((o) => (
+                  <button key={o.id} type="button"
+                    onClick={() => { onSwapDrill(exercise.id, o.id); setShowSwap(false); }}
+                    style={{ display:"flex", alignItems:"center", gap:10, width:"100%", textAlign:"left",
+                      background:`${color}0d`, border:`1px solid ${color}28`, borderRadius:12, padding:"12px 14px", cursor:"pointer" }}>
+                    <span style={{ fontSize:18 }}>🏀</span>
+                    <span style={{ flex:1 }}>
+                      <span style={{ display:"block", fontSize:14, fontWeight:700, color:"var(--fkh-text)" }}>{o.name}</span>
+                      <span style={{ fontSize:11, color:"#94a3b8", textTransform:"capitalize" }}>{tierLabel(({ beginner:1, intermediate:2, advanced:3 })[o.difficulty] || 1)}</span>
+                    </span>
+                    <span style={{ fontSize:13, fontWeight:800, color }}>Use this →</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={() => setShowSwap(false)}
+                style={{ width:"100%", padding:11, marginTop:14, background:"none", border:"none", color:"#64748b", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                Keep {exercise.name}
+              </button>
+            </div>
           </div>
         )}
       </div>

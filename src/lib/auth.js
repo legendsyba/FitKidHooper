@@ -21,10 +21,14 @@ export const CONSENT_VERSION = "2026-07-17";
 export function usernameRevealsRealName(username, firstName, lastName) {
   const u = String(username || "").toLowerCase().replace(/[^a-z0-9]/g, "");
   if (!u) return false;
+  // Check each WORD of the name(s), so the LAST name is caught whether it sits in its own field
+  // or was typed into one field as a full name ("Ryhan Carrier" -> "ryhan", "carrier"). Words
+  // under 3 chars are ignored, so initials and short syllables ("rc", "jo") don't false-match.
   return [firstName, lastName]
-    .map(n => String(n || "").toLowerCase().replace(/[^a-z0-9]/g, ""))
-    .filter(n => n.length >= 3)
-    .some(n => u.includes(n));
+    .flatMap(n => String(n || "").toLowerCase().split(/\s+/))
+    .map(w => w.replace(/[^a-z0-9]/g, ""))
+    .filter(w => w.length >= 3)
+    .some(w => u.includes(w));
 }
 
 export function isAuthConfigured() {

@@ -22,6 +22,11 @@ import ShotTrackerErrorBoundary from "./components/ShotTrackerErrorBoundary.jsx"
 import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
+import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
+import { applyDrillSwaps, recordDrillSwap, evolveFromSwaps } from "./lib/drillSwap.js";
+import { recommendProgram } from "./lib/programRecommend.js";
+import { CATEGORY_TO_AREA } from "./lib/skillGraph.js";
+import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
 import CountBadge from "./components/CountBadge.jsx";
@@ -286,13 +291,12 @@ function searchExercises(query, limit = 12) {
   }).slice(0, limit);
 }
 
-function generateWorkout(settings, templateKey, recentIds=[]) {
+function generateWorkout(settings, templateKey, recentIds=[], skillLevels=null, completed={}) {
   const tmpl = WORKOUT_TEMPLATES[templateKey];
   if (!tmpl) return null;
   const age    = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth)));
   const rule   = AGE_RULES[age];
-  const dRank  = {beginner:0,intermediate:1,advanced:2};
-  const pRank  = dRank[settings.experience||"beginner"]??0;
+  const levels = skillLevels || getSkillLevels(settings, completed);
   const goals  = settings.goals||[];
   const posProfile = POSITION_PROFILES[settings.playStyle||"any"] || POSITION_PROFILES.any;
   const posCats = new Set(posProfile.boostCats);
@@ -303,12 +307,9 @@ function generateWorkout(settings, templateKey, recentIds=[]) {
     (WORKOUTS[cat]||[]).map(ex => ({ ...ex, _cat:cat, meta:EXERCISE_META[ex.id]||{} }))
   );
 
-  // Filter: age range + difficulty (allow one level stretch for challenge)
-  const eligible = pool.filter(ex => {
-    const m = ex.meta;
-    if (m.ageRange && age < m.ageRange[0]) return false;
-    return (dRank[m.difficulty]??0) <= pRank + 1;
-  });
+  // Filter by the kid's PER-SKILL level, not their age (skillLevels.js). Age only keeps a soft
+  // floor on genuinely physical older-kid drills — see drillAllowed (option b).
+  const eligible = pool.filter(ex => drillAllowed(ex, levels, age, { stretch: 1 }));
 
   // Score: funScore + goal match + position fit + anti-repeat + randomness
   const scored = eligible.map(ex => {
@@ -748,6 +749,14 @@ const MAX_DAILY_MISSION_TASKS = 5;
  */
 function generateDailyMission(todayStr, settings, completed, enrolledPrograms, programProgress={}) {
   const age = calcAge(settings.dateOfBirth);
+  const levels = getSkillLevels(settings, completed); // per-skill level, so the mission matches the kid, not their age
+  // Drills in a category that fit the kid's level for it; falls back to the whole category so a
+  // mission is never empty.
+  const atLevel = (cat, n) => {
+    const pool = WORKOUTS[cat] || [];
+    const fit = pool.filter(e => drillAllowed({ ...e, _cat: cat }, levels, age));
+    return (fit.length >= 2 ? fit : pool).slice(0, n).map(e => e.id);
+  };
   const cutoff = new Date(Date.now()-3*86400000).toLocaleDateString("en-CA");
   const recentCats = new Set(
     Object.keys(completed)
@@ -816,9 +825,14 @@ function generateDailyMission(todayStr, settings, completed, enrolledPrograms, p
   if (tasks.length===0) {
     const bbCats = ["ballhandling","footwork","finishing","game_handles","shooting_lab","footwork_lab","shootingdrills","passing","rebounding"];
     const daySeed = new Date(todayStr+"T12:00:00").getDay();
-    const underworked = bbCats.find(c=>!recentCats.has(c));
-    const fallbackCat = underworked || bbCats[daySeed % bbCats.length];
-    const catExs = (WORKOUTS[fallbackCat]||[]).slice(0,3).map(e=>e.id);
+    // Lead an un-enrolled kid's daily mission with their WEAKEST skill (among categories not worked
+    // in the last few days), so the daily hook trains their biggest gap — same idea as the program
+    // recommender — instead of a blind recency/day rotation. Falls back to the old rotation.
+    const weakestCat = (cats) => cats.slice().sort((a, b) =>
+      (levels[CATEGORY_TO_AREA[a]] ?? 9) - (levels[CATEGORY_TO_AREA[b]] ?? 9))[0];
+    const fresh = bbCats.filter(c => !recentCats.has(c));
+    const fallbackCat = weakestCat(fresh.length ? fresh : bbCats) || bbCats[daySeed % bbCats.length];
+    const catExs = atLevel(fallbackCat, 3);
     const catInfo = CATS[fallbackCat]||{label:fallbackCat,emoji:"🏀"};
     title = `${catInfo.emoji} ${catInfo.label} Day`;
     task1Cat = fallbackCat;
@@ -840,7 +854,7 @@ function generateDailyMission(todayStr, settings, completed, enrolledPrograms, p
     const available = skillCats.filter(c=>c!==task1Cat&&(WORKOUTS[c]||[]).length>=2);
     const skillCat = available.find(c=>!recentCats.has(c)) || available[(dayOffset+1)%available.length];
     if (skillCat) {
-      const catExs = (WORKOUTS[skillCat]||[]).slice(0,2).map(e=>e.id);
+      const catExs = atLevel(skillCat, 2);
       const catInfo = CATS[skillCat]||{label:skillCat,emoji:"🏀"};
       tasks.push({
         id:"task-skill", type:"category",
@@ -1534,7 +1548,9 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
   // color-derived helpers local to this card
   const metaBg  = `${color}12`;
   const metaBrd = `${color}28`;
-  const cueTxt  = `${color}cc`;
+  // Body text reads light on the dark card; the category colour stays on accents (tag, border,
+  // the → arrow). The old category-colour-at-alpha was dim purple on dark — hard to read.
+  const cueTxt  = "#c9d2de";
   return (
     <div onClick={onViewDetail}
       style={{ background:`${color}08`,border:`1px solid ${isDone?color:metaBrd}`,borderRadius:16,overflow:"hidden",marginBottom:14,display:"flex",transition:"border-color 0.2s",cursor:onViewDetail?"pointer":"default" }}>
@@ -1571,7 +1587,7 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
           <span style={{ fontSize:10,padding:"3px 8px",background:metaBg,borderRadius:6,fontFamily:"'DM Mono',monospace",color,border:`1px solid ${metaBrd}`,fontWeight:600 }}>{w.sets}</span>
           {w.rest!=="N/A"&&<span style={{ fontSize:10,padding:"3px 8px",background:metaBg,borderRadius:6,fontFamily:"'DM Mono',monospace",color,border:`1px solid ${metaBrd}`,fontWeight:600 }}>Rest {w.rest}</span>}
         </div>
-        <p style={{ fontSize:12,color:`${color}bb`,lineHeight:1.55,margin:"0 0 8px" }}>{w.desc}</p>
+        <p style={{ fontSize:12,color:"#9aa7b8",lineHeight:1.55,margin:"0 0 8px" }}>{w.desc}</p>
         <div style={{ display:"flex",flexDirection:"column",gap:4,marginBottom:10,paddingLeft:2 }}>
           {w.cues.map((c,i)=>(
             <div key={i} style={{ fontSize:11,color:cueTxt,display:"flex",lineHeight:1.45,gap:5 }}>
@@ -1865,6 +1881,7 @@ export default function FitKidHooperApp() {
   const [showSettings, setShowSettings] = useState(false);
   const [showPlayLikePicker, setShowPlayLikePicker] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showSkillCheck, setShowSkillCheck] = useState(false);
   // Coach mode. Granted by hand in the database and re-checked server-side on
   // every action — this only decides whether the tools are visible.
   const [isCoach, setIsCoach] = useState(false);
@@ -2354,9 +2371,23 @@ export default function FitKidHooperApp() {
   const toggle  = useCallback((id, source) => {
     const key = `${today}-${id}`;
     const src = source || view;
-    if (!completed[key]) trackExerciseComplete(id, src);
-    setCompleted(p => ({ ...p, [key]: !p[key] }));
-  }, [today, completed, view]);
+    const wasDone = !!completed[key];
+    if (!wasDone) trackExerciseComplete(id, src);
+    const next = { ...completed, [key]: !wasDone };
+    setCompleted(next);
+    // On a NEW completion, a skill AREA levels up once enough of its current-level drills are done.
+    if (!wasDone) {
+      const evo = evolveSkillLevels(settings, next);
+      if (evo) {
+        setSettings(s => {
+          const ns = { ...s, skillLevels: evo.skillLevels };
+          safePersistKey("s_settings", ns, { force: true });
+          return ns;
+        });
+        setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
+      }
+    }
+  }, [today, completed, view, settings]);
 
   const markProgramExercise = useCallback((ctx, exId) => {
     const { programId, week, sessionIdx } = ctx;
@@ -2462,15 +2493,40 @@ export default function FitKidHooperApp() {
     }
   }, [isExerciseDoneForPractice]);
   const openSessionWithWarmup = useCallback((exList, ctx, startEx = null, practiceSource = null) => {
+    // Fold in any drills this kid has swapped before, so a past swap sticks in today's session too.
+    const base = (exList || []).map(e => ({ ...e, meta: e.meta || EXERCISE_META[e.id] || {} }));
+    const swappedIds = applyDrillSwaps(base.map(e => e.id), settings);
+    const swapped = swappedIds.map((id, i) => (base[i] && base[i].id === id)
+      ? base[i]
+      : ({ ...(ALL_EXERCISES[id] || {}), id, _cat: ALL_EXERCISES[id]?._cat, meta: EXERCISE_META[id] || {} }));
     const list = withSessionWarmup(
-      (exList || []).map(e => ({ ...e, meta: e.meta || EXERCISE_META[e.id] || {} })),
+      swapped,
       WORKOUTS,
       EXERCISE_META,
-      { categories: categoriesFromExercises(exList, ALL_EXERCISES) },
+      { categories: categoriesFromExercises(swapped, ALL_EXERCISES) },
     );
     const first = startEx || list[0];
     if (first) openDetail(first, list, ctx, practiceSource);
-  }, [openDetail]);
+  }, [openDetail, settings]);
+
+  /* Swap the drill a kid is on for a different one in the same skill area. Persists the choice
+     (recordDrillSwap → settings.drillSwaps) so it sticks in future sessions, and replaces it live
+     in the current session so the change is immediate. Reuses the Fit Tracker swap model. */
+  const swapActiveDrill = useCallback((fromId, toId) => {
+    if (!fromId || !toId || fromId === toId) return;
+    let ns = { ...settings, drillSwaps: recordDrillSwap(settings, fromId, toId) };
+    // Reaching for harder drills is a signal: evolve the skill level when the kid keeps doing it.
+    const evo = evolveFromSwaps(ns, completedSafe);
+    if (evo) ns = { ...ns, skillLevels: evo.skillLevels };
+    setSettings(ns);
+    safePersistKey("s_settings", ns, { force: true });
+    if (evo) setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
+    const nd = ALL_EXERCISES[toId];
+    if (!nd) return;
+    const enriched = { ...nd, _cat: nd._cat, meta: EXERCISE_META[toId] || {} };
+    setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
+    setActiveExercise(cur => (cur && cur.id === fromId ? enriched : cur));
+  }, [settings, completedSafe]);
   const detailIdx  = activeExercise ? detailList.findIndex(e=>e.id===activeExercise.id) : -1;
   const nextExDetail = detailIdx>=0 && detailIdx<detailList.length-1 ? detailList[detailIdx+1] : null;
   const closeDetail  = () => { setActiveExercise(null); setDetailContext(null); activePracticeRef.current = null; };
@@ -2487,6 +2543,7 @@ export default function FitKidHooperApp() {
     bilateralPrefs, onBilateralPrefChange: handleBilateralPrefChange,
     settings, today,
     onAskCoach: askCoachAboutExercise,
+    onSwapDrill: swapActiveDrill,
     sessionList: detailList,
     isSessionExerciseDone: isExerciseDoneForPractice,
     sessionXpEarned: detailList.length >= 2
@@ -2672,6 +2729,8 @@ export default function FitKidHooperApp() {
       })}
       firstName={settings.athleteName || ""}
       lastName={settings.lastName || ""}
+      /* 18+ (a coach/adult) may use their real name in the Jersey Name; under-18 keeps the guard. */
+      isAdult={calcAge(settings.dateOfBirth) >= 18}
       onClose={() => { setShowAuth(false); setAuthInitialMode("signin"); }}
       onSignedIn={async () => {
         setShowAuth(false);
@@ -2850,13 +2909,23 @@ export default function FitKidHooperApp() {
   }, []);
 
   const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
+  // Programs the kid is already enrolled in or has finished (earned the badge) — never recommend these.
+  const excludeProgramIds = useMemo(
+    () => [...Object.keys(enrolledProgramsSafe), ...PROGRAMS.filter(p => earnedBadges.includes(p.badgeId)).map(p => p.id)],
+    [enrolledProgramsSafe, earnedBadges],
+  );
+  // The kid's biggest remaining skill need — used so "Up Next" points at a weakness, not a random program.
+  const recommendedProgram = useMemo(
+    () => recommendProgram(settings, completedSafe, [], PROGRAMS, { exclude: excludeProgramIds })?.program || null,
+    [settings, completedSafe, excludeProgramIds],
+  );
   const nextProgram = useMemo(
-    () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges) : null,
-    [finishedProgram, enrolledProgramsSafe, earnedBadges],
+    () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges, { recommendedProgram }) : null,
+    [finishedProgram, enrolledProgramsSafe, earnedBadges, recommendedProgram],
   );
   const nextProgramWhy = useMemo(
-    () => finishedProgram ? nextProgramReason(finishedProgram.id, nextProgram, PROGRAMS, earnedBadges) : null,
-    [finishedProgram, nextProgram, earnedBadges],
+    () => finishedProgram ? nextProgramReason(finishedProgram.id, nextProgram, PROGRAMS, earnedBadges, { recommendedProgram }) : null,
+    [finishedProgram, nextProgram, earnedBadges, recommendedProgram],
   );
   const dismissNextStep = useCallback(() => {
     setProgramProgress(prev => markNextStepsHandled(prev));
@@ -3325,9 +3394,31 @@ export default function FitKidHooperApp() {
     </>
   );
 
+  const skillCheckSheet = showSkillCheck ? (
+    <SkillCheckSheet
+      P={P} SF={SF}
+      excludeProgramIds={excludeProgramIds}
+      onClose={() => setShowSkillCheck(false)}
+      onDone={(scored) => setSettings(p => {
+        const next = { ...p, skillLevels: { ...(p.skillLevels || {}), ...scored } };
+        safePersistKey("s_settings", next, { force: true });
+        return next;
+      })}
+      onOpenProgram={(id) => {
+        // "Start <program>" should actually start it: enroll the kid (unless already enrolled, so a
+        // re-check doesn't reset their progress) and drop them in My Plan where the session is ready.
+        const prog = PROGRAMS.find(p => p.id === id);
+        if (prog && !enrolledPrograms[id]) enrollProgram(prog);
+        setSelectedProgram(id);
+        setProgramSegment("myPlan");
+        openProgramsSection("plans");
+      }}
+    />
+  ) : null;
+
   const shellOverlays = (
     <>
-      {settingsSheet}{feedbackSheet}{authSheet}{guideSheet}
+      {settingsSheet}{feedbackSheet}{authSheet}{guideSheet}{skillCheckSheet}
       {/* App-level: a buddy calling has to reach you wherever you are, not
           only on the Squad tab. */}
       <BuddyVideoInviteBanner P={P} isSignedIn={auth.isSignedIn} />
@@ -3501,6 +3592,7 @@ export default function FitKidHooperApp() {
     return (
       <MeView
         settings={settings}
+        onSkillCheck={() => setShowSkillCheck(true)}
         progressTab={progressTab}
         setProgressTab={setProgressTab}
         xpData={xpData}
@@ -4209,6 +4301,7 @@ export default function FitKidHooperApp() {
       >
         <TodayView
         settings={settings}
+        onSkillCheck={() => setShowSkillCheck(true)}
         P={P}
         S={S}
         ST={ST}
@@ -4229,6 +4322,7 @@ export default function FitKidHooperApp() {
         missionHasProgramTask={missionHasProgramTask}
         enrolledPrograms={enrolledPrograms}
         programs={PROGRAMS}
+        excludeProgramIds={excludeProgramIds}
         progressCtx={progressCtx}
         showFindDrills={showFindDrills}
         onShowFindDrills={() => setShowFindDrills(true)}
