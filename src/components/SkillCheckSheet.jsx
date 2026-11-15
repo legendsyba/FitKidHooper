@@ -9,7 +9,7 @@ import { recommendProgramForLevels } from "../lib/programRecommend.js";
  * which the parent persists to settings.skillLevels (what drives drill selection). No history
  * needed — this is how a raw 3rd grader and an ahead-of-age kid both start at the right rung.
  */
-export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose, onDone, onOpenProgram, initialAreas = [], zIndex = 420 }) {
+export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose, onDone, onOpenProgram, initialAreas = [], excludeProgramIds = [], zIndex = 420 }) {
   const [step, setStep] = useState("pick"); // pick | quiz | result
   const [areas, setAreas] = useState(initialAreas);
   const [answers, setAnswers] = useState({});
@@ -18,7 +18,7 @@ export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose
   const allQuestions = quiz.flatMap((a) => a.questions);
   const answered = allQuestions.filter((q) => answers[q.id]).length;
   const scored = useMemo(() => scoreAssessment(answers), [answers]);
-  const rec = useMemo(() => recommendProgramForLevels(scored, areas), [scored, areas]);
+  const rec = useMemo(() => recommendProgramForLevels(scored, areas, undefined, { exclude: excludeProgramIds }), [scored, areas, excludeProgramIds]);
 
   const toggleArea = (a) => setAreas((p) => (p.includes(a) ? p.filter((x) => x !== a) : [...p, a]));
   const pick = (qid, tier) => setAnswers((p) => ({ ...p, [qid]: tier }));

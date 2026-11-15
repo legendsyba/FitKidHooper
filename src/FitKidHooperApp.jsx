@@ -2517,7 +2517,7 @@ export default function FitKidHooperApp() {
     if (evo) setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
     const nd = ALL_EXERCISES[toId];
     if (!nd) return;
-    const enriched = { ...nd, _cat: nd._cat || "speed", meta: EXERCISE_META[toId] || {} };
+    const enriched = { ...nd, _cat: nd._cat, meta: EXERCISE_META[toId] || {} };
     setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
     setActiveExercise(cur => (cur && cur.id === fromId ? enriched : cur));
   }, [settings, completedSafe]);
@@ -2538,7 +2538,6 @@ export default function FitKidHooperApp() {
     settings, today,
     onAskCoach: askCoachAboutExercise,
     onSwapDrill: swapActiveDrill,
-    completed: completedSafe,
     sessionList: detailList,
     isSessionExerciseDone: isExerciseDoneForPractice,
     sessionXpEarned: detailList.length >= 2
@@ -2904,10 +2903,15 @@ export default function FitKidHooperApp() {
   }, []);
 
   const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
+  // Programs the kid is already enrolled in or has finished (earned the badge) — never recommend these.
+  const excludeProgramIds = useMemo(
+    () => [...Object.keys(enrolledProgramsSafe), ...PROGRAMS.filter(p => earnedBadges.includes(p.badgeId)).map(p => p.id)],
+    [enrolledProgramsSafe, earnedBadges],
+  );
   // The kid's biggest remaining skill need — used so "Up Next" points at a weakness, not a random program.
   const recommendedProgram = useMemo(
-    () => recommendProgram(settings, completedSafe)?.program || null,
-    [settings, completedSafe],
+    () => recommendProgram(settings, completedSafe, [], PROGRAMS, { exclude: excludeProgramIds })?.program || null,
+    [settings, completedSafe, excludeProgramIds],
   );
   const nextProgram = useMemo(
     () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges, { recommendedProgram }) : null,
@@ -3387,6 +3391,7 @@ export default function FitKidHooperApp() {
   const skillCheckSheet = showSkillCheck ? (
     <SkillCheckSheet
       P={P} SF={SF}
+      excludeProgramIds={excludeProgramIds}
       onClose={() => setShowSkillCheck(false)}
       onDone={(scored) => setSettings(p => {
         const next = { ...p, skillLevels: { ...(p.skillLevels || {}), ...scored } };
@@ -4311,6 +4316,7 @@ export default function FitKidHooperApp() {
         missionHasProgramTask={missionHasProgramTask}
         enrolledPrograms={enrolledPrograms}
         programs={PROGRAMS}
+        excludeProgramIds={excludeProgramIds}
         progressCtx={progressCtx}
         showFindDrills={showFindDrills}
         onShowFindDrills={() => setShowFindDrills(true)}

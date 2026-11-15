@@ -42,7 +42,10 @@ export function programArea(program) {
  * Recommend a program from a per-area level map. `focusAreas` are the areas the kid chose to work
  * on (empty = consider every area the map scores). Returns { program, area, level } or null.
  */
-export function recommendProgramForLevels(levels = {}, focusAreas = [], programs = PROGRAMS) {
+export function recommendProgramForLevels(levels = {}, focusAreas = [], programs = PROGRAMS, { exclude = [] } = {}) {
+  // Drop programs the kid has already finished or is enrolled in, so we never recommend (and the
+  // Start button never re-enrolls) something they've done — the caller passes those ids.
+  if (exclude.length) { const skip = new Set(exclude); programs = programs.filter((p) => !skip.has(p.id)); }
   // Only areas that actually have a level (focus picks, or everything the map scored) AND that at
   // least one program targets — so an unscored area can't tie its way to the top.
   const scored = focusAreas.length ? focusAreas.filter((a) => levels[a] != null) : Object.keys(levels);
@@ -55,7 +58,9 @@ export function recommendProgramForLevels(levels = {}, focusAreas = [], programs
 
   const matches = programs.filter((p) => programArea(p) === target);
   if (!matches.length) return null;
-  const isSequel = (p) => / II\b| 2\b/i.test(p.name) || /-2$/.test(p.id) || p.level === 2 || p.advancedOf;
+  // Structured fields only — a program's name containing "2"/"II" (e.g. "2-on-2 Footwork") must not
+  // mark it an advanced sequel. Every real sequel in the catalog carries advancedOf / level / -2 id.
+  const isSequel = (p) => !!p.advancedOf || p.level === 2 || /-2$/.test(p.id);
   const wantAdvanced = tLevel >= 3;
   // A beginner/intermediate kid should not land on a "II" sequel; keep them unless that's all there is.
   const pool = (() => {
@@ -74,6 +79,6 @@ export function recommendProgramForLevels(levels = {}, focusAreas = [], programs
 }
 
 /** Recommend from a kid's stored state (settings + completion history). */
-export function recommendProgram(settings = {}, completed = {}, focusAreas = [], programs = PROGRAMS) {
-  return recommendProgramForLevels(getSkillLevels(settings, completed), focusAreas, programs);
+export function recommendProgram(settings = {}, completed = {}, focusAreas = [], programs = PROGRAMS, opts = {}) {
+  return recommendProgramForLevels(getSkillLevels(settings, completed), focusAreas, programs, opts);
 }

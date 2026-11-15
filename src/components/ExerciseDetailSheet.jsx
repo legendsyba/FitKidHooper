@@ -15,6 +15,7 @@ import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
 import { clipFor, isClipToolEnabled } from "../lib/videoClips.js";
 import { drillReplacements } from "../lib/drillSwap.js";
 import { tierLabel } from "../lib/skillLevels.js";
+import { calcAge } from "../lib/periodStats.js";
 import ClipEditor from "./ClipEditor.jsx";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
@@ -432,14 +433,16 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
   const [completePending, setCompletePending] = useState(false);
   const [showSwap, setShowSwap] = useState(false);
   // Same-area, level-appropriate drills this kid could swap in (never a drill already in the session).
+  // Only computed once the picker is open — scanning the catalog on every detail-sheet render is waste.
+  // Age is passed so the age-safety floor (older-kid-only physical drills) still applies to swaps.
   const swapOptions = useMemo(() => {
-    if (!onSwapDrill || !exercise?.id) return [];
+    if (!showSwap || !onSwapDrill || !exercise?.id) return [];
     return drillReplacements(exercise.id, {
-      settings, completed,
+      settings, completed, age: calcAge(settings?.dateOfBirth),
       exclude: (sessionList || []).map((e) => e.id),
       limit: 6,
     });
-  }, [onSwapDrill, exercise?.id, settings, completed, sessionList]);
+  }, [showSwap, onSwapDrill, exercise?.id, settings, completed, sessionList]);
   const triggerComplete = () => {
     if (hasPendingCelebration) setCompletePending(true);
     else setShowComplete(true);
@@ -842,7 +845,7 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
             )}
 
             {/* Swap this drill — a different drill for the same skill, at your level. Sticks going forward. */}
-            {onSwapDrill && swapOptions.length > 0 && (
+            {onSwapDrill && (
               <button type="button" onClick={() => setShowSwap(true)}
                 style={{ display:"flex",alignItems:"center",gap:8,width:"100%",marginBottom:18,
                   background:`${color}0d`,border:`1px solid ${color}28`,borderRadius:12,
@@ -1155,6 +1158,11 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               <div style={{ fontSize:12.5, color:"#94a3b8", marginBottom:16 }}>
                 Same skill, at your level. We'll use your pick here and remember it next time.
               </div>
+              {swapOptions.length === 0 && (
+                <div style={{ fontSize:13, color:"#94a3b8", padding:"8px 2px 2px" }}>
+                  No other drills for this skill at your level yet — keep going with this one!
+                </div>
+              )}
               <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
                 {swapOptions.map((o) => (
                   <button key={o.id} type="button"

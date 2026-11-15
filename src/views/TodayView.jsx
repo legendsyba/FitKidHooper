@@ -68,6 +68,7 @@ export default function TodayView({
   dailyAction,
   enrolledPrograms,
   programs,
+  excludeProgramIds = [],
   progressCtx,
   coachMsg,
   onOpenCoach,
@@ -734,7 +735,7 @@ export default function TodayView({
       {enrolledList.length === 0 && !finishedProgram && (() => {
         // A classified kid gets THEIR recommendation; everyone else the generic browse nudge.
         const classified = settings.skillLevels && Object.keys(settings.skillLevels).length > 0;
-        const rec = classified ? recommendProgram(settings, completed, [], programs) : null;
+        const rec = classified ? recommendProgram(settings, completed, [], programs, { exclude: excludeProgramIds }) : null;
         if (rec?.program) {
           const areaLabel = SKILL_AREAS[rec.area]?.label?.toLowerCase() || rec.area;
           const recWeeks = rec.program.weeks?.length;
