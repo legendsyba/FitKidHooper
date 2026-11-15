@@ -32,13 +32,17 @@ const btnGhost = (P) => ({
   fontSize: 12, fontWeight: 700, cursor: "pointer",
 });
 
-export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent: consentFromProfile = true, firstName = "", lastName = "", askBirthday = false, onBirthday, admin = false }) {
+export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "signin", zIndex = 350, parentConsent: consentFromProfile = true, firstName = "", lastName = "", askBirthday = false, onBirthday, admin = false, isAdult = false }) {
   const [mode, setMode] = useState(initialMode);
   /* Onboarding no longer asks for a birthday, so a kid saving their player
      may not have one yet. It decides who signs off on the account, so it is
      asked here, and the form follows it as soon as it is entered. */
   const [dob, setDob] = useState("");
   const parentConsent = askBirthday && dob ? needsParentConsent(dob) : consentFromProfile;
+  /* The "no real name" rule protects kids on public leaderboards; an adult (a coach) may use
+     their own name. Adult = 18+ by the birthday just entered, an admin sign-in, or the profile
+     age the caller passes. Everyone under 18 (and anyone whose age we don't know) keeps the rule. */
+  const isAdultUser = (askBirthday && dob) ? calcAge(dob) >= 18 : (admin || isAdult);
   const [username, setUsername] = useState(getLastUsername());
   const [passcode, setPasscode] = useState("");
   const [passcode2, setPasscode2] = useState("");
@@ -100,7 +104,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
       setStatus("A parent or guardian needs to check both boxes to continue.");
       return;
     }
-    if (usernameRevealsRealName(username, firstName, lastName)) {
+    if (!isAdultUser && usernameRevealsRealName(username, firstName, lastName)) {
       setStatus("Your Jersey Name can't include your real name — try a nickname or something creative!");
       return;
     }
@@ -246,7 +250,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
           <form onSubmit={handleSignIn}>
             <input
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={e => { setUsername(e.target.value); setStatus(null); }}
               placeholder={nameLabel}
               autoCapitalize="none"
               autoCorrect="off"
@@ -283,7 +287,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
             )}
             <input
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={e => { setUsername(e.target.value); setStatus(null); }}
               placeholder={nameLabel}
               autoCapitalize="none"
               autoCorrect="off"
@@ -353,7 +357,7 @@ export default function AuthSheet({ P, SF, onClose, onSignedIn, initialMode = "s
           <form onSubmit={handleSendRecovery}>
             <input
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={e => { setUsername(e.target.value); setStatus(null); }}
               placeholder="username or recovery email"
               autoCapitalize="none"
               style={inputStyle(P)}

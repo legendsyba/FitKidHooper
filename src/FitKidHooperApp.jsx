@@ -2672,6 +2672,8 @@ export default function FitKidHooperApp() {
       })}
       firstName={settings.athleteName || ""}
       lastName={settings.lastName || ""}
+      /* 18+ (a coach/adult) may use their real name in the Jersey Name; under-18 keeps the guard. */
+      isAdult={calcAge(settings.dateOfBirth) >= 18}
       onClose={() => { setShowAuth(false); setAuthInitialMode("signin"); }}
       onSignedIn={async () => {
         setShowAuth(false);
