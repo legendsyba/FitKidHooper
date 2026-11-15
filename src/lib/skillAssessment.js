@@ -12,6 +12,9 @@
  * is what separates a beginner from an advanced kid at the same age.
  */
 
+// Areas mirror how real youth programs evaluate players (Jr. NBA, Special Olympics and common
+// tryout rubrics all rate ball handling, shooting, finishing, passing, footwork, defense,
+// rebounding, athleticism and court sense) — and they map 1:1 to FKH's SKILL_AREAS.
 export const WANT_TO_WORK_OPTIONS = [
   { area: "handles", label: "Ball handling", emoji: "🏀" },
   { area: "finishing", label: "Finishing / layups", emoji: "🏁" },
@@ -19,6 +22,8 @@ export const WANT_TO_WORK_OPTIONS = [
   { area: "footwork", label: "Footwork & moves", emoji: "👟" },
   { area: "defense", label: "Defense", emoji: "🛡️" },
   { area: "passing", label: "Passing", emoji: "🤝" },
+  { area: "rebounding", label: "Rebounding", emoji: "🪃" },
+  { area: "athleticism", label: "Speed & athleticism", emoji: "⚡" },
 ];
 
 // Three answer tiers, shared wording where it fits. Each option's `tier` is the level it implies.
@@ -56,6 +61,8 @@ export const ASSESSMENT = {
     questions: [
       { id: "s-ft10", q: "Out of 10 free throws, how many do you make?",
         options: [{ label: "0–3", tier: 1 }, { label: "4–6", tier: 2 }, { label: "7–10", tier: 3 }] },
+      { id: "s-range", q: "How far out can you shoot with good form?",
+        options: [{ label: "Close to the rim", tier: 1 }, { label: "Free-throw area", tier: 2 }, { label: "Three-point line", tier: 3 }] },
       { id: "s-offdribble", q: "Can you shoot a jump shot off the dribble?",
         options: NO_SOME_YES("Not yet", "Sometimes", "Yes") },
       { id: "s-form", q: "Is your shooting form the same every time?",
@@ -89,6 +96,24 @@ export const ASSESSMENT = {
         options: NO_SOME_YES("Not yet", "Sometimes", "Yes") },
       { id: "p-pressure", q: "Can you pass out of trouble when someone guards you?",
         options: NO_SOME_YES("No", "Sometimes", "Yes") },
+    ],
+  },
+  rebounding: {
+    label: "Rebounding", emoji: "🪃",
+    questions: [
+      { id: "r-boxout", q: "When a shot goes up, do you box out the player you're guarding?",
+        options: NO_SOME_YES("Not yet", "Sometimes", "Yes, every time") },
+      { id: "r-goget", q: "Are you good at going and grabbing the rebound?",
+        options: NO_SOME_YES("No", "Sometimes", "Yes") },
+    ],
+  },
+  athleticism: {
+    label: "Speed & athleticism", emoji: "⚡",
+    questions: [
+      { id: "a-speed", q: "Are you one of the faster players on your team?",
+        options: NO_SOME_YES("No", "About average", "Yes, one of the fastest") },
+      { id: "a-change", q: "Can you change direction quickly without slowing way down?",
+        options: NO_SOME_YES("Not yet", "Sometimes", "Yes") },
     ],
   },
 };
