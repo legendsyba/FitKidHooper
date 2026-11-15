@@ -820,7 +820,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 3 — Off-The-Dribble Moves",
     desc:"One aggressive step toward the defender to read their reaction: if they back up, pull back and shoot; if they hold, drive past their foot; if they reach, shoot over the retreat.",
     cues:["Jab step is SHARP and aggressive — tentative jabs get ignored","Read the defender's feet: did they move back? Did they reach?","Jab and go: your first dribble is past their front foot","Jab and shoot: pull back into your shot pocket in one motion"],
-    trainer:"ShotMechanics", videoId:"eE2Vp10Sqko", videoChannel:"ShotMechanics", trusted:true, videoTitle:"Stephen Curry Jab Step Back Move — ShotMechanics" },
+    trainer:"Baller Boot Camp", videoId:"pjV78JTtqI0", videoChannel:"Baller Boot Camp", videoTitle:"How To Triple Threat | Jab Step | Footwork | Offense" },
 
   { id:"fw-rip-through",  name:"Rip Through",             tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:7,  estimatedDuration:90,
     sets:"3x8 each side", rest:"30 s",
