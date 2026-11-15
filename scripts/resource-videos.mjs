@@ -40,6 +40,8 @@ const QUERY = {
   "slab-corner-3":"corner three point shooting form", "fast-feet":"fast feet footwork quickness drill basketball",
   "fw-triple-threat":"triple threat stance basketball fundamentals youth", "flab-triple-threat":"triple threat position footwork youth drill",
   "gh-change-pace":"change of pace dribble move youth drill", "bh-in-out":"in and out dribble move tutorial youth",
+  "fin-power-layup":"power layup two foot finish youth tutorial", "sh-atw":"around the world shooting drill youth basketball",
+  "slab-catch-shoot":"catch and shoot form drill youth basketball", "sh-ft-routine":"free throw form routine youth basketball",
 };
 const TARGETS = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(QUERY);
 

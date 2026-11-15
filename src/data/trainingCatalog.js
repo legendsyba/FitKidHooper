@@ -870,7 +870,7 @@ const W_FINISHING = [
     progressionTrack:"Step 1 — Basket Finishing Foundation",
     desc:"Two-foot gather and two-foot jump to finish — the most reliable finish through contact for young players. Used on drives when defenders are in the lane.",
     cues:["Gather on TWO feet — wide base","Jump straight up — do not lean into the defender","Release the ball at the peak — do not rush","Land in the same spot you took off from"],
-    trainer:"Baller Bootcamp", videoId:"treZvJON-xM", videoChannel:"Baller Boot Camp", videoTitle:"How To Shoot A Power Layup In Basketball" },
+    trainer:"ATTACKBball", videoId:"4B_mVfbX1Bo", videoChannel:"ATTACKBball", videoTitle:"2-Foot Power Layups: Finish Through Contact" },
 
   { id:"fin-reverse",     name:"Reverse Layups",          tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3x10 each side", rest:"30 s",
@@ -944,7 +944,7 @@ const W_SHOOTING_DRILLS = [
     progressionTrack:"Step 2 — Range Extension",
     desc:"7 classic spots in sequence from right corner to left corner. Make it to move on, miss twice and go back to start (or stay on that spot). The timeless youth shooting game that never gets old.",
     cues:["Set your feet before every single shot — no rush","Each spot has the same form — do not adjust based on angle","Call your score out loud — makes it a competition even solo","Try to beat your personal best number of makes per round"],
-    trainer:"Teach Hoops", videoId:"KCJHGqWZRLU", videoChannel:"Teach Hoops", videoTitle:"Around the World Basketball Shooting Drill — Teach Hoops" },
+    trainer:"Jr. NBA", videoId:"KCYAeuepnNw", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Around The World" },
 
   { id:"sh-ft-routine",   name:"Free Throw Routine",      tag:"Foundation",      difficulty:"beginner",     ageRange:[9,14],  funScore:5,  estimatedDuration:300,
     sets:"Shoot until 10 in a row", rest:"N/A",
@@ -952,7 +952,7 @@ const W_SHOOTING_DRILLS = [
     progressionTrack:"Step 1 — Shooting Foundation",
     desc:"Build and repeat a locked pre-shot routine: same number of dribbles, same ball spin, same breath, then shoot. The routine removes the thinking so the mechanics can execute.",
     cues:["Same routine — EXACTLY the same — every single rep","1 or 2 dribbles max: more is a distraction, not a help","Deep breath out before the shot — releases tension","10 in a row is the standard: 9 then a miss means start over"],
-    trainer:"PGC Basketball", videoId:"0kj_B1za0U0", videoChannel:"PGC Basketball - Point Guard College", trusted:true, videoTitle:"Make More Free Throws — PGC Basketball" },
+    trainer:"Jr. NBA", videoId:"lnuZNZPDvaY", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Fundamentals Of The Free Throw" },
 
   { id:"sh-beat-pro",     name:"Beat The Pro",            tag:"Game",            difficulty:"intermediate", ageRange:[10,14], funScore:10, estimatedDuration:300,
     sets:"5–10 rounds", rest:"Between rounds",
