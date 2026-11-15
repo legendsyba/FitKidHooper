@@ -3614,6 +3614,42 @@ const PROGRAMS = [
     ],
   },
 
+  /* Finishing was the one core skill with no program of its own, so a kid the recommender scored
+     weakest at finishing (the founder's "12-year-old who can't make layups") had nowhere to send
+     them. Built entirely from finishing drills already vetted in the catalog — layup foundation →
+     both hands & angles → finishing footwork → craft & contact through a defender. No new videos. */
+  {
+    id:"finish-at-rim", name:"Finish at the Rim", emoji:"🪣", color:"#10b981",
+    badgeId:"pgm-finish-rim", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
+    desc:"Stop losing layups at the rim. Build both hands, the footwork to gather on the move, and the craft to finish through a defender.",
+    weeks:[
+      { week:1, goal:"Layup foundation — soft touch off both hands, balanced and under control.",
+        sessions:[
+          { day:"Session 1", focus:"Both-Hand Layups",   exercises:["fin-mikan","tn-side-hand-layup","fin-power-layup"] },
+          { day:"Session 2", focus:"Power & Balance",     exercises:["fs-power-finish","fin-power-layup","fin-mikan"] },
+          { day:"Session 3", focus:"Touch Around the Rim", exercises:["fin-mikan","tn-side-hand-layup","fs-power-finish"] },
+        ]},
+      { week:2, goal:"Both hands and angles — reverses, scoops, and off-hand finishes from either side.",
+        sessions:[
+          { day:"Session 1", focus:"Reverse & Scoop",     exercises:["fin-rev-mikan","fin-reverse","relph-scoop"] },
+          { day:"Session 2", focus:"Off-Hand Finishes",   exercises:["tn-glide-ballside-finish","fin-reverse","relph-scoop"] },
+          { day:"Session 3", focus:"Angle Control",        exercises:["tn-glide-low-inside","fin-rev-mikan","sackmann-finish"] },
+        ]},
+      { week:3, goal:"Finishing footwork — gather on the move with euros, hop steps, and speed gathers.",
+        sessions:[
+          { day:"Session 1", focus:"Gather Steps",        exercises:["fin-euro","fs-speed-gather","sackmann-finish"] },
+          { day:"Session 2", focus:"Hop & Pro Hop",       exercises:["fs-hop-step","fin-pro-hop","fs-speed-gather"] },
+          { day:"Session 3", focus:"Decide on the Move",  exercises:["fin-euro","fs-hop-step","tn-glide-ballside-finish"] },
+        ]},
+      { week:4, goal:"Craft & contact — floaters, wrong-foot finishes, and scoring through a defender.",
+        sessions:[
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-power-layup","fs-low-pickup"] },
+          { day:"Session 2", focus:"Floaters & Craft",    exercises:["fin-floater","fin-wrong-foot","relph-scoop"] },
+          { day:"Session 3", focus:"Game Finishes",       exercises:["fin-floater","fs-contact-finish","tn-glide-swing-outside"] },
+        ]},
+    ],
+  },
+
   {
     id:"first-step-explosion", name:"First Step Explosion", emoji:"⚡", color:"#f43f5e",
     badgeId:"pgm-first-step", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
@@ -4193,6 +4229,7 @@ const PROGRAM_WEEK_TIERS = {
   "step-back-legends":    [2, 3],
   "become-shooter":       [1, 2, 2, 3],
   "become-shooter-2":     [2, 2, 3, 3],
+  "finish-at-rim":        [1, 2, 2, 3],
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],
