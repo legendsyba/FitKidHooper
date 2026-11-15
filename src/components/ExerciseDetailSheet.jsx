@@ -14,7 +14,8 @@ import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
 import { clipFor, isClipToolEnabled } from "../lib/videoClips.js";
 import { drillReplacements } from "../lib/drillSwap.js";
-import { tierLabel } from "../lib/skillLevels.js";
+import { tierLabel, areaLevelProgress, areaOfExercise } from "../lib/skillLevels.js";
+import { SKILL_AREAS } from "../lib/skillGraph.js";
 import { calcAge } from "../lib/periodStats.js";
 import ClipEditor from "./ClipEditor.jsx";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
@@ -443,6 +444,20 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
       limit: 6,
     });
   }, [showSwap, onSwapDrill, exercise?.id, settings, completed, sessionList]);
+
+  // On the session-complete screen, the skill the kid just trained that they're closest to leveling
+  // up — a "1 more finishing drill to reach Intermediate!" tease, timed to the moment they're proud.
+  const skillTease = useMemo(() => {
+    if (!settings || !sessionList?.length) return null;
+    const prog = areaLevelProgress(settings, completed);
+    const touched = new Set(sessionList.map((e) => areaOfExercise(ALL_EXERCISES[e.id] || e)).filter(Boolean));
+    const pool = Object.keys(prog).filter((a) => touched.has(a));
+    const best = (pool.length ? pool : Object.keys(prog))
+      .map((a) => ({ area: a, ...prog[a] }))
+      .filter((p) => !p.maxed && p.remaining > 0 && p.remaining <= 2)
+      .sort((x, y) => x.remaining - y.remaining)[0];
+    return best || null;
+  }, [settings, completed, sessionList]);
   const triggerComplete = () => {
     if (hasPendingCelebration) setCompletePending(true);
     else setShowComplete(true);
@@ -1109,6 +1124,12 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                   {levelAfter.xpNext != null
                     ? `One step closer to ${LEVELS.find(l => l.rank === levelAfter.rank + 1)?.name || "the next level"}`
                     : `${levelAfter.emoji} ${levelAfter.name} — the top of the mountain`}
+                </div>
+              )}
+              {skillTease && (
+                <div style={{ padding:"10px 14px", borderRadius:12, background:`${color}12`, border:`1px solid ${color}30`,
+                  fontSize:13, fontWeight:700, color:"var(--fkh-text)" }}>
+                  {SKILL_AREAS[skillTease.area]?.emoji || "🔥"} {skillTease.remaining} more {SKILL_AREAS[skillTease.area]?.label?.toLowerCase() || skillTease.area} drill{skillTease.remaining > 1 ? "s" : ""} to reach {tierLabel(skillTease.level + 1)}!
                 </div>
               )}
             </div>
