@@ -38,7 +38,7 @@ const fieldLabel = { fontSize: 11, color: "#475569", marginBottom: 6, fontWeight
  * flow through the same `settings`/`setSettings` the rest of the app uses, so
  * nothing about persistence, sync, or progression changes.
  */
-export default function IdentityEditor({ settings, setSettings, avatarUrl, onAvatarChange }) {
+export default function IdentityEditor({ settings, setSettings, avatarUrl, onAvatarChange, onSkillCheck }) {
   const P = pri(settings);
   const fileRef = useRef(null);
   const [avatarSaving, setAvatarSaving] = useState(false);
@@ -189,6 +189,14 @@ export default function IdentityEditor({ settings, setSettings, avatarUrl, onAva
               </button>
             ))}
           </div>
+          {/* The self-check refines one global level into a level PER skill — what actually drives
+              which drills you get. */}
+          {onSkillCheck && (
+            <button onClick={onSkillCheck}
+              style={{ width: "100%", marginTop: 8, padding: "10px", borderRadius: 10, border: `1.5px solid ${P}`, background: `${P}1f`, color: P, fontSize: 12, fontWeight: 800, cursor: "pointer" }}>
+              🏀 Take the skill check — set your level per skill
+            </button>
+          )}
         </div>
 
         {/* Birthday */}

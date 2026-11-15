@@ -2,6 +2,8 @@ import { useState } from "react";
 import ProfileView from "../components/ProfileView.jsx";
 import ProgressJourney from "../components/ProgressJourney.jsx";
 import IdentityEditor from "../components/IdentityEditor.jsx";
+import SkillLevelsPanel from "../components/SkillLevelsPanel.jsx";
+import { getSkillLevels } from "../lib/skillLevels.js";
 import ProgressionView from "../components/ProgressionView.jsx";
 import CoachNavButton from "../components/CoachNavButton.jsx";
 import SettingsSheet from "../components/SettingsSheet.jsx";
@@ -14,6 +16,7 @@ import { readShotLog } from "../lib/shotLog.js";
 
 export default function MeView({
   settings,
+  onSkillCheck,
   progressTab,
   setProgressTab,
   xpData,
@@ -165,8 +168,10 @@ export default function MeView({
               setSettings={setSettings}
               avatarUrl={avatarUrl}
               onAvatarChange={onAvatarChange}
+              onSkillCheck={onSkillCheck}
             />
           )}
+          <SkillLevelsPanel levels={getSkillLevels(settings, completed)} P={P} onSkillCheck={onSkillCheck} />
           <ProgressJourney
             journey={journey}
             currentLevel={currentLevel}
