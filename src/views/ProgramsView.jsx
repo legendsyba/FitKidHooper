@@ -624,6 +624,26 @@ export default function ProgramsView({
                         });
                         })()}
                       </div>
+                      {enrollment && !sDone && (() => {
+                        const startCtx = { programId: prog.id, week: week.week, sessionIdx: si };
+                        const startList = withSessionWarmup(
+                          ids.filter(id => allExercises[id]).map(id => {
+                            const dose = legacy ? null : programDose(prog, week.week, si, id);
+                            return { ...allExercises[id], ...(dose ? { sets: dose } : {}), meta: allExercises[id].meta || exerciseMeta[id] || {} };
+                          }),
+                          workouts, exerciseMeta,
+                          { categories: ids.map(id => allExercises[id]?._cat).filter(Boolean) },
+                        );
+                        if (!startList.length) return null;
+                        return (
+                          <button onClick={() => openDetail(startList[0], startList, startCtx)}
+                            style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:7,width:"100%",marginTop:10,
+                              padding:"10px",borderRadius:9,border:"none",background:prog.color,color:"#07101f",
+                              fontSize:13,fontWeight:800,cursor:"pointer" }}>
+                            ▶ Start session
+                          </button>
+                        );
+                      })()}
                     </div>
                   );
                 })}
