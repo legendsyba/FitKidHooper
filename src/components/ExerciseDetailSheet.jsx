@@ -13,6 +13,8 @@ import { getChainForExercise, getChainStatus } from "../lib/progressionChains.js
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { youtubeEmbedUrl } from "../lib/youtubeEmbedUrl.js";
 import { clipFor, isClipToolEnabled } from "../lib/videoClips.js";
+import { drillReplacements } from "../lib/drillSwap.js";
+import { tierLabel } from "../lib/skillLevels.js";
 import ClipEditor from "./ClipEditor.jsx";
 import { ownThumbnail, thumbBackdrop } from "../lib/videoThumb.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
@@ -406,7 +408,7 @@ function ExerciseSetTracker({
 
 /* ═══════════════════════ EXERCISE DETAIL SHEET ════════════ */
 export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF, isDone, onToggle, onClose, onNext, completed, favored, onToggleFav, navLabel,
-  programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach,
+  programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach, onSwapDrill,
   sessionList, isSessionExerciseDone, totalXP, hasPendingCelebration, sessionXpEarned,
   isSignedIn, onSavePlayer, missionDone = true }) {
   useWakeLock(true);
@@ -428,6 +430,16 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
 
   const [showComplete, setShowComplete] = useState(false);
   const [completePending, setCompletePending] = useState(false);
+  const [showSwap, setShowSwap] = useState(false);
+  // Same-area, level-appropriate drills this kid could swap in (never a drill already in the session).
+  const swapOptions = useMemo(() => {
+    if (!onSwapDrill || !exercise?.id) return [];
+    return drillReplacements(exercise.id, {
+      settings, completed,
+      exclude: (sessionList || []).map((e) => e.id),
+      limit: 6,
+    });
+  }, [onSwapDrill, exercise?.id, settings, completed, sessionList]);
   const triggerComplete = () => {
     if (hasPendingCelebration) setCompletePending(true);
     else setShowComplete(true);
@@ -829,6 +841,18 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
               </button>
             )}
 
+            {/* Swap this drill — a different drill for the same skill, at your level. Sticks going forward. */}
+            {onSwapDrill && swapOptions.length > 0 && (
+              <button type="button" onClick={() => setShowSwap(true)}
+                style={{ display:"flex",alignItems:"center",gap:8,width:"100%",marginBottom:18,
+                  background:`${color}0d`,border:`1px solid ${color}28`,borderRadius:12,
+                  padding:"11px 14px",cursor:"pointer",textAlign:"left" }}>
+                <span style={{ fontSize:15 }}>🔄</span>
+                <span style={{ fontSize:13,fontWeight:700,color,flex:1 }}>Swap for a different drill</span>
+                <span style={{ fontSize:13,fontWeight:700,color }}>→</span>
+              </button>
+            )}
+
             {/* Common Mistakes */}
             {exercise.commonMistakes?.length>0&&(
               <div style={{ marginBottom:18 }}>
@@ -1115,6 +1139,42 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
                 </button>
               </>
             )}
+          </div>
+        )}
+
+        {/* Swap picker — pick a same-skill drill at your level to use instead. The parent swaps it
+            live and remembers it (settings.drillSwaps) so it sticks in future sessions. */}
+        {showSwap && (
+          <div onClick={() => setShowSwap(false)}
+            style={{ position:"absolute", inset:0, zIndex:6, background:"rgba(0,0,0,0.75)",
+              display:"flex", alignItems:"flex-end", justifyContent:"center" }}>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ width:"100%", maxWidth:480, maxHeight:"80%", overflowY:"auto", background:SF || BG,
+                borderRadius:"20px 20px 0 0", padding:"20px 18px 28px" }}>
+              <div style={{ fontSize:18, fontWeight:800, color:"var(--fkh-text)", marginBottom:3 }}>Swap this drill</div>
+              <div style={{ fontSize:12.5, color:"#94a3b8", marginBottom:16 }}>
+                Same skill, at your level. We'll use your pick here and remember it next time.
+              </div>
+              <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+                {swapOptions.map((o) => (
+                  <button key={o.id} type="button"
+                    onClick={() => { onSwapDrill(exercise.id, o.id); setShowSwap(false); }}
+                    style={{ display:"flex", alignItems:"center", gap:10, width:"100%", textAlign:"left",
+                      background:`${color}0d`, border:`1px solid ${color}28`, borderRadius:12, padding:"12px 14px", cursor:"pointer" }}>
+                    <span style={{ fontSize:18 }}>🏀</span>
+                    <span style={{ flex:1 }}>
+                      <span style={{ display:"block", fontSize:14, fontWeight:700, color:"var(--fkh-text)" }}>{o.name}</span>
+                      <span style={{ fontSize:11, color:"#94a3b8", textTransform:"capitalize" }}>{tierLabel(({ beginner:1, intermediate:2, advanced:3 })[o.difficulty] || 1)}</span>
+                    </span>
+                    <span style={{ fontSize:13, fontWeight:800, color }}>Use this →</span>
+                  </button>
+                ))}
+              </div>
+              <button type="button" onClick={() => setShowSwap(false)}
+                style={{ width:"100%", padding:11, marginTop:14, background:"none", border:"none", color:"#64748b", fontSize:13, fontWeight:700, cursor:"pointer" }}>
+                Keep {exercise.name}
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -23,6 +23,7 @@ import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
 import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
+import { applyDrillSwaps, recordDrillSwap } from "./lib/drillSwap.js";
 import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
@@ -2485,15 +2486,34 @@ export default function FitKidHooperApp() {
     }
   }, [isExerciseDoneForPractice]);
   const openSessionWithWarmup = useCallback((exList, ctx, startEx = null, practiceSource = null) => {
+    // Fold in any drills this kid has swapped before, so a past swap sticks in today's session too.
+    const base = (exList || []).map(e => ({ ...e, meta: e.meta || EXERCISE_META[e.id] || {} }));
+    const swappedIds = applyDrillSwaps(base.map(e => e.id), settings);
+    const swapped = swappedIds.map((id, i) => (base[i] && base[i].id === id)
+      ? base[i]
+      : ({ ...(ALL_EXERCISES[id] || {}), id, _cat: ALL_EXERCISES[id]?._cat, meta: EXERCISE_META[id] || {} }));
     const list = withSessionWarmup(
-      (exList || []).map(e => ({ ...e, meta: e.meta || EXERCISE_META[e.id] || {} })),
+      swapped,
       WORKOUTS,
       EXERCISE_META,
-      { categories: categoriesFromExercises(exList, ALL_EXERCISES) },
+      { categories: categoriesFromExercises(swapped, ALL_EXERCISES) },
     );
     const first = startEx || list[0];
     if (first) openDetail(first, list, ctx, practiceSource);
-  }, [openDetail]);
+  }, [openDetail, settings]);
+
+  /* Swap the drill a kid is on for a different one in the same skill area. Persists the choice
+     (recordDrillSwap → settings.drillSwaps) so it sticks in future sessions, and replaces it live
+     in the current session so the change is immediate. Reuses the Fit Tracker swap model. */
+  const swapActiveDrill = useCallback((fromId, toId) => {
+    if (!fromId || !toId || fromId === toId) return;
+    setSettings(s => ({ ...s, drillSwaps: recordDrillSwap(s, fromId, toId) }));
+    const nd = ALL_EXERCISES[toId];
+    if (!nd) return;
+    const enriched = { ...nd, _cat: nd._cat || "speed", meta: EXERCISE_META[toId] || {} };
+    setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
+    setActiveExercise(cur => (cur && cur.id === fromId ? enriched : cur));
+  }, []);
   const detailIdx  = activeExercise ? detailList.findIndex(e=>e.id===activeExercise.id) : -1;
   const nextExDetail = detailIdx>=0 && detailIdx<detailList.length-1 ? detailList[detailIdx+1] : null;
   const closeDetail  = () => { setActiveExercise(null); setDetailContext(null); activePracticeRef.current = null; };
@@ -2510,6 +2530,8 @@ export default function FitKidHooperApp() {
     bilateralPrefs, onBilateralPrefChange: handleBilateralPrefChange,
     settings, today,
     onAskCoach: askCoachAboutExercise,
+    onSwapDrill: swapActiveDrill,
+    completed: completedSafe,
     sessionList: detailList,
     isSessionExerciseDone: isExerciseDoneForPractice,
     sessionXpEarned: detailList.length >= 2
