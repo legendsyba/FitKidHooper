@@ -3359,6 +3359,7 @@ export default function FitKidHooperApp() {
         safePersistKey("s_settings", next, { force: true });
         return next;
       })}
+      onOpenProgram={(id) => { setSelectedProgram(id); setProgramSegment("browse"); setView("programs"); }}
     />
   ) : null;
 

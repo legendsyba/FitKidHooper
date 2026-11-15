@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { WANT_TO_WORK_OPTIONS, questionsFor, scoreAssessment } from "../lib/skillAssessment.js";
 import { tierLabel } from "../lib/skillLevels.js";
+import { recommendProgramForLevels } from "../lib/programRecommend.js";
 
 /**
  * The kid-facing skill self-check. Pick what you want to work on → answer a few game-pressure
@@ -8,7 +9,7 @@ import { tierLabel } from "../lib/skillLevels.js";
  * which the parent persists to settings.skillLevels (what drives drill selection). No history
  * needed — this is how a raw 3rd grader and an ahead-of-age kid both start at the right rung.
  */
-export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose, onDone, initialAreas = [], zIndex = 420 }) {
+export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose, onDone, onOpenProgram, initialAreas = [], zIndex = 420 }) {
   const [step, setStep] = useState("pick"); // pick | quiz | result
   const [areas, setAreas] = useState(initialAreas);
   const [answers, setAnswers] = useState({});
@@ -17,6 +18,7 @@ export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose
   const allQuestions = quiz.flatMap((a) => a.questions);
   const answered = allQuestions.filter((q) => answers[q.id]).length;
   const scored = useMemo(() => scoreAssessment(answers), [answers]);
+  const rec = useMemo(() => recommendProgramForLevels(scored, areas), [scored, areas]);
 
   const toggleArea = (a) => setAreas((p) => (p.includes(a) ? p.filter((x) => x !== a) : [...p, a]));
   const pick = (qid, tier) => setAnswers((p) => ({ ...p, [qid]: tier }));
@@ -98,7 +100,29 @@ export default function SkillCheckSheet({ P = "#f97316", SF = "#0d1526", onClose
                 );
               })}
             </div>
-            <button onClick={() => { onDone?.(scored); onClose?.(); }} style={primaryBtn(true)}>Build my plan →</button>
+            {rec?.program && (
+              <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 12, border: `1.5px solid ${P}`, background: `${P}14` }}>
+                <div style={{ fontFamily: "'DM Mono',monospace", fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 800, color: P, marginBottom: 4 }}>
+                  Recommended program
+                </div>
+                <div style={{ fontSize: 15, fontWeight: 800, color: "#fff" }}>
+                  {rec.program.emoji ? `${rec.program.emoji} ` : ""}{rec.program.name}
+                </div>
+                <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 3 }}>
+                  Built to level up your {WANT_TO_WORK_OPTIONS.find((o) => o.area === rec.area)?.label.toLowerCase() || rec.area}.
+                </div>
+              </div>
+            )}
+            {rec?.program && onOpenProgram ? (
+              <>
+                <button onClick={() => { onDone?.(scored); onOpenProgram(rec.program.id); onClose?.(); }} style={primaryBtn(true)}>
+                  Start {rec.program.name} →
+                </button>
+                <button onClick={() => { onDone?.(scored); onClose?.(); }} style={{ width: "100%", padding: 10, marginTop: 6, background: "none", border: "none", color: "#94a3b8", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>Just set my levels</button>
+              </>
+            ) : (
+              <button onClick={() => { onDone?.(scored); onClose?.(); }} style={primaryBtn(true)}>Build my plan →</button>
+            )}
             <button onClick={() => setStep("quiz")} style={{ width: "100%", padding: 10, marginTop: 6, background: "none", border: "none", color: "#64748b", fontSize: 13, cursor: "pointer" }}>← Change answers</button>
           </>
         )}
