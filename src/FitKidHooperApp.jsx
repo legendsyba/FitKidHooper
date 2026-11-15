@@ -24,6 +24,7 @@ import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
 import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
 import { applyDrillSwaps, recordDrillSwap, evolveFromSwaps } from "./lib/drillSwap.js";
+import { recommendProgram } from "./lib/programRecommend.js";
 import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
@@ -2903,13 +2904,18 @@ export default function FitKidHooperApp() {
   }, []);
 
   const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
+  // The kid's biggest remaining skill need — used so "Up Next" points at a weakness, not a random program.
+  const recommendedProgram = useMemo(
+    () => recommendProgram(settings, completedSafe)?.program || null,
+    [settings, completedSafe],
+  );
   const nextProgram = useMemo(
-    () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges) : null,
-    [finishedProgram, enrolledProgramsSafe, earnedBadges],
+    () => finishedProgram ? suggestNextProgram(finishedProgram.id, PROGRAMS, enrolledProgramsSafe, earnedBadges, { recommendedProgram }) : null,
+    [finishedProgram, enrolledProgramsSafe, earnedBadges, recommendedProgram],
   );
   const nextProgramWhy = useMemo(
-    () => finishedProgram ? nextProgramReason(finishedProgram.id, nextProgram, PROGRAMS, earnedBadges) : null,
-    [finishedProgram, nextProgram, earnedBadges],
+    () => finishedProgram ? nextProgramReason(finishedProgram.id, nextProgram, PROGRAMS, earnedBadges, { recommendedProgram }) : null,
+    [finishedProgram, nextProgram, earnedBadges, recommendedProgram],
   );
   const dismissNextStep = useCallback(() => {
     setProgramProgress(prev => markNextStepsHandled(prev));

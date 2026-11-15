@@ -877,7 +877,7 @@ export function isProgramLocked(prog, programs, earnedBadges) {
 }
 
 /** Why `next` follows `finishedId`, in a few kid-readable words for the Up Next card. */
-export function nextProgramReason(finishedId, next, programs, earnedBadges) {
+export function nextProgramReason(finishedId, next, programs, earnedBadges, opts = {}) {
   if (!next) return null;
   if (next.advancedOf === finishedId) return "You unlocked the next level:";
   if ((next.requires || []).includes(finishedId)) return "You unlocked the next level:";
@@ -887,6 +887,7 @@ export function nextProgramReason(finishedId, next, programs, earnedBadges) {
     && missingPrerequisites(p, programs, earnedBadges).some(m =>
       m.id === next.id || missingPrerequisites(m, programs, earnedBadges).some(d => d.id === next.id)));
   if (target) return `Next step toward ${target.name}:`;
+  if (opts.recommendedProgram && next.id === opts.recommendedProgram.id) return "Your next thing to work on:";
   return "Ready for your next program?";
 }
 
@@ -895,7 +896,7 @@ export function nextProgramReason(finishedId, next, programs, earnedBadges) {
  * list this program (same skill family), falling back to any featured program,
  * skipping anything already completed or currently enrolled.
  */
-export function suggestNextProgram(programId, programs, enrolledPrograms, earnedBadges) {
+export function suggestNextProgram(programId, programs, enrolledPrograms, earnedBadges, opts = {}) {
   const isAvailable = (p) =>
     p.id !== programId && !enrolledPrograms[p.id] && !earnedBadges.includes(p.badgeId)
     && !isProgramLocked(p, programs, earnedBadges);
@@ -919,6 +920,12 @@ export function suggestNextProgram(programId, programs, enrolledPrograms, earned
       if (deeper) return deeper;
     }
   }
+
+  /* No sequel or unlock to chase — point at the kid's biggest remaining need. `recommendedProgram`
+     is the per-skill recommender's pick (their next-weakest area), which beats a generic featured
+     pick for a kid who should be shoring up a weakness, not just handed "a program". */
+  const rec = opts.recommendedProgram;
+  if (rec && isAvailable(rec)) return rec;
 
   const familyId = programs.find(p => p.id === programId)?.advancedOf ?? programId;
   const relatedIds = MASTERY_TRACKS
