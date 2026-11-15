@@ -51,8 +51,11 @@ export function thumbBackdrop(seed = "", color = "#f97316") {
   // offset and pushed the highlight off the tile entirely.
   const x = 20 + ((h >>> 4) % 60);       // highlight placement, 20–79%
   const y = 18 + ((h >>> 10) % 44);      // 18–61%
+  // Bright enough to read as a video tile, not a black gap. A near-black base (#070d17) made the
+  // small drill-card tiles look empty; a lifted navy base plus stronger colour tints reads as "a
+  // video is here" while staying the category's colour and never calling Google.
   return [
-    `radial-gradient(circle at ${x}% ${y}%, ${color}3d 0%, transparent 58%)`,
-    `linear-gradient(${angle}deg, ${color}26 0%, #070d17 52%, ${color}14 100%)`,
+    `radial-gradient(circle at ${x}% ${y}%, ${color}66 0%, transparent 60%)`,
+    `linear-gradient(${angle}deg, ${color}44 0%, #1b2942 55%, ${color}30 100%)`,
   ].join(", ");
 }

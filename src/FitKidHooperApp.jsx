@@ -1534,7 +1534,9 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
   // color-derived helpers local to this card
   const metaBg  = `${color}12`;
   const metaBrd = `${color}28`;
-  const cueTxt  = `${color}cc`;
+  // Body text reads light on the dark card; the category colour stays on accents (tag, border,
+  // the → arrow). The old category-colour-at-alpha was dim purple on dark — hard to read.
+  const cueTxt  = "#c9d2de";
   return (
     <div onClick={onViewDetail}
       style={{ background:`${color}08`,border:`1px solid ${isDone?color:metaBrd}`,borderRadius:16,overflow:"hidden",marginBottom:14,display:"flex",transition:"border-color 0.2s",cursor:onViewDetail?"pointer":"default" }}>
@@ -1571,7 +1573,7 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
           <span style={{ fontSize:10,padding:"3px 8px",background:metaBg,borderRadius:6,fontFamily:"'DM Mono',monospace",color,border:`1px solid ${metaBrd}`,fontWeight:600 }}>{w.sets}</span>
           {w.rest!=="N/A"&&<span style={{ fontSize:10,padding:"3px 8px",background:metaBg,borderRadius:6,fontFamily:"'DM Mono',monospace",color,border:`1px solid ${metaBrd}`,fontWeight:600 }}>Rest {w.rest}</span>}
         </div>
-        <p style={{ fontSize:12,color:`${color}bb`,lineHeight:1.55,margin:"0 0 8px" }}>{w.desc}</p>
+        <p style={{ fontSize:12,color:"#9aa7b8",lineHeight:1.55,margin:"0 0 8px" }}>{w.desc}</p>
         <div style={{ display:"flex",flexDirection:"column",gap:4,marginBottom:10,paddingLeft:2 }}>
           {w.cues.map((c,i)=>(
             <div key={i} style={{ fontSize:11,color:cueTxt,display:"flex",lineHeight:1.45,gap:5 }}>
