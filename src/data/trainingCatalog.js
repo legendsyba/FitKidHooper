@@ -844,7 +844,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 4 — Game Skill Integration",
     desc:"Lift the ball as if shooting to get the defender airborne, then attack past them or rise for a real shot over their recovery. Requires patience — do not rush after the fake.",
     cues:["Sell the shot completely — knees bend, ball rises, eyes go to rim","WAIT for the defender to leave their feet — patient players draw fouls","Attack the moment they land — do not hesitate","Shot fake to drive, shot fake to shoot, shot fake to pass — know all three"],
-    trainer:"Baller Boot Camp", videoId:"CGnkzd9wV6g", videoChannel:"Baller Boot Camp", videoTitle:"How To Use The Shot Fake To SCORE MORE POINTS IN BASKETBALL" },
+    trainer:"Cramer Basketball", videoId:"hUeUh8hxTvQ", videoChannel:"Cramer Basketball", trusted:true, videoTitle:"KOBE BRYANT: Shot Fake Footwork Moves" },
 ];
 
 const W_FINISHING = [
@@ -894,7 +894,7 @@ const W_FINISHING = [
     progressionTrack:"Step 3 — Advanced Footwork Finishes",
     desc:"Gather the ball on one foot stepping one direction, then take the legal second step in the opposite direction — steps completely around the defender's body.",
     cues:["Gather foot steps BIG in one direction to commit the defender","Second step sweeps HARD in the other direction","Ball is protected throughout — under arm, not extended","Finish soft — this is a touch finish, not power"],
-    trainer:"ShotMechanics", videoId:"-7ONK1hiZ2A", videoChannel:"ShotMechanics", trusted:true, videoTitle:"How To Euro Step The Safe Way — ShotMechanics" },
+    trainer:"Trae Ball", videoId:"9JiRtzyN0OI", videoChannel:"Trae Ball", videoTitle:"How To: EuroStep Tutorial" },
 
   { id:"fin-pro-hop",     name:"Pro Hop Finish",          tag:"Advanced",        difficulty:"advanced",     ageRange:[11,14], funScore:9,  estimatedDuration:120,
     sets:"3x8 each side", rest:"45 s",
@@ -910,7 +910,7 @@ const W_FINISHING = [
     progressionTrack:"Step 5 — Elite Finishing",
     desc:"Finish off the unexpected foot — right-hand layup from the left foot — completely freezes the shot-blocker whose instincts tell them when to jump based on your footwork.",
     cues:["The whole point is surprise — sell the standard footwork first","Jump off the non-dominant foot on the finish","Ball still goes up with the dominant hand — just the take-off foot changes","Film yourself to confirm you are actually switching feet"],
-    trainer:"GetHandles", videoId:"vIfDkyZf52s", videoChannel:"Get Handles Basketball", trusted:true, videoTitle:"Why You SHOULD Take Wrong Foot Layups — GetHandles" },
+    trainer:"Dre Baldwin", videoId:"CodVye-uurM", videoChannel:"Dre Baldwin - Work On Your Game", trusted:true, videoTitle:"Wrong-Foot Left Hand Layup — Signature Move Tutorial" },
 ];
 
 const W_SHOOTING_DRILLS = [
@@ -1058,7 +1058,7 @@ const W_POST_MOVES = [
     progressionTrack:"Step 3 — Post Combo Moves",
     desc:"When the defender is pressing hard into your back, use their pressure against them. Plant the inside foot, reverse pivot explosively to spin away from their body, and attack straight to the basket for a power layup or hook. The spin is a counter move — it only works when the defender is pushing.",
     cues:["Plant foot is your pivot foot — never lift it before the spin is complete","Shoulder leads the spin — get your chest through first, the rest of the body follows","Ball stays tight to your chest during the spin — protect it with both hands, elbows out","Come out of the spin low and in attack mode — don't pop upright before you finish"],
-    trainer:"ShotMechanics", videoId:"Ug3uvtnC8KI", videoChannel:"ShotMechanics", trusted:true, videoTitle:"How To Perfect the Spin Move: Basketball Moves Mastery — ShotMechanics" },
+    trainer:"The Film Room", videoId:"p80SbsoBNOQ", videoChannel:"The Film Room", trusted:true, videoTitle:"Details of the Quick Post Spin" },
 
   { id:"pm-face-up",     name:"Face-Up from the Post",         tag:"Intermediate",    difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:150,
     sets:"3×8 each side", rest:"30 s",
