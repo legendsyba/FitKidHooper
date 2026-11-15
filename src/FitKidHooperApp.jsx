@@ -3393,7 +3393,15 @@ export default function FitKidHooperApp() {
         safePersistKey("s_settings", next, { force: true });
         return next;
       })}
-      onOpenProgram={(id) => { setSelectedProgram(id); setProgramSegment("browse"); setView("programs"); }}
+      onOpenProgram={(id) => {
+        // "Start <program>" should actually start it: enroll the kid (unless already enrolled, so a
+        // re-check doesn't reset their progress) and drop them in My Plan where the session is ready.
+        const prog = PROGRAMS.find(p => p.id === id);
+        if (prog && !enrolledPrograms[id]) enrollProgram(prog);
+        setSelectedProgram(id);
+        setProgramSegment("myPlan");
+        openProgramsSection("plans");
+      }}
     />
   ) : null;
 
