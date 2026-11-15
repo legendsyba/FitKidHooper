@@ -3686,6 +3686,37 @@ const PROGRAMS = [
     ],
   },
 
+  /* Two-ball handling is its own recognizable track, but the catalog's six two-ball drills were
+     scattered across four programs with no home of their own. This strings the full ladder —
+     warmup → combos → wipers → pound-to-pass → two-ball-to-finish — into one focused handles
+     specialty, with 2nd To None pocket-dribble originals woven in so the hands get a breather
+     between two-ball sets. All existing, vetted drills; two are FKH-original coach-filmed clips. */
+  {
+    id:"two-ball-handles", name:"Two-Ball Handles", emoji:"🤹", color:"#6366f1",
+    badgeId:"pgm-two-ball", duration:3, daysPerWeek:3, ageRange:[9,17], equipment:["two_basketballs"], equipmentFew:["basketball","wall","hoop"],
+    desc:"Two balls, both hands, no looking down. Build the coordination and ball control that makes one ball feel easy — then turn it into combos and finishes at game speed.",
+    weeks:[
+      { week:1, goal:"Two-ball control — get both hands alive and keep the dribbles even.",
+        sessions:[
+          { day:"Session 1", focus:"Wake the Hands",    exercises:["tn-2ball-warmup","two-ball","tn-pocket"] },
+          { day:"Session 2", focus:"Both Hands Alive",  exercises:["tn-2ball-warmup","tn-2ball-wipers","two-ball"] },
+          { day:"Session 3", focus:"Control Combos",    exercises:["tn-2ball-wipers","relph-twoball","tn-pocket"] },
+        ]},
+      { week:2, goal:"Two-ball combos — add moves and rhythm while keeping both balls under control.",
+        sessions:[
+          { day:"Session 1", focus:"Combo Moves",       exercises:["relph-twoball","two-ball","tn-2ball-wipers"] },
+          { day:"Session 2", focus:"Pound to Pass",     exercises:["cr29-d18","tn-2ball-warmup","tn-pocket-tween"] },
+          { day:"Session 3", focus:"Add a Move",        exercises:["cr29-d18","relph-twoball","two-ball"] },
+        ]},
+      { week:3, goal:"Two-ball to game — speed it up and turn the handle into a finish.",
+        sessions:[
+          { day:"Session 1", focus:"Speed Up",          exercises:["two-ball","tn-2ball-wipers","cr29-d18"] },
+          { day:"Session 2", focus:"Two-Ball to Finish", exercises:["cr29-d27","cr29-d18","relph-twoball"] },
+          { day:"Session 3", focus:"Compete",           exercises:["cr29-d27","relph-twoball","tn-2ball-warmup"] },
+        ]},
+    ],
+  },
+
   {
     id:"first-step-explosion", name:"First Step Explosion", emoji:"⚡", color:"#f43f5e",
     badgeId:"pgm-first-step", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["basketball","hoop"],
@@ -4267,6 +4298,7 @@ const PROGRAM_WEEK_TIERS = {
   "become-shooter-2":     [2, 2, 3, 3],
   "finish-at-rim":        [1, 2, 2, 3],
   "finish-at-rim-2":      [2, 3, 3, 3],
+  "two-ball-handles":     [1, 2, 3],
   "first-step-explosion": [1, 2, 2, 3],
   "complete-hooper":      [1, 2, 2, 3, 3, 3],
   "bodyweight-beast":     [1, 1, 2],
