@@ -22,6 +22,7 @@ import ShotTrackerErrorBoundary from "./components/ShotTrackerErrorBoundary.jsx"
 import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
+import { getSkillLevels, drillAllowed } from "./lib/skillLevels.js";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
 import CountBadge from "./components/CountBadge.jsx";
@@ -286,13 +287,14 @@ function searchExercises(query, limit = 12) {
   }).slice(0, limit);
 }
 
-function generateWorkout(settings, templateKey, recentIds=[]) {
+function generateWorkout(settings, templateKey, recentIds=[], skillLevels=null, completed={}) {
   const tmpl = WORKOUT_TEMPLATES[templateKey];
   if (!tmpl) return null;
   const age    = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth)));
   const rule   = AGE_RULES[age];
   const dRank  = {beginner:0,intermediate:1,advanced:2};
   const pRank  = dRank[settings.experience||"beginner"]??0;
+  const levels = skillLevels || getSkillLevels(settings, completed);
   const goals  = settings.goals||[];
   const posProfile = POSITION_PROFILES[settings.playStyle||"any"] || POSITION_PROFILES.any;
   const posCats = new Set(posProfile.boostCats);
@@ -303,12 +305,9 @@ function generateWorkout(settings, templateKey, recentIds=[]) {
     (WORKOUTS[cat]||[]).map(ex => ({ ...ex, _cat:cat, meta:EXERCISE_META[ex.id]||{} }))
   );
 
-  // Filter: age range + difficulty (allow one level stretch for challenge)
-  const eligible = pool.filter(ex => {
-    const m = ex.meta;
-    if (m.ageRange && age < m.ageRange[0]) return false;
-    return (dRank[m.difficulty]??0) <= pRank + 1;
-  });
+  // Filter by the kid's PER-SKILL level, not their age (skillLevels.js). Age only keeps a soft
+  // floor on genuinely physical older-kid drills — see drillAllowed (option b).
+  const eligible = pool.filter(ex => drillAllowed(ex, levels, age, { stretch: 1 }));
 
   // Score: funScore + goal match + position fit + anti-repeat + randomness
   const scored = eligible.map(ex => {
@@ -748,6 +747,14 @@ const MAX_DAILY_MISSION_TASKS = 5;
  */
 function generateDailyMission(todayStr, settings, completed, enrolledPrograms, programProgress={}) {
   const age = calcAge(settings.dateOfBirth);
+  const levels = getSkillLevels(settings, completed); // per-skill level, so the mission matches the kid, not their age
+  // Drills in a category that fit the kid's level for it; falls back to the whole category so a
+  // mission is never empty.
+  const atLevel = (cat, n) => {
+    const pool = WORKOUTS[cat] || [];
+    const fit = pool.filter(e => drillAllowed({ ...e, _cat: cat }, levels, age));
+    return (fit.length >= 2 ? fit : pool).slice(0, n).map(e => e.id);
+  };
   const cutoff = new Date(Date.now()-3*86400000).toLocaleDateString("en-CA");
   const recentCats = new Set(
     Object.keys(completed)
@@ -818,7 +825,7 @@ function generateDailyMission(todayStr, settings, completed, enrolledPrograms, p
     const daySeed = new Date(todayStr+"T12:00:00").getDay();
     const underworked = bbCats.find(c=>!recentCats.has(c));
     const fallbackCat = underworked || bbCats[daySeed % bbCats.length];
-    const catExs = (WORKOUTS[fallbackCat]||[]).slice(0,3).map(e=>e.id);
+    const catExs = atLevel(fallbackCat, 3);
     const catInfo = CATS[fallbackCat]||{label:fallbackCat,emoji:"🏀"};
     title = `${catInfo.emoji} ${catInfo.label} Day`;
     task1Cat = fallbackCat;
@@ -840,7 +847,7 @@ function generateDailyMission(todayStr, settings, completed, enrolledPrograms, p
     const available = skillCats.filter(c=>c!==task1Cat&&(WORKOUTS[c]||[]).length>=2);
     const skillCat = available.find(c=>!recentCats.has(c)) || available[(dayOffset+1)%available.length];
     if (skillCat) {
-      const catExs = (WORKOUTS[skillCat]||[]).slice(0,2).map(e=>e.id);
+      const catExs = atLevel(skillCat, 2);
       const catInfo = CATS[skillCat]||{label:skillCat,emoji:"🏀"};
       tasks.push({
         id:"task-skill", type:"category",

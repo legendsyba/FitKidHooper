@@ -37,9 +37,13 @@ const skillIndex = () => (_index ||= buildExerciseSkillIndex(ALL_EXERCISES, EXER
 export function getSkillLevels(settings = {}, completed = {}) {
   const inferred = inferAreaTiers(completed || {}, skillIndex());
   const override = settings.skillLevels || {};
+  const base = labelTier(settings.experience); // the kid's stated global level = the baseline
   const out = {};
   for (const area of Object.keys(SKILL_AREAS)) {
-    out[area] = clampTier(override[area] != null ? override[area] : inferred[area] != null ? inferred[area] : 1);
+    // Coach/kid override wins absolutely. Otherwise start from the stated global level and let
+    // demonstrated history RAISE a specific area above it — so an area is never below what they
+    // said they are, but can be ahead where they've proven it. A coach lowers a weak area by override.
+    out[area] = clampTier(override[area] != null ? override[area] : Math.max(base, inferred[area] || 1));
   }
   return out;
 }
@@ -63,8 +67,20 @@ export function areaOfExercise(ex) {
 export function drillFitsLevel(ex, areaLevels = {}, { stretch = 1 } = {}) {
   const area = areaOfExercise(ex);
   const kid = area ? areaLevels[area] ?? 1 : 1;
-  const d = DIFFICULTY_TIER[ex.difficulty] || 1;
+  const d = DIFFICULTY_TIER[ex.difficulty ?? ex.meta?.difficulty] || 1;
   return d <= kid + stretch;
+}
+
+/**
+ * The selection gate that replaces the age floor: a drill is allowed when it FITS THE KID'S LEVEL
+ * for its area (level + a stretch rung). Option (b) safety — a genuinely physical, older-kid drill
+ * (its own minimum age is >= safetyAge, e.g. dunking / heavy plyometrics) keeps a gentle age floor
+ * so a small 8-year-old isn't told to dunk. Everything else ignores age entirely.
+ */
+export function drillAllowed(ex, levels = {}, age, { stretch = 1, safetyAge = 12 } = {}) {
+  const ar = ex.ageRange || ex.meta?.ageRange;
+  if (ar && ar[0] >= safetyAge && typeof age === "number" && age < ar[0]) return false;
+  return drillFitsLevel(ex, levels, { stretch });
 }
 
 /** Set a per-area override; returns the new skillLevels object to persist on settings. */
