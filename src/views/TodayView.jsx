@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
+import { recommendProgram } from "../lib/programRecommend.js";
+import { SKILL_AREAS } from "../lib/skillGraph.js";
 import ProgressRail from "../components/ProgressRail.jsx";
 import ChallengeStrip from "../components/ChallengeStrip.jsx";
 import FriendsTeaser from "../components/FriendsTeaser.jsx";
@@ -730,6 +732,30 @@ export default function TodayView({
           no route to one from home. One dashed row, only when nothing is
           enrolled. */}
       {enrolledList.length === 0 && !finishedProgram && (() => {
+        // A classified kid gets THEIR recommendation; everyone else the generic browse nudge.
+        const classified = settings.skillLevels && Object.keys(settings.skillLevels).length > 0;
+        const rec = classified ? recommendProgram(settings, completed, [], programs) : null;
+        if (rec?.program) {
+          const areaLabel = SKILL_AREAS[rec.area]?.label?.toLowerCase() || rec.area;
+          const recWeeks = rec.program.weeks?.length;
+          return (
+            <button type="button" onClick={() => onStartProgram?.(rec.program)}
+              style={{ display:"block", width:"calc(100% - 40px)", margin:"0 20px 14px", textAlign:"left",
+                padding:"13px 15px", borderRadius:14, cursor:"pointer", border:`1.5px solid ${P}`, background:`${P}14` }}>
+              <div style={{ fontFamily:"'DM Mono',monospace", fontSize:9.5, letterSpacing:"0.16em",
+                textTransform:"uppercase", fontWeight:800, color:P, marginBottom:5 }}>
+                Recommended for you
+              </div>
+              <div style={{ fontSize:13, fontWeight:700, color:"var(--fkh-text)", lineHeight:1.3 }}>
+                {rec.program.emoji ? `${rec.program.emoji} ` : ""}{rec.program.name}
+              </div>
+              <div style={{ fontSize:11, color:"#64748b", marginTop:4, lineHeight:1.45 }}>
+                Built to level up your {areaLabel}{recWeeks ? ` — ${recWeeks} weeks` : ""}.
+              </div>
+              <div style={{ fontSize:11.5, fontWeight:800, color:P, marginTop:8 }}>Start program →</div>
+            </button>
+          );
+        }
         const picks = programs.slice(0, 2).map(pr => pr.name);
         const rest = Math.max(0, programs.length - picks.length);
         const weeks = programs[0]?.weeks?.length;
