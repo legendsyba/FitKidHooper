@@ -3656,32 +3656,32 @@ const PROGRAMS = [
      speed. An advanced finisher (self-check tier 3) routes here instead of the foundational I. */
   {
     id:"finish-at-rim-2", name:"Finish at the Rim II", emoji:"🔥", color:"#059669",
-    badgeId:"pgm-finish-rim-2", advancedOf:"finish-at-rim", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"],
-    desc:"Finish like a guard who gets to the rim at will: pro hops, the low SGA gather, wrong-foot layups, swing-step finishes off both hands, floaters, and scoring through contact at game speed.",
+    badgeId:"pgm-finish-rim-2", advancedOf:"finish-at-rim", level:2, duration:4, daysPerWeek:3, ageRange:[10,17], equipment:["basketball","hoop"], equipmentFew:["two_basketballs"],
+    desc:"Finish like a guard who gets to the rim at will: attack off the dribble, pro hops, the low SGA gather, wrong-foot layups, swing-step finishes off both hands, floaters, and scoring through contact at game speed.",
     weeks:[
-      { week:1, goal:"Advanced gathers — pro hop, the low pickup, and ball-side footwork on the move.",
+      { week:1, goal:"Attack and gather — turn a live dribble into a gather, pro hop, and low pickup.",
         sessions:[
-          { day:"Session 1", focus:"Euro & Hop Craft",    exercises:["fin-euro","fs-hop-step","fin-pro-hop"] },
-          { day:"Session 2", focus:"Low Gather",          exercises:["fs-low-pickup","fin-pro-hop","tn-glide-ballside-finish"] },
-          { day:"Session 3", focus:"Swing Finishes",      exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fs-low-pickup"] },
+          { day:"Session 1", focus:"Handles to Finish",   exercises:["cr29-d14","fin-euro","fs-hop-step"] },
+          { day:"Session 2", focus:"Pro Hop & Low Gather", exercises:["fin-pro-hop","fs-low-pickup","tn-glide-ballside-finish"] },
+          { day:"Session 3", focus:"Two-Ball Control",    exercises:["cr29-d27","fin-pro-hop","fs-low-pickup"] },
         ]},
       { week:2, goal:"Off-foot and deception — wrong-foot layups, floaters, and swing-step both hands.",
         sessions:[
           { day:"Session 1", focus:"Wrong Foot",          exercises:["fin-wrong-foot","fs-hop-step","tn-glide-swing-inside"] },
-          { day:"Session 2", focus:"Floaters",            exercises:["fin-floater","fin-wrong-foot","fs-low-pickup"] },
-          { day:"Session 3", focus:"Swing & Finish",      exercises:["tn-glide-swing-outside","tn-glide-swing-inside","fin-pro-hop"] },
+          { day:"Session 2", focus:"Floaters",            exercises:["fin-floater","fin-wrong-foot","cr29-d14"] },
+          { day:"Session 3", focus:"Swing Both Hands",    exercises:["tn-glide-swing-outside","tn-glide-swing-inside","cr29-d27"] },
         ]},
       { week:3, goal:"Contact and craft — finish through a body and combine moves into finishes.",
         sessions:[
-          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-wrong-foot","fin-floater"] },
+          { day:"Session 1", focus:"Through Contact",     exercises:["fs-contact-finish","fin-wrong-foot","tn-glide-ballside-finish"] },
           { day:"Session 2", focus:"Craft Combos",        exercises:["fin-floater","fs-contact-finish","tn-glide-swing-outside"] },
-          { day:"Session 3", focus:"Game Speed",          exercises:["fs-low-pickup","fin-pro-hop","fs-contact-finish"] },
+          { day:"Session 3", focus:"Game Speed",          exercises:["fs-low-pickup","fin-pro-hop","cr29-d27"] },
         ]},
       { week:4, goal:"Elite game finishes — put the whole package together at game speed.",
         sessions:[
           { day:"Session 1", focus:"Finish Package",      exercises:["fin-wrong-foot","fin-floater","fs-contact-finish"] },
           { day:"Session 2", focus:"Both-Hand Swings",    exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fs-low-pickup"] },
-          { day:"Session 3", focus:"Compete",             exercises:["fin-floater","fs-contact-finish","fin-pro-hop"] },
+          { day:"Session 3", focus:"Compete",             exercises:["fin-floater","fs-contact-finish","cr29-d14"] },
         ]},
     ],
   },
