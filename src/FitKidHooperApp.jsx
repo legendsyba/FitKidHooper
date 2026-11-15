@@ -22,7 +22,7 @@ import ShotTrackerErrorBoundary from "./components/ShotTrackerErrorBoundary.jsx"
 import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
-import { getSkillLevels, drillAllowed } from "./lib/skillLevels.js";
+import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
 import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
@@ -293,8 +293,6 @@ function generateWorkout(settings, templateKey, recentIds=[], skillLevels=null, 
   if (!tmpl) return null;
   const age    = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth)));
   const rule   = AGE_RULES[age];
-  const dRank  = {beginner:0,intermediate:1,advanced:2};
-  const pRank  = dRank[settings.experience||"beginner"]??0;
   const levels = skillLevels || getSkillLevels(settings, completed);
   const goals  = settings.goals||[];
   const posProfile = POSITION_PROFILES[settings.playStyle||"any"] || POSITION_PROFILES.any;
@@ -2363,9 +2361,23 @@ export default function FitKidHooperApp() {
   const toggle  = useCallback((id, source) => {
     const key = `${today}-${id}`;
     const src = source || view;
-    if (!completed[key]) trackExerciseComplete(id, src);
-    setCompleted(p => ({ ...p, [key]: !p[key] }));
-  }, [today, completed, view]);
+    const wasDone = !!completed[key];
+    if (!wasDone) trackExerciseComplete(id, src);
+    const next = { ...completed, [key]: !wasDone };
+    setCompleted(next);
+    // On a NEW completion, a skill AREA levels up once enough of its current-level drills are done.
+    if (!wasDone) {
+      const evo = evolveSkillLevels(settings, next);
+      if (evo) {
+        setSettings(s => {
+          const ns = { ...s, skillLevels: evo.skillLevels };
+          safePersistKey("s_settings", ns, { force: true });
+          return ns;
+        });
+        setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
+      }
+    }
+  }, [today, completed, view, settings]);
 
   const markProgramExercise = useCallback((ctx, exId) => {
     const { programId, week, sessionIdx } = ctx;

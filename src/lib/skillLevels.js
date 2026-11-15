@@ -17,7 +17,6 @@
  */
 import { SKILL_AREAS, CATEGORY_TO_AREA } from "./skillGraph.js";
 import { buildExerciseSkillIndex, DIFFICULTY_TIER } from "./exerciseSkills.js";
-import { inferAreaTiers } from "./developmentPathways.js";
 import { ALL_EXERCISES, EXERCISE_META } from "../data/trainingCatalog.js";
 
 export const TIER_LABEL = { 1: "beginner", 2: "intermediate", 3: "advanced" };
@@ -34,8 +33,29 @@ const skillIndex = () => (_index ||= buildExerciseSkillIndex(ALL_EXERCISES, EXER
  * otherwise it is inferred from completion history. So it answers "what level is this kid at
  * finishing" independently of age, and defaults sensibly (beginner) for a brand-new kid.
  */
+/**
+ * Infer a per-area level (1-3) from the DIFFICULTY of drills the kid has completed — the average,
+ * rounded. On the same scale as a drill's `difficulty`, so inference, selection and evolve all
+ * agree. An area with no completions is absent (the caller defaults it).
+ */
+function inferDifficultyLevels(completed = {}) {
+  const sum = {}, n = {};
+  for (const [key, done] of Object.entries(completed)) {
+    if (!done) continue;
+    const ex = ALL_EXERCISES[key.split("-").slice(3).join("-")];
+    if (!ex) continue;
+    const area = areaOfExercise(ex);
+    if (!area) continue;
+    sum[area] = (sum[area] || 0) + (DIFFICULTY_TIER[ex.difficulty] || 1);
+    n[area] = (n[area] || 0) + 1;
+  }
+  const out = {};
+  for (const area in sum) out[area] = clampTier(sum[area] / n[area]);
+  return out;
+}
+
 export function getSkillLevels(settings = {}, completed = {}) {
-  const inferred = inferAreaTiers(completed || {}, skillIndex());
+  const inferred = inferDifficultyLevels(completed || {});
   const override = settings.skillLevels || {};
   const base = labelTier(settings.experience); // the kid's stated global level = the baseline
   const out = {};
@@ -83,25 +103,49 @@ export function drillAllowed(ex, levels = {}, age, { stretch = 1, safetyAge = 12
   return drillFitsLevel(ex, levels, { stretch });
 }
 
+/** A kid-facing "you leveled up" line for a raised area. */
+export function levelUpMessage({ area, to }) {
+  const a = SKILL_AREAS[area];
+  return `${a?.emoji || "⚡"} Leveled up to ${tierLabel(to)} ${a?.label || area}!`;
+}
+
 /** Set a per-area override; returns the new skillLevels object to persist on settings. */
 export function setSkillLevel(settings = {}, area, tierOrLabel) {
   const t = typeof tierOrLabel === "string" ? labelTier(tierOrLabel) : clampTier(tierOrLabel);
   return { ...(settings.skillLevels || {}), [area]: t };
 }
 
+/** Count completed drills per `${area}:${difficultyTier}`, from the completion map. */
+function completedByAreaLevel(completed = {}) {
+  const counts = {};
+  for (const [key, done] of Object.entries(completed)) {
+    if (!done) continue;
+    const exId = key.split("-").slice(3).join("-"); // completion keys are "<date>-<n>-<x>-<exId>"
+    const ex = ALL_EXERCISES[exId];
+    if (!ex) continue;
+    const area = areaOfExercise(ex);
+    if (!area) continue;
+    const tier = DIFFICULTY_TIER[ex.difficulty] || 1;
+    const k = `${area}:${tier}`;
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  return counts;
+}
+
 /**
- * Should any area level UP? An area evolves when the kid has completed enough drills AT its
- * current level — mastery, not age or time. Returns a new skillLevels override map (or null if
- * nothing changed). `countAtLevel(area, tier)` is supplied by the caller from completion history.
+ * Should any area level UP? An area evolves when the kid has completed enough DISTINCT drills AT
+ * its current level — mastery, not age or time. Returns a new skillLevels override map (persist on
+ * settings.skillLevels) or null if nothing changed. Only ever raises a level, never lowers.
  */
-export function evolveSkillLevels(settings = {}, completed = {}, countAtLevel, { needed = 4 } = {}) {
+export function evolveSkillLevels(settings = {}, completed = {}, { needed = 4 } = {}) {
   const levels = getSkillLevels(settings, completed);
   const override = { ...(settings.skillLevels || {}) };
-  let changed = false;
+  const counts = completedByAreaLevel(completed);
+  const raised = [];
   for (const area of Object.keys(SKILL_AREAS)) {
     const cur = levels[area];
     if (cur >= 3) continue;
-    if ((countAtLevel?.(area, cur) || 0) >= needed) { override[area] = cur + 1; changed = true; }
+    if ((counts[`${area}:${cur}`] || 0) >= needed) { override[area] = cur + 1; raised.push({ area, to: cur + 1 }); }
   }
-  return changed ? override : null;
+  return raised.length ? { skillLevels: override, raised } : null;
 }
