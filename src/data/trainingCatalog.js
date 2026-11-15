@@ -1119,7 +1119,7 @@ const W_FINISHING_SCHOOL = [
     progressionTrack:"Step 4 — Advanced Finishes",
     desc:"Pick the ball up early, low, and LONG on the last dribble — the SGA-style gather that eats ground and gets you past the defender before the finish. Change speeds into it: slow, slow, then explode.",
     cues:["Pick it up low and far out front — cover ground on the gather","Change speed INTO the pickup — decelerate, then explode","Long first step off the pickup — shoulder past the defender","Finish soft off two feet or flow into a euro"],
-    trainer:"ILoveBasketball", videoId:"xyKHAcLPWqc", videoChannel:"ILoveBasketballTV", trusted:true, videoTitle:"Dribble Pickups Impossible to Guard — ILoveBasketball" },
+    trainer:"HoopStudy", videoId:"K8H8fELW5sQ", videoChannel:"HoopStudy", trusted:true, videoTitle:"Low Pick-Up Finishing Drill That WORKS" },
 
   { id:"fs-speed-gather",  name:"Speed Gather (One Foot)",     tag:"Foundation",  difficulty:"intermediate", ageRange:[10,14], funScore:8,  estimatedDuration:90,
     sets:"3×6 each side", rest:"30 s",
