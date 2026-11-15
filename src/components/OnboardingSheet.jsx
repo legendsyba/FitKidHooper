@@ -95,6 +95,9 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
   const { min: minDob, max: maxDob } = useMemo(() => dobBounds(), []);
   const normUser = normalizeUsername(username);
   const isReturning = flow === "returning";
+  /* The "no real name" rule protects kids on public leaderboards; an adult (a coach) may use
+     their own name. 18+ by the birthday on file skips it; everyone else keeps it. */
+  const isAdultUser = calcAge(dateOfBirth) >= 18;
 
   // One event per screen reached, so the drop-off point is visible.
   const screen = verifyMode ? "verify" : step === 0 ? "welcome" : isReturning ? "log_in" : "save_player";
@@ -113,6 +116,9 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     if (!norm) { setUsernameStatus(null); return; }
     const err = validateUsername(norm);
     if (err) { setUsernameStatus("invalid"); return; }
+    // Real-name rule runs live too, so a kid learns as they type rather than at save. Checked
+    // before the network call (it's synchronous and cheap); skipped for an adult coach.
+    if (!isAdultUser && usernameRevealsRealName(norm, firstName, "")) { setUsernameStatus("revealsname"); return; }
     setUsernameStatus("checking");
     try {
       const available = await checkUsernameAvailable(norm);
@@ -120,7 +126,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     } catch {
       setUsernameStatus(null);
     }
-  }, [isReturning]);
+  }, [isReturning, isAdultUser, firstName]);
 
   useEffect(() => {
     if (isReturning || !normUser) {
@@ -160,7 +166,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     if (userErr) return userErr;
     if (usernameStatus === "taken") return "That username is taken — try another";
     if (usernameStatus === "checking") return "Still checking username…";
-    if (usernameRevealsRealName(normUser, firstName, "")) return "Your Jersey Name can't include your real name — try a nickname or something creative!";
+    if (!isAdultUser && usernameRevealsRealName(normUser, firstName, "")) return "Your Jersey Name can't include your real name — try a nickname or something creative!";
     if (!/^\d{6}$/.test(passcode)) return "Passcode must be exactly 6 digits";
     if (passcode !== passcode2) return "Passcodes do not match";
     if (!recoveryEmail.trim().includes("@")) {
@@ -320,6 +326,7 @@ export default function OnboardingSheet({ P = "#f97316", onComplete, onAuthSucce
     if (usernameStatus === "checking") return <span style={{ color: "#94a3b8" }}>Checking…</span>;
     if (usernameStatus === "ok") return <span style={{ color: "#22c55e" }}>✓ @{normUser} is available</span>;
     if (usernameStatus === "taken") return <span style={{ color: "#f87171" }}>✗ Username taken</span>;
+    if (usernameStatus === "revealsname") return <span style={{ color: "#f87171" }}>✗ That looks like your real name — try a nickname</span>;
     if (usernameStatus === "invalid") return <span style={{ color: "#f87171" }}>3–20 letters, numbers, or _</span>;
     return null;
   };
