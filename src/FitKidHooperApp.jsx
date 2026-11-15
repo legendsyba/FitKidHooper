@@ -23,6 +23,7 @@ import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
 import { getSkillLevels, drillAllowed } from "./lib/skillLevels.js";
+import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
 import CountBadge from "./components/CountBadge.jsx";
@@ -1872,6 +1873,7 @@ export default function FitKidHooperApp() {
   const [showSettings, setShowSettings] = useState(false);
   const [showPlayLikePicker, setShowPlayLikePicker] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
+  const [showSkillCheck, setShowSkillCheck] = useState(false);
   // Coach mode. Granted by hand in the database and re-checked server-side on
   // every action — this only decides whether the tools are visible.
   const [isCoach, setIsCoach] = useState(false);
@@ -3332,9 +3334,21 @@ export default function FitKidHooperApp() {
     </>
   );
 
+  const skillCheckSheet = showSkillCheck ? (
+    <SkillCheckSheet
+      P={P} SF={SF}
+      onClose={() => setShowSkillCheck(false)}
+      onDone={(scored) => setSettings(p => {
+        const next = { ...p, skillLevels: { ...(p.skillLevels || {}), ...scored } };
+        safePersistKey("s_settings", next, { force: true });
+        return next;
+      })}
+    />
+  ) : null;
+
   const shellOverlays = (
     <>
-      {settingsSheet}{feedbackSheet}{authSheet}{guideSheet}
+      {settingsSheet}{feedbackSheet}{authSheet}{guideSheet}{skillCheckSheet}
       {/* App-level: a buddy calling has to reach you wherever you are, not
           only on the Squad tab. */}
       <BuddyVideoInviteBanner P={P} isSignedIn={auth.isSignedIn} />
@@ -3508,6 +3522,7 @@ export default function FitKidHooperApp() {
     return (
       <MeView
         settings={settings}
+        onSkillCheck={() => setShowSkillCheck(true)}
         progressTab={progressTab}
         setProgressTab={setProgressTab}
         xpData={xpData}

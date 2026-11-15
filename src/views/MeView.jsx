@@ -14,6 +14,7 @@ import { readShotLog } from "../lib/shotLog.js";
 
 export default function MeView({
   settings,
+  onSkillCheck,
   progressTab,
   setProgressTab,
   xpData,
@@ -165,6 +166,7 @@ export default function MeView({
               setSettings={setSettings}
               avatarUrl={avatarUrl}
               onAvatarChange={onAvatarChange}
+              onSkillCheck={onSkillCheck}
             />
           )}
           <ProgressJourney
