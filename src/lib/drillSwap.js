@@ -77,6 +77,39 @@ export function clearDrillSwap(settings = {}, fromId) {
 }
 
 /**
+ * Evolve a skill level from swap behaviour — the "recognize and evolve" the founder asked for.
+ *
+ * A kid who keeps swapping toward HARDER drills in an area is telling us they've outgrown the
+ * level we have them at. When an area has at least `needed` distinct current swaps whose target
+ * sits ABOVE the kid's level for that area, nudge that area up one rung. Raise-only and capped at
+ * advanced, like evolveSkillLevels — and self-limiting: once the level rises, those same swaps no
+ * longer sit above it, so it won't bump again without fresh reaching. Returns { skillLevels, raised }
+ * to persist (same shape as evolveSkillLevels) or null.
+ */
+export function evolveFromSwaps(settings = {}, completed = {}, { needed = 2 } = {}) {
+  const swaps = settings.drillSwaps || {};
+  const levels = getSkillLevels(settings, completed);
+  const override = { ...(settings.skillLevels || {}) };
+  const reaches = {}; // area -> count of current swaps reaching above the kid's level there
+  for (const [fromId, toId] of Object.entries(swaps)) {
+    const from = exOf(fromId), to = exOf(toId);
+    if (!from || !to) continue;
+    const area = areaOfExercise(to);
+    if (!area || areaOfExercise(from) !== area) continue;
+    const toTier = DIFFICULTY_TIER[to.difficulty] || 1;
+    if (toTier > (levels[area] || 1)) reaches[area] = (reaches[area] || 0) + 1;
+  }
+  const raised = [];
+  for (const [area, n] of Object.entries(reaches)) {
+    const cur = levels[area];
+    if (cur >= 3 || n < needed) continue;
+    override[area] = cur + 1;
+    raised.push({ area, to: cur + 1 });
+  }
+  return raised.length ? { skillLevels: override, raised } : null;
+}
+
+/**
  * Fold a kid's stored swaps into a list of exercise ids — the "remember it going forward" step.
  * Each id the kid has swapped away from is replaced by what they swapped to, as long as the
  * target still exists, is in the same area, and isn't already in the list (no duplicates). Safe

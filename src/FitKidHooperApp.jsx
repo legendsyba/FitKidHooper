@@ -23,7 +23,7 @@ import ShotTracker from "./components/ShotTracker.jsx";
 import ExerciseDetailSheet from "./components/ExerciseDetailSheet.jsx";
 import { LEVELS, getLevel } from "./lib/levels.js";
 import { getSkillLevels, drillAllowed, evolveSkillLevels, levelUpMessage } from "./lib/skillLevels.js";
-import { applyDrillSwaps, recordDrillSwap } from "./lib/drillSwap.js";
+import { applyDrillSwaps, recordDrillSwap, evolveFromSwaps } from "./lib/drillSwap.js";
 import SkillCheckSheet from "./components/SkillCheckSheet.jsx";
 import { todayKey } from "./lib/dateKeys.js";
 import ViewErrorBoundary from "./components/ViewErrorBoundary.jsx";
@@ -2507,13 +2507,19 @@ export default function FitKidHooperApp() {
      in the current session so the change is immediate. Reuses the Fit Tracker swap model. */
   const swapActiveDrill = useCallback((fromId, toId) => {
     if (!fromId || !toId || fromId === toId) return;
-    setSettings(s => ({ ...s, drillSwaps: recordDrillSwap(s, fromId, toId) }));
+    let ns = { ...settings, drillSwaps: recordDrillSwap(settings, fromId, toId) };
+    // Reaching for harder drills is a signal: evolve the skill level when the kid keeps doing it.
+    const evo = evolveFromSwaps(ns, completedSafe);
+    if (evo) ns = { ...ns, skillLevels: evo.skillLevels };
+    setSettings(ns);
+    safePersistKey("s_settings", ns, { force: true });
+    if (evo) setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
     const nd = ALL_EXERCISES[toId];
     if (!nd) return;
     const enriched = { ...nd, _cat: nd._cat || "speed", meta: EXERCISE_META[toId] || {} };
     setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
     setActiveExercise(cur => (cur && cur.id === fromId ? enriched : cur));
-  }, []);
+  }, [settings, completedSafe]);
   const detailIdx  = activeExercise ? detailList.findIndex(e=>e.id===activeExercise.id) : -1;
   const nextExDetail = detailIdx>=0 && detailIdx<detailList.length-1 ? detailList[detailIdx+1] : null;
   const closeDetail  = () => { setActiveExercise(null); setDetailContext(null); activePracticeRef.current = null; };
