@@ -7,7 +7,7 @@ import { tierLabel } from "../lib/skillLevels.js";
  * meter; these are the levels that drive which drills the kid gets, and they climb on their own as
  * the kid masters each skill. `levels` is the map from getSkillLevels().
  */
-export default function SkillLevelsPanel({ levels = {}, P = "#f97316", onSkillCheck }) {
+export default function SkillLevelsPanel({ levels = {}, progress = {}, P = "#f97316", onSkillCheck }) {
   const order = ["handles", "shooting", "finishing", "footwork", "passing", "defense", "rebounding", "athleticism"];
   return (
     <div style={{ marginTop: 16 }}>
@@ -26,17 +26,38 @@ export default function SkillLevelsPanel({ levels = {}, P = "#f97316", onSkillCh
           const a = SKILL_AREAS[area];
           if (!a) return null;
           const tier = Math.max(1, Math.min(3, levels[area] || 1));
+          const pr = progress[area];
+          // A kid-readable nudge toward the next rung — the motivation to come back and finish it.
+          const nudge = !pr ? null
+            : pr.maxed ? "Maxed out — you're advanced! 🏆"
+            : pr.remaining <= 0 ? "Ready to level up — finish a drill! ⚡"
+            : `${pr.remaining} more ${a.label.toLowerCase()} drill${pr.remaining > 1 ? "s" : ""} to level up`;
           return (
-            <div key={area} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 10, background: "#0b1322", border: "1px solid #1e293b" }}>
-              <span style={{ fontSize: 16, width: 22, textAlign: "center" }}>{a.emoji}</span>
-              <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>{a.label}</span>
-              {/* 3-segment meter: filled up to the kid's tier. */}
-              <span style={{ display: "flex", gap: 3 }}>
-                {[1, 2, 3].map((t) => (
-                  <span key={t} style={{ width: 16, height: 6, borderRadius: 3, background: t <= tier ? P : "#24304a" }} />
-                ))}
-              </span>
-              <span style={{ width: 78, textAlign: "right", fontSize: 11, fontWeight: 800, color: P, textTransform: "capitalize" }}>{tierLabel(tier)}</span>
+            <div key={area} style={{ display: "flex", flexDirection: "column", gap: 6, padding: "9px 12px", borderRadius: 10, background: "#0b1322", border: "1px solid #1e293b" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 16, width: 22, textAlign: "center" }}>{a.emoji}</span>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: "#e2e8f0" }}>{a.label}</span>
+                {/* 3-segment meter: filled up to the kid's tier. */}
+                <span style={{ display: "flex", gap: 3 }}>
+                  {[1, 2, 3].map((t) => (
+                    <span key={t} style={{ width: 16, height: 6, borderRadius: 3, background: t <= tier ? P : "#24304a" }} />
+                  ))}
+                </span>
+                <span style={{ width: 78, textAlign: "right", fontSize: 11, fontWeight: 800, color: P, textTransform: "capitalize" }}>{tierLabel(tier)}</span>
+              </div>
+              {nudge && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 32 }}>
+                  {/* dots filled per distinct drill done at this level */}
+                  {!pr.maxed && (
+                    <span style={{ display: "flex", gap: 3 }}>
+                      {Array.from({ length: pr.needed }).map((_, i) => (
+                        <span key={i} style={{ width: 6, height: 6, borderRadius: 99, background: i < pr.done ? P : "#24304a" }} />
+                      ))}
+                    </span>
+                  )}
+                  <span style={{ fontSize: 10.5, fontWeight: 600, color: pr.remaining <= 0 && !pr.maxed ? P : "#8595ad" }}>{nudge}</span>
+                </div>
+              )}
             </div>
           );
         })}

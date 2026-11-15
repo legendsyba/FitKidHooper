@@ -3,7 +3,7 @@ import ProfileView from "../components/ProfileView.jsx";
 import ProgressJourney from "../components/ProgressJourney.jsx";
 import IdentityEditor from "../components/IdentityEditor.jsx";
 import SkillLevelsPanel from "../components/SkillLevelsPanel.jsx";
-import { getSkillLevels } from "../lib/skillLevels.js";
+import { getSkillLevels, areaLevelProgress } from "../lib/skillLevels.js";
 import ProgressionView from "../components/ProgressionView.jsx";
 import CoachNavButton from "../components/CoachNavButton.jsx";
 import SettingsSheet from "../components/SettingsSheet.jsx";
@@ -171,7 +171,7 @@ export default function MeView({
               onSkillCheck={onSkillCheck}
             />
           )}
-          <SkillLevelsPanel levels={getSkillLevels(settings, completed)} P={P} onSkillCheck={onSkillCheck} />
+          <SkillLevelsPanel levels={getSkillLevels(settings, completed)} progress={areaLevelProgress(settings, completed)} P={P} onSkillCheck={onSkillCheck} />
           <ProgressJourney
             journey={journey}
             currentLevel={currentLevel}

@@ -115,21 +115,42 @@ export function setSkillLevel(settings = {}, area, tierOrLabel) {
   return { ...(settings.skillLevels || {}), [area]: t };
 }
 
-/** Count completed drills per `${area}:${difficultyTier}`, from the completion map. */
+/** Count DISTINCT completed drills per `${area}:${difficultyTier}`, from the completion map. Distinct
+ *  so that mastery means breadth (four different drills), not repeating one drill four times. */
 function completedByAreaLevel(completed = {}) {
-  const counts = {};
+  const seen = {}; // `${area}:${tier}` -> Set of distinct exIds
   for (const [key, done] of Object.entries(completed)) {
     if (!done) continue;
-    const exId = key.split("-").slice(3).join("-"); // completion keys are "<date>-<n>-<x>-<exId>"
+    const exId = key.split("-").slice(3).join("-"); // completion keys are "<YYYY>-<MM>-<DD>-<exId>"
     const ex = ALL_EXERCISES[exId];
     if (!ex) continue;
     const area = areaOfExercise(ex);
     if (!area) continue;
     const tier = DIFFICULTY_TIER[ex.difficulty] || 1;
     const k = `${area}:${tier}`;
-    counts[k] = (counts[k] || 0) + 1;
+    (seen[k] ||= new Set()).add(exId);
   }
+  const counts = {};
+  for (const k of Object.keys(seen)) counts[k] = seen[k].size;
   return counts;
+}
+
+/**
+ * Per-area progress toward the next level: { level, done, needed, remaining, maxed }. `done` is how
+ * many DISTINCT current-level drills the kid has finished, `remaining` how many more to level up —
+ * the number behind a "2 more to level up!" nudge. Mirrors evolveSkillLevels exactly.
+ */
+export function areaLevelProgress(settings = {}, completed = {}, { needed = 4 } = {}) {
+  const levels = getSkillLevels(settings, completed);
+  const counts = completedByAreaLevel(completed);
+  const out = {};
+  for (const area of Object.keys(SKILL_AREAS)) {
+    const cur = levels[area];
+    const done = counts[`${area}:${cur}`] || 0;
+    const maxed = cur >= 3;
+    out[area] = { level: cur, done: Math.min(done, needed), needed, remaining: maxed ? 0 : Math.max(0, needed - done), maxed };
+  }
+  return out;
 }
 
 /**
