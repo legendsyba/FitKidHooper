@@ -22,6 +22,9 @@ export const ANALYTICS_EVENTS = {
   MISSION_CLAIM: "mission_claim",
   PROGRAM_ENROLL: "program_enroll",
   PROGRAM_SESSION_COMPLETE: "program_session_complete",
+  /* A kid swapped a drill in a session for an alternative (same skill area).
+     Measures adoption of the swap feature and which drills get rejected. */
+  DRILL_SWAP: "drill_swap",
   CHALLENGE_COMPLETE: "challenge_complete",
   BADGE_EARN: "badge_earn",
   EXERCISE_FAVORITE: "exercise_favorite",

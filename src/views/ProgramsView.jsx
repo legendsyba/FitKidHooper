@@ -211,13 +211,15 @@ export default function ProgramsView({
       .filter(Boolean)
   ), [favorites, allExercises]);
 
-  const openExercise = (ex, list = [], ctx = null) => {
+  const openExercise = (ex, list = [], ctx = null, source = null) => {
     const enriched = { ...ex, meta: ex.meta || exerciseMeta[ex.id] || {} };
     const base = list.map(e => ({ ...e, meta: e.meta || exerciseMeta[e.id] || {} }));
     const fullList = withSessionWarmup(base, workouts, exerciseMeta, {
       categories: categoriesFromExercises(base, allExercises),
     });
-    openDetail(enriched, fullList, ctx);
+    // `source` marks a deliberate multi-drill session start (custom / generated
+    // workout) so practice_started fires; single-drill opens pass none.
+    openDetail(enriched, fullList, ctx, source);
   };
 
   const startCustomList = (entryOrIds) => {
@@ -227,7 +229,7 @@ export default function ProgramsView({
     const exerciseIds = exerciseIdsForCustomWorkout(entry);
     const exs = exerciseIds.map(id => allExercises[id]).filter(Boolean);
     if (!exs.length) return;
-    openExercise(exs[0], exs);
+    openExercise(exs[0], exs, null, "workout");
   };
 
   const saveBuiltWorkout = () => {
@@ -297,7 +299,7 @@ export default function ProgramsView({
       allExercises,
     });
     if (!w?.exercises?.length) return;
-    openExercise(w.exercises[0], w.exercises);
+    openExercise(w.exercises[0], w.exercises, null, "workout");
   };
 
   const onShareProgram = async (prog) => {

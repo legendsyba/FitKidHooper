@@ -2522,6 +2522,13 @@ export default function FitKidHooperApp() {
     safePersistKey("s_settings", ns, { force: true });
     if (evo) setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
     const nd = ALL_EXERCISES[toId];
+    track(ANALYTICS_EVENTS.DRILL_SWAP, {
+      from_id: fromId,
+      to_id: toId,
+      to_cat: nd?._cat ?? null,
+      program_id: detailContext?.programId ?? null,
+      leveled_up: !!evo,
+    });
     if (!nd) return;
     const enriched = { ...nd, _cat: nd._cat, meta: EXERCISE_META[toId] || {} };
     setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
