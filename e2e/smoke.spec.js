@@ -243,4 +243,32 @@ test.describe("FKH pre-deploy smoke", () => {
     await expectAppBooted(page);
     await expect(page.getByText("July update — Ask Coach FKH")).toHaveCount(0);
   });
+
+  // Install-prompt reach: ~97% of kids leave before finishing a drill, and the banner used to be
+  // gated behind that — so it never reached the kids whose retention it exists to fix. It now also
+  // shows on a return visit. These lock that reach without re-covering a brand-new kid's first open.
+  test("install banner shows for a returning kid who hasn't trained", async ({ page }) => {
+    await seedAthleteStorage(page, {
+      s_onboarded: "1", "fkh-tour-v1-complete": "1", "fkh-tour-prompt-dismissed": "1",
+      s_done: "{}", // never completed a drill
+      "fkh-opened-before": new Date(Date.now() - 86_400_000).toISOString(), // 2nd+ open
+    });
+    await page.goto("/");
+    await expectAppBooted(page);
+    // Desktop test browser: no iOS, no native beforeinstallprompt → manual path after the fallback.
+    await expect(page.getByText("Keep FKH one tap away")).toBeVisible({ timeout: 8_000 });
+    await expect(page.getByText(/never lose your .*streak/)).toBeVisible();
+  });
+
+  test("install banner stays hidden on a brand-new kid's first open", async ({ page }) => {
+    await seedAthleteStorage(page, {
+      s_onboarded: "1", "fkh-tour-v1-complete": "1", "fkh-tour-prompt-dismissed": "1",
+      s_done: "{}",
+    });
+    await page.addInitScript(() => localStorage.removeItem("fkh-opened-before"));
+    await page.goto("/");
+    await expectAppBooted(page);
+    await page.waitForTimeout(3000); // past the banner's own fallback delay
+    await expect(page.getByText("Keep FKH one tap away")).toHaveCount(0);
+  });
 });
