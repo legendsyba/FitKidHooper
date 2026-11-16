@@ -25,9 +25,14 @@ export function getStreak(completed, { graceDays = 1 } = {}) {
     if (active(k)) {
       streak++;
       missesInARow = 0;
+    } else if (i === 0) {
+      // Today isn't done *yet* — the day isn't over, so it neither breaks the streak nor
+      // counts toward it. Without this, a comeback morning after a grace rest day (trained,
+      // rested yesterday, haven't trained today) read as two misses and dropped to 0 —
+      // showing the streak as already lost exactly when training today would save it.
     } else {
       missesInARow++;
-      if (missesInARow > graceDays) break; // 2 missed days in a row ends the streak
+      if (missesInARow > graceDays) break; // two real missed days in a row ends the streak
     }
     d.setDate(d.getDate() - 1);
   }
