@@ -25,6 +25,14 @@ export const clampTier = (t) => Math.max(1, Math.min(3, Math.round(Number(t) || 
 export const tierLabel = (t) => TIER_LABEL[clampTier(t)];
 export const labelTier = (l) => LABEL_TIER[String(l || "").toLowerCase()] || 1;
 
+/**
+ * A drill's difficulty tier (1-3). Difficulty lives on the drill OR in its `meta` — 169 of 332
+ * catalog drills carry it only on `meta.difficulty`. Reading `ex.difficulty` alone (as inference
+ * and level-up counting once did) silently scored all of those as beginner, pinning kids' inferred
+ * levels too low and miscounting the "N more to level up" progress. Resolve both, like drill gating.
+ */
+export const exerciseTier = (ex) => DIFFICULTY_TIER[ex?.difficulty ?? ex?.meta?.difficulty] || 1;
+
 let _index = null;
 const skillIndex = () => (_index ||= buildExerciseSkillIndex(ALL_EXERCISES, EXERCISE_META));
 
@@ -46,7 +54,7 @@ function inferDifficultyLevels(completed = {}) {
     if (!ex) continue;
     const area = areaOfExercise(ex);
     if (!area) continue;
-    sum[area] = (sum[area] || 0) + (DIFFICULTY_TIER[ex.difficulty] || 1);
+    sum[area] = (sum[area] || 0) + exerciseTier(ex);
     n[area] = (n[area] || 0) + 1;
   }
   const out = {};
@@ -87,7 +95,7 @@ export function areaOfExercise(ex) {
 export function drillFitsLevel(ex, areaLevels = {}, { stretch = 1 } = {}) {
   const area = areaOfExercise(ex);
   const kid = area ? areaLevels[area] ?? 1 : 1;
-  const d = DIFFICULTY_TIER[ex.difficulty ?? ex.meta?.difficulty] || 1;
+  const d = exerciseTier(ex);
   return d <= kid + stretch;
 }
 
@@ -126,7 +134,7 @@ function completedByAreaLevel(completed = {}) {
     if (!ex) continue;
     const area = areaOfExercise(ex);
     if (!area) continue;
-    const tier = DIFFICULTY_TIER[ex.difficulty] || 1;
+    const tier = exerciseTier(ex);
     const k = `${area}:${tier}`;
     (seen[k] ||= new Set()).add(exId);
   }
