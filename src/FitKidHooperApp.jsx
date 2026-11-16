@@ -1964,6 +1964,10 @@ export default function FitKidHooperApp() {
     try{return new Set(JSON.parse(localStorage.getItem("fkh-celebrated-badges")||"[]"));}catch{return new Set();}
   });
   const [celebrationQueue, setCelebrationQueue] = useState([]);
+  // Badges queued for celebration THIS session (shown or not yet). Separate from
+  // celebratedBadges (persisted "already shown"): a badge is persisted only once its
+  // celebration is actually dismissed, so one covered by a sheet isn't lost on reload.
+  const queuedBadgesRef = useRef(new Set());
   const [ledger, setLedger] = useState(()=>readLocalLedger());
   const [benchmarkPBs, setBenchmarkPBs] = useState(()=>readLocalPBs());
   const [growthLog, setGrowthLog] = useState(()=>readGrowthLog());
@@ -2939,17 +2943,22 @@ export default function FitKidHooperApp() {
     () => buildCoachMessage(completedSafe, xpData, earnedBadges, programProgressSafe, coachGapAnalysis.weakAreas, settings),
     [completedSafe, xpData, earnedBadges, programProgressSafe, coachGapAnalysis, settings]
   );
-  // Detect newly unlocked badges → queue celebration + record dates
+  // Detect newly unlocked badges → queue celebration + record dates. The badge is NOT marked
+  // celebrated here — only when its celebration is actually dismissed (dismissCelebration).
+  // Badges are earned BY finishing a drill, inside the drill sheet; marking them seen at queue
+  // time meant any badge the sheet covered was recorded as celebrated yet never shown, and lost
+  // on reload — the first-rep "First Workout" badge worst of all. queuedBadgesRef stops the effect
+  // re-queuing the same badge within a session; BADGE_EARN fires once (gated on badgeDates).
   useEffect(()=>{
-    const newBadges = earnedBadges.filter(id=>!celebratedBadges.has(id));
+    const newBadges = earnedBadges.filter(id=>!celebratedBadges.has(id) && !queuedBadgesRef.current.has(id));
     if (newBadges.length===0) return;
     const defs = newBadges.map(id=>BADGES_DEF.find(b=>b.id===id)).filter(Boolean);
-    for (const id of newBadges) track(ANALYTICS_EVENTS.BADGE_EARN, { badge_id: id });
+    for (const id of newBadges) {
+      if (!badgeDates[id]) track(ANALYTICS_EVENTS.BADGE_EARN, { badge_id: id });
+      queuedBadgesRef.current.add(id);
+    }
     setCelebrationQueue(q=>[...q,...defs]);
     if (defs.length>0) setLastEarnedBadge(defs[defs.length-1]);
-    const updated = new Set([...celebratedBadges,...newBadges]);
-    setCelebratedBadges(updated);
-    try { localStorage.setItem("fkh-celebrated-badges",JSON.stringify([...updated])); } catch { /* ignore */ }
     // Record earn date for each new badge (first-time only)
     const today = new Date().toLocaleDateString("en-CA");
     setBadgeDates(prev=>{
@@ -2959,6 +2968,25 @@ export default function FitKidHooperApp() {
       return next;
     });
   },[earnedBadges]);
+
+  /** A badge is "celebrated" (persisted) only once its celebration is dismissed — see the effect
+   *  above. Milestone (ledger) celebrations carry a `kind` and are tracked via the ledger, not here. */
+  const markBadgeShown = useCallback((id)=>{
+    if (!id) return;
+    setCelebratedBadges(prev=>{
+      if (prev.has(id)) return prev;
+      const updated = new Set(prev); updated.add(id);
+      try { localStorage.setItem("fkh-celebrated-badges", JSON.stringify([...updated])); } catch { /* ignore */ }
+      return updated;
+    });
+  },[]);
+  const dismissCelebration = useCallback(()=>{
+    setCelebrationQueue(q=>{
+      const shown = q[0];
+      if (shown?.id && !shown.kind) markBadgeShown(shown.id);
+      return q.slice(1);
+    });
+  },[markBadgeShown]);
 
   // Shared progression context — drives both the grant ledger and the journey UI.
   const progressCtx = useMemo(()=>{
@@ -3477,7 +3505,7 @@ export default function FitKidHooperApp() {
           onOpenExercise={(id) => { const ex = ALL_EXERCISES[id]; if (ex) openDetail(ex); setShowCoachFKH(false); }}
         />
       )}
-      {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={()=>setCelebrationQueue(q=>q.slice(1))}/>}
+      {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={dismissCelebration}/>}
       {renderMissionOverlays()}
       {tourOverlay}
     </>
@@ -3776,7 +3804,7 @@ export default function FitKidHooperApp() {
     return (
       <div style={{ background:BG,minHeight:"100vh",maxWidth:680,margin:"0 auto",paddingBottom:80 }}>
         {shellOverlays}
-        {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={()=>setCelebrationQueue(q=>q.slice(1))}/>}
+        {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={dismissCelebration}/>}
         {renderMissionOverlays()}
         {activeExercise&&<ExerciseDetailSheet exercise={activeExercise} color={P} isSignedIn={auth.isSignedIn} onSavePlayer={openSavePlayer}
           bg2={SF} brd={bd} BG={BG} SF={SF}
@@ -3989,7 +4017,7 @@ export default function FitKidHooperApp() {
     return (
       <div style={{ fontFamily:"'DM Sans','Helvetica Neue',sans-serif",background:BG,color:"var(--fkh-text)",minHeight:"100vh",maxWidth:680,margin:"0 auto",paddingBottom:"calc(80px + env(safe-area-inset-bottom, 0px))" }}>
         {shellOverlays}
-        {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={()=>setCelebrationQueue(q=>q.slice(1))}/>}
+        {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={dismissCelebration}/>}
         {renderMissionOverlays()}
         {tourOverlay}
         <div style={{ padding:"16px 20px 12px",borderBottom:`1px solid ${P}14`,position:"sticky",top:0,background:BG,backdropFilter:"blur(10px)",zIndex:10 }}>
@@ -4194,7 +4222,7 @@ export default function FitKidHooperApp() {
         totalXP={xpData.total}
         {...detailSheetProps} missionDone={requiredTasksDone}/>}
       {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]}
-        onDismiss={()=>setCelebrationQueue(q=>q.slice(1))}/>}
+        onDismiss={dismissCelebration}/>}
       {renderMissionOverlays()}
       {tourOverlay}
       {showOnboarding && !auth.loading && (
