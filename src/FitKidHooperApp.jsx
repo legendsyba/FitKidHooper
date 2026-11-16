@@ -2869,6 +2869,9 @@ export default function FitKidHooperApp() {
   /* XP / Level / Badges ──────────────────────────────────── */
   const xpData = useMemo(() => computeXP(completedSafe, programProgressSafe, missionLogSafe), [completedSafe, programProgressSafe, missionLogSafe]);
   const currentLevel = useMemo(() => getLevel(xpData.total), [xpData.total]);
+  // Days-in-a-row trained (1-day grace). Shown as a 🔥 chip in the home header so a
+  // returning kid sees the streak they'd break by skipping — the strongest day-2 pull.
+  const trainingStreak = useMemo(() => getStreak(completedSafe), [completedSafe]);
   const prevLevelRankRef = useRef(currentLevel.rank);
   useEffect(() => {
     if (currentLevel.rank > prevLevelRankRef.current) {
@@ -4268,6 +4271,15 @@ export default function FitKidHooperApp() {
               {currentLevel.emoji} {currentLevel.name.toUpperCase()} · {xpData.total} XP
             </div>
           </div>
+          {trainingStreak >= 1 && (
+            <div onClick={()=>{ setView("progress"); setProgressTab("overview"); }}
+              title={`${trainingStreak}-day training streak — train today to keep it`}
+              style={{ flexShrink:0,display:"flex",alignItems:"center",gap:3,cursor:"pointer",
+                padding:"5px 9px",borderRadius:20,background:"#f9731618",border:"1px solid #f9731655",
+                fontFamily:"'DM Mono',monospace",fontSize:12,fontWeight:800,color:"#fb923c",lineHeight:1 }}>
+              🔥 {trainingStreak}
+            </div>
+          )}
           {isCoach && (
             <button type="button" onClick={()=>setShowCoachPanel(true)}
               aria-label="Coach tools"
@@ -4407,7 +4419,7 @@ export default function FitKidHooperApp() {
         onDismissNotificationPrompt={dismissNotificationPromptBanner}
         showGuestSavePrompt={!auth.isSignedIn && !auth.loading && !showOnboarding && !tourActive && !guestSaveDismissed && xpData.total > 0}
         guestSaveXp={xpData.total}
-        guestSaveStreak={getStreak(completedSafe)}
+        guestSaveStreak={trainingStreak}
         onSavePlayer={openSavePlayer}
         onDismissGuestSavePrompt={dismissGuestSavePrompt}
         onOpenSchedule={() => openSchedule("home", "week")}
