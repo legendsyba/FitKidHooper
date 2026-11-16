@@ -11,8 +11,7 @@
  * Plain module (no React/app imports) so it runs in node for tests.
  */
 import { ALL_EXERCISES, EXERCISE_META } from "../data/trainingCatalog.js";
-import { DIFFICULTY_TIER } from "./exerciseSkills.js";
-import { areaOfExercise, drillAllowed, getSkillLevels } from "./skillLevels.js";
+import { areaOfExercise, drillAllowed, getSkillLevels, exerciseTier } from "./skillLevels.js";
 
 const exOf = (id) => ALL_EXERCISES[id] || null;
 /** A drill a kid can actually watch: a YouTube clip or an FKH-original coach-filmed video. */
@@ -36,7 +35,7 @@ export function drillReplacements(exId, { settings = {}, completed = {}, age, ex
   if (!area) return [];
   const levels = getSkillLevels(settings, completed);
   const skip = new Set([exId, ...exclude]);
-  const srcTier = DIFFICULTY_TIER[ex.difficulty] || 1;
+  const srcTier = exerciseTier(ex);
   const swaps = settings.drillSwaps || {};
 
   const scored = [];
@@ -45,7 +44,7 @@ export function drillReplacements(exId, { settings = {}, completed = {}, age, ex
     if (areaOfExercise(cand) !== area) continue;      // a swap stays in the same skill area
     if (!hasVideo(cand)) continue;                    // never swap into a drill with no demo
     if (!drillAllowed(cand, levels, age)) continue;   // must fit the kid's level (and age-safety)
-    const tier = DIFFICULTY_TIER[cand.difficulty] || 1;
+    const tier = exerciseTier(cand);
     const score =
       -Math.abs(tier - srcTier) * 2 +                 // closest difficulty to what it replaces
       (cand.videoSource === "fkh" ? 1.5 : 0) +        // prefer FKH-original coach-filmed clips
@@ -96,7 +95,7 @@ export function evolveFromSwaps(settings = {}, completed = {}, { needed = 2 } = 
     if (!from || !to) continue;
     const area = areaOfExercise(to);
     if (!area || areaOfExercise(from) !== area) continue;
-    const toTier = DIFFICULTY_TIER[to.difficulty] || 1;
+    const toTier = exerciseTier(to);
     if (toTier > (levels[area] || 1)) reaches[area] = (reaches[area] || 0) + 1;
   }
   const raised = [];

@@ -10,8 +10,7 @@
  * tag.
  */
 import { PROGRAMS, ALL_EXERCISES } from "../data/trainingCatalog.js";
-import { DIFFICULTY_TIER } from "./exerciseSkills.js";
-import { areaOfExercise, getSkillLevels, clampTier } from "./skillLevels.js";
+import { areaOfExercise, getSkillLevels, clampTier, exerciseTier } from "./skillLevels.js";
 
 const eachExercise = function* (program) {
   for (const w of program.weeks || [])
@@ -22,7 +21,7 @@ const eachExercise = function* (program) {
 /** A program's own content difficulty (1-3): the average difficulty of its exercises. */
 export function programLevel(program) {
   let sum = 0, n = 0;
-  for (const ex of eachExercise(program)) { sum += DIFFICULTY_TIER[ex.difficulty] || 1; n++; }
+  for (const ex of eachExercise(program)) { sum += exerciseTier(ex); n++; }
   return n ? clampTier(sum / n) : 1;
 }
 
