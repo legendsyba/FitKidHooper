@@ -884,7 +884,7 @@ const W_FOOTWORK = [
     progressionTrack:"Step 5 — Reactive Footwork",
     desc:"Chain front and reverse pivots together off a coach or partner's reactive cue, stringing the whole pivot ladder into one move at game speed.",
     cues:["React to the cue — do not guess the pivot early","Pivot foot never lifts or slides","Flow front pivot into reverse without standing up","Finish every combo in triple threat, ready to attack"],
-    trainer:"Jr. NBA", videoId:"3GPNfqIzs9Y", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Forward Pivot Drill — Jr. NBA" },
+    trainer:"Jr. NBA", videoId:"5DgXrx7ZkHU", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Reverse Pivot Drill — Jr. NBA" },
 
   { id:"fw-transition-stop", name:"Transition Jump-Stop",  tag:"Advanced",        difficulty:"advanced",     ageRange:[11,17], funScore:9,  estimatedDuration:120,
     sets:"4x4 reps", rest:"35 s",
