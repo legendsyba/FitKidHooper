@@ -1909,6 +1909,9 @@ export default function FitKidHooperApp() {
     return null;
   });
   const [openMessagesInbox, setOpenMessagesInbox] = useState(false);
+  // {programId, week} when a coach-QR arrival should scroll My Plan to the assigned
+  // week; ProgramsView consumes and clears it. null the rest of the time.
+  const [coachTargetWeek, setCoachTargetWeek] = useState(null);
   const auth = useAuth(settings);
   const { squadNotifications, unreadMessages, friendRequests, feedActivity, challengeActivity, markSquadTabSeen, refreshSquadNotifications } = useSquadNotifications(auth.isSignedIn, auth.username);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -2526,6 +2529,13 @@ export default function FitKidHooperApp() {
     safePersistKey("s_settings", ns, { force: true });
     if (evo) setMissionTaskToast({ id: "levelup", label: levelUpMessage(evo.raised[0]) });
     const nd = ALL_EXERCISES[toId];
+    track(ANALYTICS_EVENTS.DRILL_SWAP, {
+      from_id: fromId,
+      to_id: toId,
+      to_cat: nd?._cat ?? null,
+      program_id: detailContext?.programId ?? null,
+      leveled_up: !!evo,
+    });
     if (!nd) return;
     const enriched = { ...nd, _cat: nd._cat, meta: EXERCISE_META[toId] || {} };
     setDetailList(list => list.map(e => (e.id === fromId ? enriched : e)));
@@ -2899,8 +2909,16 @@ export default function FitKidHooperApp() {
     setProgramProgress(retired.progress);
   }, [enrolledProgramsSafe, programProgressSafe]);
 
-  const enrollProgram = useCallback((prog) => {
-    const startDate = new Date().toLocaleDateString("en-CA");
+  const enrollProgram = useCallback((prog, { startWeek = 1 } = {}) => {
+    // A coach can drop a kid straight into the week they're running (startWeek):
+    // backdate the start by whole weeks so that week is "current" and unlocked
+    // immediately — honoring the coach's assignment over the calendar gate. Whole-week
+    // backdating preserves the day-of-week rhythm, and the schedule logic is
+    // current-week-scoped, so there is no "you're behind on weeks 1..N-1" nagging.
+    const target = Math.max(1, Math.min(Number(startWeek) || 1, prog.duration || 1));
+    const d = new Date();
+    if (target > 1) d.setDate(d.getDate() - (target - 1) * 7);
+    const startDate = d.toLocaleDateString("en-CA");
     const startedAt = Date.now();
     setEnrolledPrograms(prev => {
       const next = { ...prev, [prog.id]: { startDate, startedAt } };
@@ -2912,7 +2930,7 @@ export default function FitKidHooperApp() {
       safePersistKey("fkh-program-progress", next, { force: true });
       return next;
     });
-    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id });
+    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id, ...(target > 1 ? { start_week: target } : {}) });
   }, []);
 
   const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
@@ -3239,7 +3257,24 @@ export default function FitKidHooperApp() {
       setFriendsFocusTick(t => t + 1);
     }
     if (pendingNav.openFriends) setFriendsFocusTick(t => t + 1);
-    if (pendingNav.openProgram) setSelectedProgram(pendingNav.openProgram);
+    if (pendingNav.openProgram) {
+      const pid = pendingNav.openProgram;
+      setSelectedProgram(pid);
+      // A coach-QR arrival is the highest-intent moment — the kid just scanned their
+      // coach's code mid-practice. Drop the enroll friction: auto-enroll and land them
+      // in My Plan (scrolled to the coach's week), one tap from ▶ Start session, instead
+      // of on a detail page they have to decipher. A bare ?program= share does none of
+      // this — it just opens the detail page as before.
+      if (pendingNav.coachArrival) {
+        const prog = PROGRAMS.find(p => p.id === pid);
+        if (prog) {
+          if (!enrolledProgramsSafe[pid]) enrollProgram(prog, { startWeek: pendingNav.openProgramWeek || 1 });
+          setProgramSegment("myPlan");
+          openProgramsSection("plans");
+          if (pendingNav.openProgramWeek) setCoachTargetWeek({ programId: pid, week: pendingNav.openProgramWeek });
+        }
+      }
+    }
     setPendingNav(null);
   }, [pendingNav]);
 
@@ -3533,6 +3568,8 @@ export default function FitKidHooperApp() {
         earnedBadges={earnedBadges}
         selectedProgram={selectedProgram}
         setSelectedProgram={setSelectedProgram}
+        coachTargetWeek={coachTargetWeek}
+        onCoachWeekConsumed={() => setCoachTargetWeek(null)}
         allExercises={ALL_EXERCISES}
         exerciseMeta={EXERCISE_META}
         cats={CATS}

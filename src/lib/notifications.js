@@ -277,6 +277,13 @@ export function parseNavigationDeepLink(input) {
   const friends = params.get("friends") === "1";
   const program = params.get("program");
   const klass = params.get("class");
+  // A coach-practice QR carries ?src=coach (and ?week=<n> for the session the coach
+  // assigned). A coach arrival is the highest-intent open — the kid just scanned their
+  // coach's code — so it earns auto-enroll + landing on that week, unlike a bare
+  // kid-to-kid ?program= share, which only opens the detail page.
+  const coachArrival = params.get("src") === "coach";
+  const weekRaw = params.get("week");
+  const openProgramWeek = program && weekRaw && /^\d{1,2}$/.test(weekRaw) ? Number(weekRaw) : null;
 
   let tab = null;
   let openMessages = false;
@@ -298,7 +305,13 @@ export function parseNavigationDeepLink(input) {
   if (klass && !tab) tab = "home";
 
   if (!tab) return null;
-  return { tab, openMessages, openFriends, openProgram: program || null, openClass: klass || null };
+  return {
+    tab, openMessages, openFriends,
+    openProgram: program || null,
+    openProgramWeek,
+    coachArrival: coachArrival && !!program,
+    openClass: klass || null,
+  };
 }
 
 function stripNavigationParamsFromLocation() {
@@ -308,14 +321,21 @@ function stripNavigationParamsFromLocation() {
   const friends = params.get("friends") === "1";
   const program = params.get("program");
   const klass = params.get("class");
-  if (!view && !messages && !friends && !program && !klass) return;
+  // ?src= is an analytics attribution tag (e.g. a coach-QR arrival). It is read
+  // once at analytics module load; strip it so a refresh doesn't re-attribute
+  // the visit as a fresh coach arrival on every reload.
+  const src = params.get("src");
+  const week = params.get("week");
+  if (!view && !messages && !friends && !program && !klass && !src && !week) return;
   if (view) params.delete("view");
   if (messages) params.delete("messages");
   if (friends) params.delete("friends");
   if (program) params.delete("program");
+  if (week) params.delete("week");
   // Stripped like the rest: left on the URL, a shared class link would reopen
   // the sheet on every refresh, including after the athlete dismissed it.
   if (klass) params.delete("class");
+  if (src) params.delete("src");
   const qs = params.toString();
   const path = window.location.pathname + (qs ? `?${qs}` : "");
   window.history.replaceState({}, "", path);
