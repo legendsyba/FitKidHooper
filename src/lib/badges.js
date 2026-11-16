@@ -41,6 +41,7 @@ export const BADGES_DEF = [
   { id:"pgm-become-shooter-2",cat:"program", name:"Bucket Getter",    emoji:"🔥", desc:"Complete Become a Shooter II",               color:"#7c3aed" },
   { id:"pgm-become-shooter", cat:"program", name:"Pure Shooter",      emoji:"🎯", desc:"Complete Become a Shooter",                  color:"#8b5cf6" },
   { id:"pgm-first-step",     cat:"program", name:"First Step Elite",  emoji:"⚡", desc:"Complete First Step Explosion",              color:"#f43f5e" },
+  { id:"pgm-first-step-2",   cat:"program", name:"First Step Assassin", emoji:"💥", desc:"Complete First Step Explosion II",           color:"#be123c" },
   { id:"pgm-finish-rim",     cat:"program", name:"Rim Finisher",     emoji:"🪣", desc:"Complete Finish at the Rim",                 color:"#10b981" },
   { id:"pgm-finish-rim-2",   cat:"program", name:"Bucket Master",    emoji:"🔥", desc:"Complete Finish at the Rim II",              color:"#059669" },
   { id:"pgm-two-ball",       cat:"program", name:"Two-Ball Technician", emoji:"🤹", desc:"Complete Two-Ball Handles",               color:"#6366f1" },
