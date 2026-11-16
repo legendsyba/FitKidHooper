@@ -2,12 +2,28 @@ import { useState, useEffect } from 'react'
 import { athleteHasPriorUsage, PRACTICE_DONE_EVENT } from './lib/athleteExperience.js'
 
 const DISMISSED_KEY = 'fkh-install-dismissed'
+const OPENED_BEFORE_KEY = 'fkh-opened-before'
 
 function isStandalone() {
   return (
     window.navigator.standalone === true ||
     window.matchMedia('(display-mode: standalone)').matches
   )
+}
+
+/* True on the 2nd+ ever open of the app on this device. A kid who comes back has
+   shown intent and is past the first-impression moment — the right time to ask
+   them to install, and (critically) it reaches the ~97% who leave before ever
+   finishing a drill, who otherwise never saw this prompt at all. Sets the marker
+   on the first call so the very first open returns false. */
+function readIsReturnVisit() {
+  try {
+    if (localStorage.getItem(OPENED_BEFORE_KEY)) return true
+    localStorage.setItem(OPENED_BEFORE_KEY, new Date().toISOString())
+    return false
+  } catch {
+    return false
+  }
 }
 
 function isIOS() {
@@ -20,10 +36,12 @@ export default function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(() => window._installPrompt || null)
   const [show, setShow] = useState(false)
 
-  /* Not before the first practice. A brand-new kid lands on Home with one job —
-     start today's practice — and this was the first thing covering it. It waits
-     for a whole practice (not one drill, which left it stacked on Home with the
-     badge and tour mid-session), or for a later visit by a kid who has trained. */
+  /* Eligible to be asked when the kid has shown intent — either trained (≥1 drill
+     or a finished practice) OR come back for a 2nd+ visit. A brand-new kid on their
+     very first open is NOT eligible: Home's one job is "start today's practice" and
+     this used to cover it. The return-visit path is what reaches the ~97% who leave
+     before finishing a drill — they just have to come back once. */
+  const returnVisit = useState(readIsReturnVisit)[0]
   const [hasTrained, setHasTrained] = useState(() => athleteHasPriorUsage())
   useEffect(() => {
     if (hasTrained) return
@@ -32,8 +50,10 @@ export default function InstallBanner() {
     return () => window.removeEventListener(PRACTICE_DONE_EVENT, onFirst)
   }, [hasTrained])
 
+  const eligible = hasTrained || returnVisit
+
   useEffect(() => {
-    if (!hasTrained) return
+    if (!eligible) return
     if (isStandalone() || localStorage.getItem(DISMISSED_KEY)) return
 
     // If prompt was already captured before React mounted, show immediately
@@ -64,7 +84,7 @@ export default function InstallBanner() {
       window.removeEventListener('installpromptready', onPromptReady)
       clearTimeout(fallback)
     }
-  }, [hasTrained])
+  }, [eligible])
 
   useEffect(() => {
     const handler = () => setShow(false)
@@ -111,20 +131,21 @@ export default function InstallBanner() {
       <span style={{ fontSize: 28, flexShrink: 0 }}>🏀</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#f97316', marginBottom: 4 }}>
-          Install FKH
+          Keep FKH one tap away
         </div>
 
         {ios && (
           <div style={{ fontSize: 12, color: 'var(--fkh-text-muted)', lineHeight: 1.6 }}>
-            Tap <strong style={{ color: 'var(--fkh-text)' }}>Share</strong> ⎋ at the bottom of Safari,
-            then <strong style={{ color: 'var(--fkh-text)' }}>Add to Home Screen</strong>.
+            Add it to your home screen so you never lose your 🔥 streak and FKH is
+            there every day. Tap <strong style={{ color: 'var(--fkh-text)' }}>Share</strong> ⎋ at the
+            bottom of Safari, then <strong style={{ color: 'var(--fkh-text)' }}>Add to Home Screen</strong>.
           </div>
         )}
 
         {!ios && hasNativePrompt && (
           <>
             <div style={{ fontSize: 12, color: 'var(--fkh-text-muted)', lineHeight: 1.5, marginBottom: 10 }}>
-              Install for the full app experience — works offline too.
+              Add it to your home screen so you never lose your 🔥 streak and FKH is there every day.
             </div>
             <button onClick={triggerInstall} style={{
               background: '#f97316',
@@ -144,8 +165,9 @@ export default function InstallBanner() {
 
         {!ios && !hasNativePrompt && (
           <div style={{ fontSize: 12, color: 'var(--fkh-text-muted)', lineHeight: 1.6 }}>
-            Tap the <strong style={{ color: 'var(--fkh-text)' }}>⋮ menu</strong> in Chrome, then tap{' '}
-            <strong style={{ color: 'var(--fkh-text)' }}>Add to Home Screen</strong>.
+            Add it to your home screen so you never lose your 🔥 streak and FKH is
+            there every day. Tap the <strong style={{ color: 'var(--fkh-text)' }}>⋮ menu</strong> in
+            Chrome, then <strong style={{ color: 'var(--fkh-text)' }}>Add to Home Screen</strong>.
           </div>
         )}
       </div>

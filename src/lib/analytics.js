@@ -29,6 +29,30 @@ try {
   if (src) initialEntrySource = src.slice(0, 32);
 } catch { /* no window, or malformed URL */ }
 
+// Coarse platform/browser (no raw user-agent stored) so we can tell WHY install
+// rate is low: iOS can only install via Safari's Share sheet, Android installs in
+// Chrome, desktop rarely installs at all. Paired with is_standalone, this answers
+// "how much is iOS manual-install friction hurting us" — which the UA-less events
+// table can't today. Just four/four buckets, nothing identifying.
+function detectPlatform() {
+  try {
+    const ua = navigator.userAgent || "";
+    if (/iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1)) return "ios";
+    if (/android/i.test(ua)) return "android";
+    if (/windows|macintosh|linux|cros/i.test(ua)) return "desktop";
+    return "other";
+  } catch { return "other"; }
+}
+function detectBrowser() {
+  try {
+    const ua = navigator.userAgent || "";
+    if (/crios|chrome|chromium/i.test(ua)) return "chrome";
+    if (/fxios|firefox/i.test(ua)) return "firefox";
+    if (/safari/i.test(ua)) return "safari"; // after Chrome: Chrome's UA also contains "Safari"
+    return "other";
+  } catch { return "other"; }
+}
+
 // When signed in, events are logged under the auth user id (set by the app on
 // auth state change) so a kid's activity is unified across devices. Falls back
 // to the per-device id for anonymous use.
@@ -413,6 +437,8 @@ export function initAnalytics({ ageGroup = "unknown", isStandalone = false } = {
   track(ANALYTICS_EVENTS.SESSION_START, {
     is_standalone: isStandalone,
     is_return: !isFirstEver,
+    platform: detectPlatform(),
+    browser: detectBrowser(),
     ...(initialEntrySource ? { entry_source: initialEntrySource } : {}),
   });
   upsertAthleteAnalytics({ isFirstSession: isFirstEver });
