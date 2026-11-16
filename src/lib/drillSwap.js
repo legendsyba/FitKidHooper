@@ -10,7 +10,7 @@
  *
  * Plain module (no React/app imports) so it runs in node for tests.
  */
-import { ALL_EXERCISES, EXERCISE_META } from "../data/trainingCatalog.js";
+import { ALL_EXERCISES } from "../data/trainingCatalog.js";
 import { areaOfExercise, drillAllowed, getSkillLevels, exerciseTier } from "./skillLevels.js";
 
 const exOf = (id) => ALL_EXERCISES[id] || null;

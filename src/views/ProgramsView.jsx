@@ -198,6 +198,9 @@ export default function ProgramsView({
       return () => clearTimeout(t);
     }
     onCoachWeekConsumed?.();
+    // Runs when the coach-assigned target or the open program changes; the consume
+    // callback is a stable one-shot and is deliberately not a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coachTargetWeek, selectedProgram]);
 
   const enrollProg = (prog) => {

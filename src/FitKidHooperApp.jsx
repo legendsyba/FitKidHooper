@@ -1993,6 +1993,9 @@ export default function FitKidHooperApp() {
   const [friendsFocusTick, setFriendsFocusTick] = useState(0);
   const [playerHighlight, setPlayerHighlight] = useState(null);
   const [avatarRevision, setAvatarRevision] = useState(0);
+  // avatarRevision is a deliberate recompute trigger (bumpAvatar re-reads the stored avatar
+  // after a change); exhaustive-deps can't see that it's intentional, not unnecessary.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const avatarUrl = useMemo(() => readStoredAvatar(), [avatarRevision]);
   const bumpAvatar = useCallback(() => setAvatarRevision(v => v + 1), []);
   const headerFrameColor = useMemo(
@@ -2988,7 +2991,10 @@ export default function FitKidHooperApp() {
       try{ localStorage.setItem("fkh-badge-dates",JSON.stringify(next)); }catch { /* ignore */ }
       return next;
     });
-  },[earnedBadges]);
+    // celebratedBadges/badgeDates are read for filtering; re-runs when they change are
+    // no-ops (queuedBadgesRef already holds anything queued this session), so listing them
+    // is safe and satisfies exhaustive-deps.
+  },[earnedBadges, celebratedBadges, badgeDates]);
 
   /** A badge is "celebrated" (persisted) only once its celebration is dismissed — see the effect
    *  above. Milestone (ledger) celebrations carry a `kind` and are tracked via the ledger, not here. */
@@ -3276,6 +3282,9 @@ export default function FitKidHooperApp() {
       }
     }
     setPendingNav(null);
+    // Intentionally runs only when a new pending navigation arrives; it consumes and
+    // clears pendingNav, so the enroll/section helpers it reads are deliberately omitted.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingNav]);
 
   useEffect(() => listenForNotificationNavigation(setPendingNav), []);

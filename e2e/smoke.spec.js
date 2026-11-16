@@ -5,6 +5,7 @@ import {
   supabaseAuthStorageKey,
 } from "./helpers/athleteStorage.js";
 import { mockSignedInAthlete } from "./helpers/mockSupabase.js";
+import { RELEASE_ID } from "../src/lib/changelog.js";
 
 function attachRuntimeGuards(page) {
   page.on("pageerror", (error) => {
@@ -161,6 +162,68 @@ test.describe("FKH pre-deploy smoke", () => {
     await expect(page.getByText("🧪 Frozen Mission")).toBeVisible({ timeout: 10_000 });
     const missions = await page.evaluate(() => JSON.parse(localStorage.getItem("fkh-missions") || "{}"));
     expect(missions[today]?.mission?.title).toBe("🧪 Frozen Mission");
+  });
+
+  // Regression: the first-rep "First Workout" badge (earned on the very first drill) was marked
+  // celebrated at queue-time while the drill sheet covered the overlay, so the celebration never
+  // showed and was lost on reload. The fix persists celebratedBadges on DISMISS, not on queue.
+  // Here: an earned-but-not-yet-celebrated badge must actually render its overlay on boot, and
+  // once dismissed must stay dismissed across a reload (not re-fire, not re-swallow).
+  test("first-rep badge celebration shows and does not re-fire after dismiss", async ({ page }) => {
+    const today = new Date().toLocaleDateString("en-CA");
+    await seedAthleteStorage(page, {
+      s_onboarded: "1",
+      "fkh-tour-v1-complete": "1",
+      "fkh-tour-prompt-dismissed": "1",
+      // Suppress the unrelated What's New sheet, which otherwise covers the overlay at boot.
+      "fkh-last-seen-release": RELEASE_ID,
+      // One real completion → getEarnedBadges yields workouts-1 ("First Workout").
+      s_done: JSON.stringify({ [`${today}-bh-pound`]: true }),
+      // NB: deliberately do NOT seed "fkh-celebrated-badges". The seed runs via addInitScript,
+      // which re-applies on every reload — seeding "[]" here would wipe what the app persists on
+      // dismiss and make the reload step pass for the wrong reason (it would always re-fire). With
+      // the key unseeded it defaults empty on first boot, and the app's persisted value survives
+      // the reload, so the no-re-fire assertion actually tests the fix.
+    });
+    await page.goto("/");
+    await expectAppBooted(page);
+
+    // The overlay — not a badge shelf — is proven by its own controls: the "Badge Unlocked!"
+    // kicker and the "Awesome! 🎉" dismiss button exist nowhere else. (The overlay is emitted
+    // once per view, so the role resolves to more than one node — assert on the first.)
+    const dismiss = page.getByRole("button", { name: "Awesome! 🎉" });
+    await expect(dismiss.first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("Badge Unlocked!").first()).toBeVisible();
+    await expect(page.getByText("First Workout").first()).toBeVisible();
+
+    // THE REGRESSION GUARD. The bug marked the badge celebrated at QUEUE time (persisting it the
+    // instant it was shown), so a reload before the kid ever dismissed it found it already
+    // "celebrated" and never showed it again — which on the real drill-completion path, where a
+    // sheet covered the overlay, meant the first-rep celebration was seen zero times. The fix
+    // persists only on dismiss, so an undismissed celebration must survive a reload and show again.
+    await page.reload();
+    await expectAppBooted(page);
+    await expect(dismiss.first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("First Workout").first()).toBeVisible();
+
+    // Now dismiss it. The overlay is emitted once per mounted view, so several identical copies
+    // stack at the same z-index; they share one onDismiss, so clicking the topmost clears them all.
+    for (let i = 0; i < 6 && (await dismiss.count()); i++) {
+      await dismiss.last().click();
+      await page.waitForTimeout(300);
+    }
+    await expect(dismiss).toHaveCount(0);
+
+    // Dismiss persisted the badge as celebrated…
+    const celebrated = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem("fkh-celebrated-badges") || "[]"));
+    expect(celebrated).toContain("workouts-1");
+
+    // …so NOW a reload must NOT re-show it (dismissed-and-seen stays seen).
+    await page.reload();
+    await expectAppBooted(page);
+    await page.waitForTimeout(1500); // give the celebration effect a chance to (wrongly) re-queue
+    await expect(page.getByRole("button", { name: "Awesome! 🎉" })).toHaveCount(0);
   });
 
   test("brand-new athlete does not auto-open What's New", async ({ page }) => {
