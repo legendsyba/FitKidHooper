@@ -1136,7 +1136,9 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
             {!isSignedIn && onSavePlayer ? (
               <>
                 <div style={{ fontSize:13, color:"var(--fkh-text-muted)", marginBottom:18, maxWidth:300 }}>
-                  Save your player so you never lose your streak, badges, or XP.
+                  {streak >= 2
+                    ? `Save your player so you never lose your 🔥 ${streak}-day streak, your badges, or your XP.`
+                    : "Save your player so you never lose your streak, badges, or XP."}
                 </div>
                 <button onClick={onSavePlayer}
                   style={{ padding:"14px 28px", borderRadius:12, border:"none", background:color,
