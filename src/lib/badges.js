@@ -54,6 +54,7 @@ export const BADGES_DEF = [
   { id:"pgm-own-the-glass",  cat:"program", name:"Glass Cleaner",     emoji:"🪃", desc:"Complete the Own the Glass program",          color:"#22c55e" },
   { id:"pgm-step-back-legends", cat:"program", name:"Step Back Legend", emoji:"↩️", desc:"Complete the Step Back Legends program",   color:"#7c3aed" },
   { id:"pgm-lockdown-defender", cat:"program", name:"Lockdown Defender", emoji:"🛡️", desc:"Complete the Lockdown Defender program",    color:"#0ea5e9" },
+  { id:"pgm-lockdown-2",     cat:"program", name:"Shutdown Artist",   emoji:"🔒", desc:"Complete Lockdown Defender II",               color:"#0284c7" },
   { id:"pgm-passing-fundamentals", cat:"program", name:"Passing Certified", emoji:"🤝", desc:"Complete Passing Fundamentals",          color:"#14b8a6" },
   { id:"pgm-floor-general",  cat:"program", name:"Floor General",     emoji:"🧠", desc:"Complete the Floor General program",           color:"#6366f1" },
   { id:"pgm-smooth-handles", cat:"program", name:"Smooth Operator",  emoji:"🌊", desc:"Complete the Smooth Handles program",         color:"#38bdf8" },
