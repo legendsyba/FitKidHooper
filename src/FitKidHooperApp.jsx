@@ -2902,8 +2902,16 @@ export default function FitKidHooperApp() {
     setProgramProgress(retired.progress);
   }, [enrolledProgramsSafe, programProgressSafe]);
 
-  const enrollProgram = useCallback((prog) => {
-    const startDate = new Date().toLocaleDateString("en-CA");
+  const enrollProgram = useCallback((prog, { startWeek = 1 } = {}) => {
+    // A coach can drop a kid straight into the week they're running (startWeek):
+    // backdate the start by whole weeks so that week is "current" and unlocked
+    // immediately — honoring the coach's assignment over the calendar gate. Whole-week
+    // backdating preserves the day-of-week rhythm, and the schedule logic is
+    // current-week-scoped, so there is no "you're behind on weeks 1..N-1" nagging.
+    const target = Math.max(1, Math.min(Number(startWeek) || 1, prog.duration || 1));
+    const d = new Date();
+    if (target > 1) d.setDate(d.getDate() - (target - 1) * 7);
+    const startDate = d.toLocaleDateString("en-CA");
     const startedAt = Date.now();
     setEnrolledPrograms(prev => {
       const next = { ...prev, [prog.id]: { startDate, startedAt } };
@@ -2915,7 +2923,7 @@ export default function FitKidHooperApp() {
       safePersistKey("fkh-program-progress", next, { force: true });
       return next;
     });
-    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id });
+    track(ANALYTICS_EVENTS.PROGRAM_ENROLL, { program_id: prog.id, ...(target > 1 ? { start_week: target } : {}) });
   }, []);
 
   const finishedProgram = useMemo(() => pendingNextStep(PROGRAMS, programProgressSafe), [programProgressSafe]);
@@ -3229,7 +3237,7 @@ export default function FitKidHooperApp() {
       if (pendingNav.coachArrival) {
         const prog = PROGRAMS.find(p => p.id === pid);
         if (prog) {
-          if (!enrolledProgramsSafe[pid]) enrollProgram(prog);
+          if (!enrolledProgramsSafe[pid]) enrollProgram(prog, { startWeek: pendingNav.openProgramWeek || 1 });
           setProgramSegment("myPlan");
           openProgramsSection("plans");
           if (pendingNav.openProgramWeek) setCoachTargetWeek({ programId: pid, week: pendingNav.openProgramWeek });
