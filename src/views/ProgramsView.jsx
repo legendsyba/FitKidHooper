@@ -636,7 +636,7 @@ export default function ProgramsView({
                         );
                         if (!startList.length) return null;
                         return (
-                          <button onClick={() => openDetail(startList[0], startList, startCtx)}
+                          <button onClick={() => openDetail(startList[0], startList, startCtx, "program")}
                             style={{ display:"flex",alignItems:"center",justifyContent:"center",gap:7,width:"100%",marginTop:10,
                               padding:"10px",borderRadius:9,border:"none",background:prog.color,color:"#07101f",
                               fontSize:13,fontWeight:800,cursor:"pointer" }}>
