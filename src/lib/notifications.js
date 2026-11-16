@@ -308,7 +308,11 @@ function stripNavigationParamsFromLocation() {
   const friends = params.get("friends") === "1";
   const program = params.get("program");
   const klass = params.get("class");
-  if (!view && !messages && !friends && !program && !klass) return;
+  // ?src= is an analytics attribution tag (e.g. a coach-QR arrival). It is read
+  // once at analytics module load; strip it so a refresh doesn't re-attribute
+  // the visit as a fresh coach arrival on every reload.
+  const src = params.get("src");
+  if (!view && !messages && !friends && !program && !klass && !src) return;
   if (view) params.delete("view");
   if (messages) params.delete("messages");
   if (friends) params.delete("friends");
@@ -316,6 +320,7 @@ function stripNavigationParamsFromLocation() {
   // Stripped like the rest: left on the URL, a shared class link would reopen
   // the sheet on every refresh, including after the athlete dismissed it.
   if (klass) params.delete("class");
+  if (src) params.delete("src");
   const qs = params.toString();
   const path = window.location.pathname + (qs ? `?${qs}` : "");
   window.history.replaceState({}, "", path);

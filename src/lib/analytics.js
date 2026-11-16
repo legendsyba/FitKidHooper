@@ -19,6 +19,16 @@ let flushTimer = null;
 let flushing = false;
 let context = { ageGroup: "unknown", isStandalone: false };
 
+// How this visit arrived (?src=), captured at module load — before the app strips
+// navigation params from the URL — so a coach-QR or shared-link arrival can be
+// attributed on session_start. legendsyba's fkhProgramUrl tags coach-practice QRs
+// with ?src=coach; without this we can't tell a coach arrival from an organic open.
+let initialEntrySource = null;
+try {
+  const src = new URLSearchParams(window.location.search).get("src");
+  if (src) initialEntrySource = src.slice(0, 32);
+} catch { /* no window, or malformed URL */ }
+
 // When signed in, events are logged under the auth user id (set by the app on
 // auth state change) so a kid's activity is unified across devices. Falls back
 // to the per-device id for anonymous use.
@@ -403,6 +413,7 @@ export function initAnalytics({ ageGroup = "unknown", isStandalone = false } = {
   track(ANALYTICS_EVENTS.SESSION_START, {
     is_standalone: isStandalone,
     is_return: !isFirstEver,
+    ...(initialEntrySource ? { entry_source: initialEntrySource } : {}),
   });
   upsertAthleteAnalytics({ isFirstSession: isFirstEver });
 
