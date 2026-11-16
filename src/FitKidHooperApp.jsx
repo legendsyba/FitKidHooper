@@ -1909,6 +1909,9 @@ export default function FitKidHooperApp() {
     return null;
   });
   const [openMessagesInbox, setOpenMessagesInbox] = useState(false);
+  // {programId, week} when a coach-QR arrival should scroll My Plan to the assigned
+  // week; ProgramsView consumes and clears it. null the rest of the time.
+  const [coachTargetWeek, setCoachTargetWeek] = useState(null);
   const auth = useAuth(settings);
   const { squadNotifications, unreadMessages, friendRequests, feedActivity, challengeActivity, markSquadTabSeen, refreshSquadNotifications } = useSquadNotifications(auth.isSignedIn, auth.username);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -3215,7 +3218,24 @@ export default function FitKidHooperApp() {
       setFriendsFocusTick(t => t + 1);
     }
     if (pendingNav.openFriends) setFriendsFocusTick(t => t + 1);
-    if (pendingNav.openProgram) setSelectedProgram(pendingNav.openProgram);
+    if (pendingNav.openProgram) {
+      const pid = pendingNav.openProgram;
+      setSelectedProgram(pid);
+      // A coach-QR arrival is the highest-intent moment — the kid just scanned their
+      // coach's code mid-practice. Drop the enroll friction: auto-enroll and land them
+      // in My Plan (scrolled to the coach's week), one tap from ▶ Start session, instead
+      // of on a detail page they have to decipher. A bare ?program= share does none of
+      // this — it just opens the detail page as before.
+      if (pendingNav.coachArrival) {
+        const prog = PROGRAMS.find(p => p.id === pid);
+        if (prog) {
+          if (!enrolledProgramsSafe[pid]) enrollProgram(prog);
+          setProgramSegment("myPlan");
+          openProgramsSection("plans");
+          if (pendingNav.openProgramWeek) setCoachTargetWeek({ programId: pid, week: pendingNav.openProgramWeek });
+        }
+      }
+    }
     setPendingNav(null);
   }, [pendingNav]);
 
@@ -3509,6 +3529,8 @@ export default function FitKidHooperApp() {
         earnedBadges={earnedBadges}
         selectedProgram={selectedProgram}
         setSelectedProgram={setSelectedProgram}
+        coachTargetWeek={coachTargetWeek}
+        onCoachWeekConsumed={() => setCoachTargetWeek(null)}
         allExercises={ALL_EXERCISES}
         exerciseMeta={EXERCISE_META}
         cats={CATS}

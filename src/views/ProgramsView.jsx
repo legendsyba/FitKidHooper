@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { pathTagForProgram, suggestNextProgram, isProgramLocked, missingPrerequisites, nextProgramReason } from "../lib/achievements.js";
 import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
@@ -131,6 +131,8 @@ export default function ProgramsView({
   earnedBadges,
   selectedProgram,
   setSelectedProgram,
+  coachTargetWeek,
+  onCoachWeekConsumed,
   allExercises,
   exerciseMeta,
   cats,
@@ -179,6 +181,24 @@ export default function ProgramsView({
   const [missionIntensity, setMissionIntensity] = useState("medium");
   const [buildCatFilter, setBuildCatFilter] = useState("all");
   const [buildPickQuery, setBuildPickQuery] = useState("");
+
+  // A coach-QR arrival hands us the week the coach assigned; scroll My Plan to it and
+  // flash it so the kid sees "this is the one" instead of a wall of weeks. Runs once
+  // the selected program matches, then clears the request.
+  const weekRefs = useRef({});
+  const [flashWeek, setFlashWeek] = useState(null);
+  useEffect(() => {
+    if (!coachTargetWeek || coachTargetWeek.programId !== selectedProgram) return;
+    const el = weekRefs.current[coachTargetWeek.week];
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      setFlashWeek(coachTargetWeek.week);
+      const t = setTimeout(() => setFlashWeek(null), 2600);
+      onCoachWeekConsumed?.();
+      return () => clearTimeout(t);
+    }
+    onCoachWeekConsumed?.();
+  }, [coachTargetWeek, selectedProgram]);
 
   const enrollProg = (prog) => {
     enrollProgram(prog);
@@ -534,9 +554,12 @@ export default function ProgramsView({
             const weekDone = week.sessions.every((_, si) => sessionDone(week.week, si));
             const weekPct = Math.round((week.sessions.filter((_, si) => sessionDone(week.week, si)).length / week.sessions.length) * 100);
             return (
-              <div key={week.week} style={{ margin:"0 18px 12px",borderRadius:14,
-                border:`1px solid ${isCurrent ? prog.color+"44" : "rgba(255,255,255,0.07)"}`,
-                background:isCurrent ? `${prog.color}08` : SF,overflow:"hidden" }}>
+              <div key={week.week} ref={el => { weekRefs.current[week.week] = el; }}
+                style={{ margin:"0 18px 12px",borderRadius:14,
+                border:`1px solid ${flashWeek === week.week ? prog.color : isCurrent ? prog.color+"44" : "rgba(255,255,255,0.07)"}`,
+                boxShadow: flashWeek === week.week ? `0 0 0 2px ${prog.color}66` : "none",
+                transition:"box-shadow 0.3s ease, border-color 0.3s ease",
+                background:flashWeek === week.week ? `${prog.color}14` : isCurrent ? `${prog.color}08` : SF,overflow:"hidden" }}>
                 <div style={{ padding:"13px 14px",display:"flex",alignItems:"center",gap:10 }}>
                   <div style={{ width:32,height:32,borderRadius:8,
                     background:weekDone ? `${prog.color}20` : isCurrent ? `${prog.color}18` : "rgba(255,255,255,0.05)",
