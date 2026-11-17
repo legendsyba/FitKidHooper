@@ -1679,12 +1679,23 @@ const W_REBOUNDING = [
   { id:"reb-outlet", name:"Rebound & Outlet", tag:"Transition", setup:"solo",
     sets:"3x10", rest:"30 s",
     desc:"Grab a self-toss rebound, turn, and fire an outlet pass to a wall target to start the break.",
-    cues:["Secure first, then turn","Turn to the sideline","Strong, accurate outlet","Quick — beat the defense down the floor"] },
+    cues:["Secure first, then turn","Turn to the sideline","Strong, accurate outlet","Quick — beat the defense down the floor"],
+    trainer:"Basketball Manitoba", videoId:"bQiQA7Lzc0o", videoChannel:"Basketball Manitoba", videoTitle:"Chin, Chest, Rebound & Outlet" },
   { id:"reb-power", name:"Power Rebound Finish", tag:"Finishing", setup:"solo",
     sets:"3x8", rest:"30 s",
     desc:"Rebound a miss off the glass and go straight back up strong with two feet. Putbacks win games.",
     cues:["Two feet, two hands","Chin it — don't bring it down","Go up strong and tall","Finish high off the glass"],
     trainer:"Kevin Melson", videoId:"YzhHbFUVBO0", videoStart:28, videoEnd:72, videoChannel:"Kevin Melson", videoTitle:"Offensive Rebound Putback Drill" },
+  { id:"reb-pursuit", name:"Loose-Ball Pursuit", tag:"Advanced", setup:"solo",
+    sets:"3x8", rest:"40 s",
+    desc:"Toss the ball out long off the glass or the floor, then explode after it and come up with the 50/50 ball — every loose ball is yours.",
+    cues:["Explode on the bounce — first to the ball wins","Go low and scoop it with two hands","Come up strong and chin it — protect the ball","Stay on your feet, under control"],
+    trainer:"Coach Mike", videoId:"RYIi7bkFXQ8", videoChannel:"Coach Mike", videoTitle:"Continuous Loose Ball Drill" },
+  { id:"reb-two-ball-react", name:"Reaction Rebound", tag:"Advanced", setup:"solo",
+    sets:"3x10", rest:"30 s",
+    desc:"Toss the ball off the backboard without knowing which way it bounces, then react, track it, and grab it at its highest point.",
+    cues:["Don't guess — read the ball off the rim","Quick first step toward where it's going","Catch it at the peak with two hands","Land balanced, ready for the next one"],
+    trainer:"eHoopsTracker", videoId:"Ox0X6yEhu20", videoChannel:"eHoopsTracker", videoTitle:"Reaction Rebounding Drill" },
 ];
 
 /* ── Partner & Games (needs a teammate/defender — opt-in, not in solo missions) ── */
@@ -1714,6 +1725,11 @@ const W_PARTNER_GAMES = [
     sets:"Play to 11, 1+ rounds", rest:"as needed",
     desc:"3v3 — the closest thing to the real game. Spacing, cutting, screening, and live decisions all at once.",
     cues:["Keep good spacing — fill the open spots","Screen for a teammate","Read help defense before you drive","Communicate every possession"] },
+  { id:"reb-war", name:"Rebounding War", tag:"Rebounding", setup:"partner",
+    sets:"Play to 5, 3 rounds", rest:"60 s",
+    desc:"One ball, two players, one rule: go get it. A shot goes up, you box out and battle your partner for the board. First to 5 boards wins the round.",
+    cues:["Hit first — find your partner and seal before the ball comes off","Wide base, stay low, forearms ready","Go get it at its highest point — rip it away","Chin every board, no easy ones"],
+    trainer:"Championship Productions", videoId:"xeNVQ8hhS7U", videoChannel:"Championship Productions", videoTitle:"War Rebounding Drill — Chris Mack" },
 ];
 
 /* ── Defense — on-ball & team defensive skills (own category; ties in agility crossovers below) ── */
@@ -1766,6 +1782,18 @@ const W_DEFENSE = [
     desc:"Help on the drive, then recover out and close out the open shooter — the X-out footwork that holds team defense together.",
     cues:["Help early — beat the ball to the paint","Recover on the pass with short, choppy steps","Close out high-hand, don't give up the drive again","Call every rotation out loud"],
     trainer:"Basketball Immersion", videoId:"dCEV0xnIlIM", videoChannel:"Basketball Immersion", trusted:true, videoTitle:"Three Player Rotation" },
+  { id:"def-slide-mirror", name:"Mirror Slides", tag:"Advanced", difficulty:"advanced", ageRange:[10,17], funScore:8, estimatedDuration:90,
+    sets:"4x20 s", rest:"30 s",
+    transferTags:["defense","reaction","footwork"],
+    desc:"Face a partner (or your own shadow) and mirror every move they make — slide for slide — staying square and in front without ever crossing your feet.",
+    cues:["React, don't lead — mirror what they do","Stay square, chest up, hands active","Never cross your feet — push and slide","Short quick steps, stay low the whole time"],
+    trainer:"BHS", videoId:"UV-Mb4YPgoc", videoChannel:"BHS", videoTitle:"Mirror Drill" },
+  { id:"def-multi-effort", name:"Multiple-Effort Defense", tag:"Advanced", difficulty:"advanced", ageRange:[11,17], funScore:7, estimatedDuration:120,
+    sets:"4 possessions", rest:"45 s",
+    transferTags:["defense","closeout","rebounding"],
+    desc:"One possession, three efforts: close out, contain the drive, then box out and rebound — keep competing until the ball is yours. No play off.",
+    cues:["Closeout under control — break down before you arrive","Contain the drive — beat them to the spot, no reaching","Shot's up? Find a body and box out","Finish the possession — chin the rebound"],
+    trainer:"Championship Productions", videoId:"yxR0y-F2lF4", videoChannel:"Championship Productions", videoTitle:"UCLA Drill for Shooting & Defense" },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -2438,6 +2466,8 @@ const EXERCISE_META = {
   "def-zigzag-turn":     { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"athletic",     bodyFocus:["legs","hips","lungs"],             basketballTransfer:["defense","footwork","containment"],           equipment:"basketball",   spaceRequired:"large",      ageRange:[11,17], estimatedDuration:120, funScore:8, workoutRole:["main"] },
   "def-shell-dig":       { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"medium", movementType:"skill",        bodyFocus:["legs","hips","reaction"],          basketballTransfer:["defense","help-defense","reaction"],          equipment:"basketball",   spaceRequired:"medium",     ageRange:[11,17], estimatedDuration:120, funScore:7, workoutRole:["main"] },
   "def-help-recover":    { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"athletic",     bodyFocus:["legs","hips","lungs"],             basketballTransfer:["defense","rotation","closeout"],              equipment:"basketball",   spaceRequired:"large",      ageRange:[11,17], estimatedDuration:120, funScore:7, workoutRole:["main"] },
+  "def-slide-mirror":    { difficulty:"advanced",     impactLevel:"low",    intensityLevel:"high",   movementType:"athletic",     bodyFocus:["legs","hips","reaction"],          basketballTransfer:["defense","reaction","footwork"],              equipment:"none",         spaceRequired:"medium",     ageRange:[10,17], estimatedDuration:90,  funScore:8, workoutRole:["main"] },
+  "def-multi-effort":    { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"athletic",     bodyFocus:["legs","hips","lungs"],             basketballTransfer:["defense","closeout","rebounding"],            equipment:"basketball",   spaceRequired:"large",      ageRange:[11,17], estimatedDuration:120, funScore:7, workoutRole:["main"] },
   /* ─── HANDLES ─── */
   "tennis-dribble":      { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"low",    movementType:"skill",        bodyFocus:["hands","eyes","coordination"],     basketballTransfer:["ball-handling","reaction"], equipment:"tennis_ball",  spaceRequired:"small",      ageRange:[9,14],  estimatedDuration:120, funScore:8, workoutRole:["main"] },
   "tennis-snatch":       { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"low",    movementType:"skill",        bodyFocus:["hands","eyes","coordination"],     basketballTransfer:["ball-handling","reaction"], equipment:"basketball + tennis ball", spaceRequired:"small", ageRange:[9,14],  estimatedDuration:90,  funScore:8, workoutRole:["warmup","main"] },
@@ -2534,6 +2564,9 @@ const EXERCISE_META = {
   "reb-boxout":          { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"medium", movementType:"skill",     bodyFocus:["hips","legs","core"],          basketballTransfer:["rebounding","footwork"],                  equipment:"none",              spaceRequired:"small",  ageRange:[9,17],  estimatedDuration:90,  funScore:5, workoutRole:["main"],          progressionTrack:"Step 1 — Go Get the Ball" },
   "reb-outlet":          { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"medium", movementType:"athletic",  bodyFocus:["legs","core","arms"],          basketballTransfer:["rebounding","passing","transition"],      equipment:"basketball + hoop", spaceRequired:"medium", ageRange:[10,17], estimatedDuration:120, funScore:7, workoutRole:["main"],          progressionTrack:"Step 2 — Timing & Touch" },
   "reb-power":           { difficulty:"intermediate", impactLevel:"high",   intensityLevel:"high",   movementType:"athletic",  bodyFocus:["legs","core","shoulders"],     basketballTransfer:["rebounding","contact-finishing"],         equipment:"basketball + hoop", spaceRequired:"medium", ageRange:[10,17], estimatedDuration:120, funScore:8, workoutRole:["main"],          progressionTrack:"Step 3 — Finish the Play" },
+  "reb-pursuit":         { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"athletic",  bodyFocus:["legs","core","hands"],         basketballTransfer:["rebounding","hustle","reaction"],         equipment:"basketball + hoop", spaceRequired:"large",  ageRange:[11,17], estimatedDuration:120, funScore:8, workoutRole:["main"],          progressionTrack:"Step 3 — Finish the Play" },
+  "reb-two-ball-react":  { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"elastic",   bodyFocus:["legs","hands","reaction"],     basketballTransfer:["rebounding","reaction","touch"],          equipment:"basketball + hoop", spaceRequired:"medium", ageRange:[11,17], estimatedDuration:120, funScore:8, workoutRole:["main"],          progressionTrack:"Step 2 — Timing & Touch" },
+  "reb-war":             { difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"athletic",  bodyFocus:["hips","legs","core"],          basketballTransfer:["rebounding","toughness","boxout"],        equipment:"partner",           spaceRequired:"medium", ageRange:[11,17], estimatedDuration:180, funScore:9, workoutRole:["main"] },
   /* ─── PARTNER & GAMES ─── every one needs a second person; equipment says so explicitly. */
   "pg-partner-pass":     { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"medium", movementType:"skill",     bodyFocus:["hands","arms","feet"],         basketballTransfer:["passing","mechanics"],                    equipment:"partner",           spaceRequired:"medium", ageRange:[9,17],  estimatedDuration:180, funScore:8, workoutRole:["warmup","main"], progressionTrack:"Step 1 — Work With a Partner" },
   "pg-closeout-read":    { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"medium", movementType:"skill",     bodyFocus:["feet","eyes","hips"],          basketballTransfer:["decision-making","basketball-IQ"],        equipment:"partner",           spaceRequired:"medium", ageRange:[10,17], estimatedDuration:180, funScore:8, workoutRole:["main"],          progressionTrack:"Step 2 — Read the Defender" },
@@ -4205,6 +4238,40 @@ const PROGRAMS = [
     ],
   },
   {
+    id:"own-the-glass-2", name:"Own the Glass II", emoji:"🥇", color:"#16a34a",
+    badgeId:"pgm-own-the-glass-2", advancedOf:"own-the-glass", level:2, duration:3, daysPerWeek:3, ageRange:[11,17], equipment:["basketball","hoop"],
+    desc:"Go from boxing out to dominating the glass: react to every miss, chase the 50/50 ball, and win the second and third effort. Game-speed rebounding with a putback and outlet finish.",
+    weeks:[
+      { week:1, goal:"Go get every miss — read the ball off the rim and explode after it.",
+        sessions:[
+          { day:"Session 1", focus:"Read & React",      exercises:["reb-two-ball-react","reb-self-toss","snap-downs"],
+            dose:{ "reb-two-ball-react":"2x6", "reb-self-toss":"2x6", "snap-downs":"2x5" } },
+          { day:"Session 2", focus:"Chase the 50/50",   exercises:["reb-pursuit","reb-outlet","split-sq"],
+            dose:{ "reb-pursuit":"3x8", "reb-outlet":"3x8", "split-sq":"2x6 each leg" } },
+          { day:"Session 3", focus:"Second Jump",       exercises:["reb-power","reb-two-ball-react","tuck-jumps"],
+            dose:{ "reb-power":"2x6", "reb-two-ball-react":"2x6", "tuck-jumps":"2x4" } },
+        ]},
+      { week:2, goal:"Win the second effort — putbacks, outlets, and never giving up on a board.",
+        sessions:[
+          { day:"Session 1", focus:"High Point",        exercises:["reb-tips","reb-two-ball-react","reb-self-toss"],
+            dose:{ "reb-tips":"2x5 each hand", "reb-two-ball-react":"2x6", "reb-self-toss":"2x6" } },
+          { day:"Session 2", focus:"Pursue & Outlet",   exercises:["reb-pursuit","reb-outlet","reb-power"],
+            dose:{ "reb-pursuit":"3x8", "reb-outlet":"3x6", "reb-power":"2x6" } },
+          { day:"Session 3", focus:"Putback Finish",    exercises:["reb-power","reb-tips","tuck-jumps"],
+            dose:{ "reb-power":"3x6", "reb-tips":"2x5 each hand", "tuck-jumps":"2x4" } },
+        ]},
+      { week:3, goal:"Own the whole glass — string every effort together at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"React & Pursue",    exercises:["reb-two-ball-react","reb-pursuit","reb-power"],
+            dose:{ "reb-two-ball-react":"3x6", "reb-pursuit":"3x8", "reb-power":"3x6" } },
+          { day:"Session 2", focus:"Board to Break",    exercises:["reb-power","reb-outlet","reb-pursuit"],
+            dose:{ "reb-power":"3x6", "reb-outlet":"3x8", "reb-pursuit":"3x8" } },
+          { day:"Session 3", focus:"Total Boards",      exercises:["reb-pursuit","reb-power","reb-two-ball-react"],
+            dose:{ "reb-pursuit":"3x8", "reb-power":"3x6", "reb-two-ball-react":"3x8" } },
+        ]},
+    ],
+  },
+  {
     id:"lockdown-defender", name:"Lockdown Defender", emoji:"🛡️", color:"#0ea5e9",
     badgeId:"pgm-lockdown-defender", duration:4, daysPerWeek:3, ageRange:[9,17], equipment:["cones"],
     desc:"Become the player nobody wants to be guarded by — stance, slide, containment, closeouts, and team defense that shuts the ball down.",
@@ -4447,6 +4514,7 @@ const PROGRAM_WEEK_TIERS = {
   "jump-rope-speed":      [2, 2, 3, 3],
   "band-strength":        [1, 1, 2, 2],
   "own-the-glass":        [1, 2, 3],
+  "own-the-glass-2":      [2, 3, 3],
   "lockdown-defender":    [1, 2, 2, 3],
   "passing-fundamentals": [1, 1, 2],
   "smooth-handles":       [1, 2, 2, 3],
