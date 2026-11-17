@@ -401,6 +401,7 @@ export default function ProgramsView({
               <ProgramIcon prog={prog} size={72} active />
               <div>
                 <div style={{ fontSize:20,fontWeight:800,color:"var(--fkh-text)",lineHeight:1.2 }}>{prog.name}</div>
+                {prog.tier === "varsity" && <div style={{ marginTop:4 }}><span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:`${prog.color}22`,border:`1px solid ${prog.color}`,color:prog.color,fontWeight:800 }}>🏆 VARSITY · HS</span></div>}
                 <div style={{ fontSize:11,color:"#64748b",marginTop:2 }}>{programCadenceLabel(prog)} · Ages {prog.ageRange[0]}–{prog.ageRange[1]}</div>
                 {(() => {
                   const gear = programGearSummary(prog);
@@ -757,6 +758,7 @@ export default function ProgramsView({
               {prog.level && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,border:`1px solid ${prog.color}66`,color:prog.color,fontWeight:800 }}>
                 {isProgramLocked(prog, programs, earnedBadges) ? "🔒 " : ""}LEVEL {prog.level}
               </span>}
+              {prog.tier === "varsity" && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:`${prog.color}22`,border:`1px solid ${prog.color}`,color:prog.color,fontWeight:800 }}>🏆 VARSITY · HS</span>}
               {enrolled && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:prog.color,color:"#fff",fontWeight:700 }}>ENROLLED</span>}
               {completedBadge && <span style={{ fontSize:9,padding:"2px 7px",borderRadius:99,background:"rgba(34,197,94,0.2)",color:"#22c55e",fontWeight:700 }}>✓ DONE</span>}
               <TrainerCredit prog={prog} />

@@ -25,6 +25,10 @@ const AGE_RULES = {
   12: { maxMinutes: 20, maxHighImpact: 3 },
   13: { maxMinutes: 25, maxHighImpact: 4 },
   14: { maxMinutes: 30, maxHighImpact: 5 },
+  15: { maxMinutes: 35, maxHighImpact: 6 },
+  16: { maxMinutes: 40, maxHighImpact: 7 },
+  17: { maxMinutes: 45, maxHighImpact: 8 },
+  18: { maxMinutes: 45, maxHighImpact: 8 },
 };
 
 const INTENSITY = {
@@ -159,7 +163,7 @@ export function generateCustomMissionWorkout({
 }) {
   const focusOpt = BUILD_FOCUS_OPTIONS.find(f => f.id === focusId) || BUILD_FOCUS_OPTIONS[0];
   const intensity = INTENSITY[intensityId] || INTENSITY.medium;
-  const age = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth) || 9)); // unknown age → youngest, most careful
+  const age = Math.min(18, Math.max(9, calcAge(settings.dateOfBirth) || 9)); // unknown age → youngest, most careful
   const rule = AGE_RULES[age] || AGE_RULES[11];
   const pRank = DIFF_RANK[settings.experience || "beginner"] ?? 0;
   const levels = skillLevels || getSkillLevels(settings, completed);

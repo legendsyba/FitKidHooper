@@ -296,7 +296,7 @@ function searchExercises(query, limit = 12) {
 function generateWorkout(settings, templateKey, recentIds=[], skillLevels=null, completed={}) {
   const tmpl = WORKOUT_TEMPLATES[templateKey];
   if (!tmpl) return null;
-  const age    = Math.min(14, Math.max(9, calcAge(settings.dateOfBirth)));
+  const age    = Math.min(18, Math.max(9, calcAge(settings.dateOfBirth)));
   const rule   = AGE_RULES[age];
   const levels = skillLevels || getSkillLevels(settings, completed);
   const goals  = settings.goals||[];
