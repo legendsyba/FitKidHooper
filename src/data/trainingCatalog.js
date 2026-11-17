@@ -2723,6 +2723,13 @@ const AGE_RULES = {
   12: { maxMinutes:20, maxExercises:7, maxHighImpact:3, focus:["elastic","strength","skill","athletic"] },
   13: { maxMinutes:25, maxExercises:8, maxHighImpact:4, focus:["explosion","speed","conditioning","strength"] },
   14: { maxMinutes:30, maxExercises:9, maxHighImpact:5, focus:["explosion","speed","conditioning","strength"] },
+  /* HS / Varsity (15–18): longer sessions, more drills, higher impact tolerance, power &
+     conditioning focus. Still no barbell — power comes from plyometrics, band and bodyweight
+     work. Consumers clamp age to 18 (FitKidHooperApp generateWorkout, missionGenerator). */
+  15: { maxMinutes:35, maxExercises:10, maxHighImpact:6, focus:["explosion","speed","conditioning","strength"] },
+  16: { maxMinutes:40, maxExercises:11, maxHighImpact:7, focus:["explosion","power","conditioning","strength"] },
+  17: { maxMinutes:45, maxExercises:12, maxHighImpact:8, focus:["power","speed","conditioning","strength"] },
+  18: { maxMinutes:45, maxExercises:12, maxHighImpact:8, focus:["power","speed","conditioning","strength"] },
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -4488,6 +4495,88 @@ const PROGRAMS = [
         ]},
     ],
   },
+
+  /* ═══ VARSITY (HS, 15–17) ═══ A distinct level: "advanced" for a 16-year-old varsity
+     player is a different thing than "advanced" for an 11-year-old. These run at game speed,
+     off live reads, with higher volume — but still NO barbell (power comes from plyos, bands,
+     and bodyweight). Marked `tier:"varsity"` and `ageRange:[15,17]` so they surface as their
+     own level. Drills are the top-end advanced pool (floor 11, so they clear the jump age-gate).
+     Partner drills (pg-1v1, reb-war) assume a HS player has a teammate to go live against. */
+  {
+    id:"varsity-guard", name:"Varsity Guard", emoji:"🎯", color:"#f43f5e",
+    badgeId:"pgm-varsity-guard", tier:"varsity", ageRange:[15,17], duration:3, daysPerWeek:3, equipment:["basketball","hoop","partner"],
+    desc:"HS-level lead guard training: game-speed handles, shot creation off the dribble, and live reads against pressure. Built for a varsity player — harder and faster than the advanced tier. Grab a teammate for the live reps.",
+    weeks:[
+      { week:1, goal:"Handle at game speed — tight, low, and under control against pressure.",
+        sessions:[
+          { day:"Session 1", focus:"Live Dribble Attack", exercises:["tn-pocket-drop-tween","tn-curved-behind","fw-jab-counters"] },
+          { day:"Session 2", focus:"Create & Shoot",       exercises:["tn-balldrop-snatch-pullup","fw-transition-stop","tn-pocket-drop-tween"] },
+          { day:"Session 3", focus:"Read the Defender",    exercises:["fw-react-closeout","def-closeout-contain","pg-1v1"] },
+        ]},
+      { week:2, goal:"Create your own shot — footwork and change-of-pace into the pull-up.",
+        sessions:[
+          { day:"Session 1", focus:"Pull-Up Off the Bounce", exercises:["tn-curved-behind","tn-balldrop-snatch-pullup","fw-jab-counters"] },
+          { day:"Session 2", focus:"Change of Pace",         exercises:["fw-transition-stop","tn-pocket-drop-tween","def-closeout-contain"] },
+          { day:"Session 3", focus:"Beat Your Man 1v1",      exercises:["pg-1v1","tn-balldrop-snatch-pullup","fw-react-closeout"] },
+        ]},
+      { week:3, goal:"Run the show under pressure — make the right read every possession.",
+        sessions:[
+          { day:"Session 1", focus:"Pressure Handles",   exercises:["tn-curved-behind","fw-jab-counters","pg-1v1"] },
+          { day:"Session 2", focus:"Shot Creation",      exercises:["tn-balldrop-snatch-pullup","def-closeout-contain","fw-transition-stop"] },
+          { day:"Session 3", focus:"Live Floor General", exercises:["pg-1v1","tn-pocket-drop-tween","tn-balldrop-snatch-pullup"] },
+        ]},
+    ],
+  },
+  {
+    id:"varsity-scorer", name:"Varsity Scorer", emoji:"🪣", color:"#f59e0b",
+    badgeId:"pgm-varsity-scorer", tier:"varsity", ageRange:[15,17], duration:3, daysPerWeek:3, equipment:["basketball","hoop","cones"],
+    desc:"Become a three-level scorer at the varsity level: finish through contact, score off footwork, and get to your pull-up at game speed. Harder and more game-realistic than the advanced finishing tier.",
+    weeks:[
+      { week:1, goal:"Finish through contact — glide, hang, and finish off either hand.",
+        sessions:[
+          { day:"Session 1", focus:"Glide Finishes",     exercises:["tn-glide-swing-inside","tn-glide-swing-outside","fw-pivot-gauntlet"] },
+          { day:"Session 2", focus:"Off-Hand & Angles",  exercises:["tn-side-hand-layup-adv","tn-balldrop-snatch-pullup","fw-sweep-speed"] },
+          { day:"Session 3", focus:"Finish Under Pressure", exercises:["tn-glide-swing-inside","fw-react-closeout","tn-side-hand-layup-adv"] },
+        ]},
+      { week:2, goal:"Footwork into the shot — get square and up quick off any step.",
+        sessions:[
+          { day:"Session 1", focus:"Pivot Into the Shot", exercises:["fw-pivot-gauntlet","tn-balldrop-snatch-pullup","tn-glide-swing-outside"] },
+          { day:"Session 2", focus:"Sweep & Rip to Rim",  exercises:["fw-sweep-speed","tn-side-hand-layup-adv","tn-glide-swing-inside"] },
+          { day:"Session 3", focus:"Read & Finish",        exercises:["fw-react-closeout","tn-balldrop-snatch-pullup","tn-glide-swing-outside"] },
+        ]},
+      { week:3, goal:"Score from all three levels at game speed.",
+        sessions:[
+          { day:"Session 1", focus:"At the Rim",      exercises:["tn-glide-swing-inside","tn-glide-swing-outside","tn-side-hand-layup-adv"] },
+          { day:"Session 2", focus:"Off the Bounce",  exercises:["tn-balldrop-snatch-pullup","fw-pivot-gauntlet","tn-glide-swing-inside"] },
+          { day:"Session 3", focus:"Three-Level",     exercises:["tn-side-hand-layup-adv","fw-sweep-speed","tn-balldrop-snatch-pullup"] },
+        ]},
+    ],
+  },
+  {
+    id:"varsity-stopper", name:"Varsity Stopper", emoji:"🔐", color:"#0284c7",
+    badgeId:"pgm-varsity-stopper", tier:"varsity", ageRange:[15,17], duration:3, daysPerWeek:3, equipment:["basketball","hoop","partner"],
+    desc:"Guard the other team's best player and own the glass — varsity-level on-ball defense, help rotations, and rebounding at game speed. The two-way work that wins HS games.",
+    weeks:[
+      { week:1, goal:"Lock up the ball — contain, turn the dribbler, and move your feet.",
+        sessions:[
+          { day:"Session 1", focus:"On-Ball Containment", exercises:["def-closeout-contain","def-zigzag-turn","def-slide-mirror"] },
+          { day:"Session 2", focus:"Multiple Effort",     exercises:["def-multi-effort","def-closeout-contain","def-shell-dig"] },
+          { day:"Session 3", focus:"Turn & Mirror",       exercises:["def-zigzag-turn","def-help-recover","def-slide-mirror"] },
+        ]},
+      { week:2, goal:"Help the helper — rotate, recover, and go get the board.",
+        sessions:[
+          { day:"Session 1", focus:"Help & Recover",    exercises:["def-help-recover","def-shell-dig","reb-pursuit"] },
+          { day:"Session 2", focus:"Dig & Rebound",     exercises:["def-multi-effort","reb-two-ball-react","def-closeout-contain"] },
+          { day:"Session 3", focus:"Rotate as a Unit",  exercises:["def-help-recover","reb-pursuit","def-zigzag-turn"] },
+        ]},
+      { week:3, goal:"Two-way at game speed — compete on every possession until the ball is yours.",
+        sessions:[
+          { day:"Session 1", focus:"Battle on the Ball", exercises:["def-closeout-contain","def-multi-effort","reb-war"] },
+          { day:"Session 2", focus:"Shell at Speed",     exercises:["def-shell-dig","def-help-recover","reb-two-ball-react"] },
+          { day:"Session 3", focus:"Own Both Ends",      exercises:["reb-war","def-zigzag-turn","reb-pursuit"] },
+        ]},
+    ],
+  },
 ];
 
 /* Development tier per program week — the same T1 Foundation → T2 Application → T3 Game-Speed
@@ -4520,6 +4609,9 @@ const PROGRAM_WEEK_TIERS = {
   "smooth-handles":       [1, 2, 2, 3],
   "floor-general":        [1, 2, 2, 3],
   "cramer-29":            [1, 2, 2, 3, 3],
+  "varsity-guard":        [3, 3, 3],
+  "varsity-scorer":       [3, 3, 3],
+  "varsity-stopper":      [3, 3, 3],
 };
 const TIER_LABELS = { 1: "Foundation", 2: "Application", 3: "Game-Speed" };
 const programWeekTier = (programId, weekNum) => PROGRAM_WEEK_TIERS[programId]?.[weekNum - 1] ?? null;
