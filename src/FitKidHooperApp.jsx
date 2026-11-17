@@ -12,6 +12,8 @@ const CoachClassRoom = lazy(() => import("./components/ClassLiveSheet.jsx"));
 import { amICoach } from "./lib/coachClasses.js";
 import { ownThumbnail, thumbBackdrop } from "./lib/videoThumb.js";
 import OnboardingSheet from "./components/OnboardingSheet.jsx";
+import BuddyModeSheet from "./components/BuddyModeSheet.jsx";
+import { partnerFitBadge } from "./lib/partnerMode.js";
 import PlayLikePickerSheet from "./components/PlayLikePickerSheet.jsx";
 import FeedbackCenter from "./components/FeedbackCenter.jsx";
 import { useAuth } from "./hooks/useAuth.js";
@@ -1567,6 +1569,7 @@ function DrillCard({ w, color, bg2, brd, isDone, onToggle, onViewDetail, favored
           <div>
             <span style={{ fontSize:9,padding:"2px 8px",borderRadius:20,fontWeight:800,display:"inline-block",marginBottom:4,background:bg2,color,border:`1px solid ${brd}`,letterSpacing:"0.04em" }}>{w.tag}</span>
             {w.trainer && <span style={{ fontSize:9,padding:"2px 8px",borderRadius:20,display:"inline-block",marginBottom:4,marginLeft:4,background:metaBg,color,border:`1px solid ${metaBrd}`,opacity:0.8 }}>📹 {w.trainer}</span>}
+            {partnerFitBadge(w) && <span style={{ fontSize:9,padding:"2px 8px",borderRadius:20,display:"inline-block",marginBottom:4,marginLeft:4,background:`${color}1a`,color,border:`1px solid ${color}55`,fontWeight:700 }}>🤝 {partnerFitBadge(w).label}</span>}
             <div style={{ fontSize:13,fontWeight:700,color:"var(--fkh-text)",lineHeight:1.2 }}>{w.name}</div>
           </div>
           <div style={{ display:"flex",alignItems:"center",gap:6,flexShrink:0 }}>
@@ -1984,6 +1987,7 @@ export default function FitKidHooperApp() {
   const [programsHubSection, setProgramsHubSection] = useState("plans");
   const [lockerBadgesOpen, setLockerBadgesOpen] = useState(true);
   const [showFindDrills, setShowFindDrills] = useState(false);
+  const [buddyDrill, setBuddyDrill] = useState(null); // Buddy Mode: the drill two kids are competing on
   const [showCoachFKH, setShowCoachFKH] = useState(false);
   const [coachInitialQuery, setCoachInitialQuery] = useState(null);
   const [workoutOpen, setWorkoutOpen] = useState(() => {
@@ -3425,6 +3429,7 @@ export default function FitKidHooperApp() {
 
   const programDetailSheet = activeExercise ? (
     <ExerciseDetailSheet exercise={activeExercise} color={P} isSignedIn={auth.isSignedIn} onSavePlayer={openSavePlayer}
+      onBuddy={()=>setBuddyDrill(activeExercise)}
       bg2={SF} brd={bd} BG={BG} SF={SF}
       isDone={detailContext && !isWarmupExercise(activeExercise)
         ? isProgramExerciseDone(programProgress, detailContext.programId, detailContext.week, detailContext.sessionIdx, activeExercise.id)
@@ -3494,6 +3499,8 @@ export default function FitKidHooperApp() {
   const shellOverlays = (
     <>
       {settingsSheet}{feedbackSheet}{authSheet}{guideSheet}{skillCheckSheet}
+      {buddyDrill && <BuddyModeSheet drill={buddyDrill} settings={settings} color={P}
+        onClose={()=>setBuddyDrill(null)} onCount={()=>toggle(buddyDrill.id, "buddy")} />}
       {/* App-level: a buddy calling has to reach you wherever you are, not
           only on the Squad tab. */}
       <BuddyVideoInviteBanner P={P} isSignedIn={auth.isSignedIn} />
@@ -3824,6 +3831,7 @@ export default function FitKidHooperApp() {
           ))}
         </div>
         {activeExercise&&<ExerciseDetailSheet isSignedIn={auth.isSignedIn} onSavePlayer={openSavePlayer}
+          onBuddy={()=>setBuddyDrill(activeExercise)}
           exercise={activeExercise} color={catColor(activeExercise._cat)}
           bg2={catBg(activeExercise._cat)} brd={catBrd(activeExercise._cat)}
           BG={BG} SF={SF} isDone={isDone(activeExercise.id)}
@@ -3856,6 +3864,7 @@ export default function FitKidHooperApp() {
         {celebrationQueue.length>0&&<BadgeCelebration badge={celebrationQueue[0]} onDismiss={dismissCelebration}/>}
         {renderMissionOverlays()}
         {activeExercise&&<ExerciseDetailSheet exercise={activeExercise} color={P} isSignedIn={auth.isSignedIn} onSavePlayer={openSavePlayer}
+          onBuddy={()=>setBuddyDrill(activeExercise)}
           bg2={SF} brd={bd} BG={BG} SF={SF}
           isDone={isDone(activeExercise.id)} onToggle={()=>toggle(activeExercise.id)}
           onClose={closeDetail} onNext={nextExDetail?()=>setActiveExercise(nextExDetail):null}
@@ -4259,6 +4268,7 @@ export default function FitKidHooperApp() {
     <div style={{ fontFamily:"'DM Sans','Helvetica Neue',sans-serif",background:BG,color:"var(--fkh-text)",minHeight:"100vh",maxWidth:680,margin:"0 auto",paddingBottom:"calc(80px + env(safe-area-inset-bottom, 0px))" }}>
       {shellOverlays}
       {activeExercise&&<ExerciseDetailSheet isSignedIn={auth.isSignedIn} onSavePlayer={openSavePlayer}
+        onBuddy={()=>setBuddyDrill(activeExercise)}
         exercise={activeExercise} color={catColor(activeExercise._cat)}
         bg2={catBg(activeExercise._cat)} brd={catBrd(activeExercise._cat)}
         BG={BG} SF={SF} isDone={isDone(activeExercise.id)}
