@@ -8,6 +8,7 @@ import {
 } from "../lib/exerciseSession.js";
 import { LEVELS, getLevel } from "../lib/levels.js";
 import { CATS } from "../lib/categories.js";
+import { partnerFit } from "../lib/partnerMode.js";
 import { BENEFIT_MAP, ALL_EXERCISES } from "../data/trainingCatalog.js";
 import { getChainForExercise, getChainStatus } from "../lib/progressionChains.js";
 import { useWakeLock } from "../lib/useWakeLock.js";
@@ -412,7 +413,7 @@ function ExerciseSetTracker({
 export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF, isDone, onToggle, onClose, onNext, completed, favored, onToggleFav, navLabel,
   programContext, setLog, onSetLogChange, maxRepsMap, onMaxRepsChange, bilateralPrefs, onBilateralPrefChange, settings, today, onAskCoach, onSwapDrill,
   sessionList, isSessionExerciseDone, totalXP, hasPendingCelebration, sessionXpEarned,
-  isSignedIn, onSavePlayer, missionDone = true }) {
+  isSignedIn, onSavePlayer, onBuddy, missionDone = true }) {
   useWakeLock(true);
 
   /* Practice session summary — only meaningful for a real multi-exercise
@@ -637,6 +638,16 @@ export default function ExerciseDetailSheet({ exercise, color, bg2, brd, BG, SF,
 
         {/* Scrollable body */}
         <div style={{ flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch" }}>
+
+          {/* Buddy Mode — head-to-head on this drill, for partner-friendly skills */}
+          {onBuddy && partnerFit(exercise) !== "solo" && (
+            <div style={{ padding:"12px 16px 0" }}>
+              <button onClick={onBuddy}
+                style={{ width:"100%",padding:"12px",borderRadius:14,background:`${color}1a`,border:`1.5px solid ${color}66`,color,fontSize:15,fontWeight:800,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8 }}>
+                🤝 Play with a buddy
+              </button>
+            </div>
+          )}
 
           {/* Video — inline player or thumbnail tap-to-play (only when a video exists) */}
           {(exercise.videoId || exercise.videoSource === "fkh") && (clipMode ? (
