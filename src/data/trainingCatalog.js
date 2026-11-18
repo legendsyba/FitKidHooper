@@ -698,7 +698,7 @@ const W_SHOOTING = [
     sets:"5 reps each variation each side", rest:"30 s",
     desc:"DJ Sackmann drill connecting ball handling to shooting — hesitate the defender then rise for the shot.",
     cues:["The hesitation earns the shot — do not skip the setup","One foot anchored on the gather — do not drift","Balance on the catch: weight centered, ready to shoot"],
-    trainer:"Shot Science Basketball", videoId:"EyYbMJzrKYs", videoChannel:"Shot Science Basketball", trusted:true, videoTitle:"Hesitation Dribble Attack" },
+    trainer:"DJ Sackmann", videoId:"IUy1jilyT3w", videoChannel:"HoopStudy", trusted:true, videoTitle:"Shoot out of Hesitations with DJ Sackmann" },
 
   /* ── Leveled shooting challenges — Bronze/Silver/Gold targets. `levels` is structured data a
      future levels UI can render; the targets are also in the desc so it works in today's UI. ── */
