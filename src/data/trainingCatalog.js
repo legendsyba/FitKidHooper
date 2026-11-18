@@ -356,6 +356,18 @@ const W_EXPLOSION = [
     desc:"Basketball-specific plyometric session focused on vertical jump and explosiveness for dunking and shot-blocking.",
     cues:["Apply every rep to your basketball game","Visualize jumping for a ball on every rep","Track your standing reach weekly","Patience — vertical gains take 6-8 weeks minimum"],
     trainer:"The Lost Breed", videoId:"QRN1Yzo0hjU", videoChannel:"The Lost Breed", videoTitle:"3 Exercises To Increase Your Vertical" },
+  { id:"depth-jump-vert", name:"Depth Jump", tag:"Reactive Power", sets:"4x5", rest:"75 s",
+    desc:"Step off a low box, land on two feet, and explode straight back up as fast as you can — the less time on the ground, the better. Varsity-level reactive power for your vertical.",
+    cues:["Step OFF the box — don't jump off it","Leave the ground fast — think hot floor","Land soft and balanced first, then explode","Start on a low box — add height only when you stay quick"],
+    trainer:"Wil Fleming", videoId:"AzPJZHOmGEg", videoChannel:"Wil Fleming", videoTitle:"Max Effort Plyometrics: Depth Jumps" },
+  { id:"repeat-broad-jump", name:"Repeat Broad Jumps", tag:"Horizontal Power", sets:"4x5", rest:"75 s",
+    desc:"Max-distance broad jumps, one right after the other — land and immediately load the next. Builds the horizontal, first-step power you feel on every drive.",
+    cues:["Swing the arms and explode forward","Land soft, then reload fast — no long pause","Full extension — ankles, knees, hips","Max distance every rep — quality over count"],
+    trainer:"University of Denver Sports Performance", videoId:"5Oq8KeqqPLw", videoChannel:"University of Denver Sports Performance", videoTitle:"Continuous Broad Jump" },
+  { id:"sl-lateral-hop", name:"Single-Leg Lateral Hops", tag:"Stability Power", sets:"3x6 each side", rest:"60 s",
+    desc:"Hop side to side on ONE leg, landing balanced and controlled each time. Builds the single-leg lateral power and ankle-and-knee stability that keeps you healthy and quick.",
+    cues:["Land soft and hold a beat — don't rush","Knee over the toes, never caving inward","Push off powerfully to the next landing","Stay low in an athletic stance throughout"],
+    trainer:"Rehab Hero", videoId:"u7Cp4Lges4Y", videoChannel:"Rehab Hero", videoTitle:"Single Leg Lateral Hops" },
 ];
 
 const W_HANDLES = [
@@ -467,6 +479,10 @@ const W_CONDITIONING = [
     desc:"Do a push-up, then tap each shoulder alternately while in the top position. Adds anti-rotation challenge to the push-up.",
     cues:["Hips do not rotate — resist the rotation","Wide stance helps — feet hip-width or wider","Slow on the taps — control beats speed","Full push-up between each set of taps"],
     videoId:"kF9X6PKVysc", videoChannel:"Live Lean TV Daily Exercises", videoTitle:"Push-Up Shoulder Taps — Proper Form" },
+  { id:"shuttle-conditioning", name:"Lane Shuttle", tag:"Conditioning", sets:"4 rounds", rest:"75 s",
+    desc:"Sprint and touch each line — foul line, half, far foul line, baseline — and back. Game-shape conditioning that teaches you to change direction when you're already tired.",
+    cues:["Touch every line with your hand — no cheating","Sink your hips to stop and turn at each line","Full sprint out, control the turn, full sprint back","Hold your form when you're tired — that's the point"],
+    trainer:"Denise De Vine", videoId:"6XYSqfInJFU", videoChannel:"Denise De Vine", videoTitle:"Basketball Suicide Sprint Test" },
 ];
 
 const W_COORDINATION = [
@@ -593,6 +609,10 @@ const W_DECELERATION = [
     desc:"Sprint out to a shooter and decelerate with controlled footwork. The exact defensive skill used on every perimeter closeout.",
     cues:["Sprint is full speed to start","Chop steps at 6-8 feet — not earlier","Wide stance on arrival — ready to slide","Hand up and contest — this is a full defensive rep"],
     videoId:"6mzS2sVhcdg", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Closeout Deceleration — Basketball Defense" },
+  { id:"decel-cut", name:"Decelerate & Cut", tag:"Change of Direction", sets:"4x4 each way", rest:"60 s",
+    desc:"Sprint out, drop your hips and hit the brakes under control, then plant and cut hard the other way. The deceleration mechanics behind every sharp cut and defensive slide.",
+    cues:["Lower your hips to brake — don't stay tall","Short, choppy steps to gather, then plant","Plant on the OUTSIDE foot and push the other way","Stay balanced through the cut — no stumbling"],
+    trainer:"Lee Taft", videoId:"RA58o7cIADA", videoChannel:"Lee Taft", videoTitle:"The Lunge Stop: Basketball Deceleration" },
 ];
 
 const W_ATHLETIC = [
@@ -2567,6 +2587,11 @@ const EXERCISE_META = {
   "reb-pursuit":         { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"athletic",  bodyFocus:["legs","core","hands"],         basketballTransfer:["rebounding","hustle","reaction"],         equipment:"basketball + hoop", spaceRequired:"large",  ageRange:[11,17], estimatedDuration:120, funScore:8, workoutRole:["main"],          progressionTrack:"Step 3 — Finish the Play" },
   "reb-two-ball-react":  { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"elastic",   bodyFocus:["legs","hands","reaction"],     basketballTransfer:["rebounding","reaction","touch"],          equipment:"basketball + hoop", spaceRequired:"medium", ageRange:[11,17], estimatedDuration:120, funScore:8, workoutRole:["main"],          progressionTrack:"Step 2 — Timing & Touch" },
   "reb-war":             { difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"athletic",  bodyFocus:["hips","legs","core"],          basketballTransfer:["rebounding","toughness","boxout"],        equipment:"partner",           spaceRequired:"medium", ageRange:[11,17], estimatedDuration:180, funScore:9, workoutRole:["main"] },
+  "depth-jump-vert":     { difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"elastic",      bodyFocus:["legs","core"],          basketballTransfer:["jumping","explosion","reactive-power"],       equipment:"box",   spaceRequired:"medium", ageRange:[13,17], estimatedDuration:120, funScore:8, workoutRole:["main"] },
+  "repeat-broad-jump":   { difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"elastic",      bodyFocus:["legs","core"],          basketballTransfer:["explosion","first-step","jumping"],           equipment:"none", spaceRequired:"large",  ageRange:[13,17], estimatedDuration:120, funScore:8, workoutRole:["main"] },
+  "sl-lateral-hop":      { difficulty:"advanced",     impactLevel:"medium", intensityLevel:"high",   movementType:"elastic",      bodyFocus:["legs","core"],          basketballTransfer:["lateral-power","stability","injury-prevention"], equipment:"none", spaceRequired:"medium", ageRange:[13,17], estimatedDuration:90,  funScore:7, workoutRole:["main"] },
+  "decel-cut":           { difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"deceleration", bodyFocus:["legs","hips","core"],   basketballTransfer:["deceleration","change-of-direction","defense"],  equipment:"none", spaceRequired:"large",  ageRange:[13,17], estimatedDuration:120, funScore:8, workoutRole:["main"] },
+  "shuttle-conditioning":{ difficulty:"advanced",     impactLevel:"high",   intensityLevel:"high",   movementType:"conditioning", bodyFocus:["legs","lungs"],         basketballTransfer:["conditioning","game-shape"],                  equipment:"none", spaceRequired:"large",  ageRange:[13,17], estimatedDuration:180, funScore:6, workoutRole:["main"] },
   /* ─── PARTNER & GAMES ─── every one needs a second person; equipment says so explicitly. */
   "pg-partner-pass":     { difficulty:"beginner",     impactLevel:"low",    intensityLevel:"medium", movementType:"skill",     bodyFocus:["hands","arms","feet"],         basketballTransfer:["passing","mechanics"],                    equipment:"partner",           spaceRequired:"medium", ageRange:[9,17],  estimatedDuration:180, funScore:8, workoutRole:["warmup","main"], progressionTrack:"Step 1 — Work With a Partner" },
   "pg-closeout-read":    { difficulty:"intermediate", impactLevel:"medium", intensityLevel:"medium", movementType:"skill",     bodyFocus:["feet","eyes","hips"],          basketballTransfer:["decision-making","basketball-IQ"],        equipment:"partner",           spaceRequired:"medium", ageRange:[10,17], estimatedDuration:180, funScore:8, workoutRole:["main"],          progressionTrack:"Step 2 — Read the Defender" },
@@ -4577,6 +4602,40 @@ const PROGRAMS = [
         ]},
     ],
   },
+  {
+    id:"varsity-athlete", name:"Varsity Athlete", emoji:"⚡", color:"#a855f7",
+    badgeId:"pgm-varsity-athlete", tier:"varsity", ageRange:[15,17], duration:3, daysPerWeek:3, equipment:["box"],
+    desc:"Varsity-level power and conditioning — reactive plyometrics, lateral explosiveness, deceleration mechanics, and game-shape conditioning. No weight room: all power comes from plyos and bodyweight. Build the engine that holds up for four quarters. (A low box or bench is used for depth jumps.)",
+    weeks:[
+      { week:1, goal:"Build reactive power — explode fast and land under control.",
+        sessions:[
+          { day:"Session 1", focus:"Vertical Power",   exercises:["depth-jump-vert","repeat-broad-jump","shuttle-conditioning"],
+            dose:{ "depth-jump-vert":"4x5", "repeat-broad-jump":"4x5", "shuttle-conditioning":"4x40 s" } },
+          { day:"Session 2", focus:"Lateral Power",    exercises:["lateral-bound-stick","decel-cut","shuttle-conditioning"],
+            dose:{ "lateral-bound-stick":"3x6 each side", "decel-cut":"4x4 each way", "shuttle-conditioning":"4x40 s" } },
+          { day:"Session 3", focus:"Brakes & Engine",  exercises:["decel-cut","sl-lateral-hop","shuttle-conditioning"],
+            dose:{ "decel-cut":"4x4 each way", "sl-lateral-hop":"3x6 each side", "shuttle-conditioning":"4x40 s" } },
+        ]},
+      { week:2, goal:"Add volume — more reps, same clean landings.",
+        sessions:[
+          { day:"Session 1", focus:"Vertical Power",   exercises:["depth-jump-vert","repeat-broad-jump","shuttle-conditioning"],
+            dose:{ "depth-jump-vert":"4x6", "repeat-broad-jump":"4x6", "shuttle-conditioning":"5x40 s" } },
+          { day:"Session 2", focus:"Lateral Power",    exercises:["lateral-bound-stick","decel-cut","shuttle-conditioning"],
+            dose:{ "lateral-bound-stick":"3x6 each side", "decel-cut":"4x5 each way", "shuttle-conditioning":"5x40 s" } },
+          { day:"Session 3", focus:"Single-Leg Power", exercises:["sl-lateral-hop","depth-jump-vert","shuttle-conditioning"],
+            dose:{ "sl-lateral-hop":"3x8 each side", "depth-jump-vert":"3x5", "shuttle-conditioning":"5x40 s" } },
+        ]},
+      { week:3, goal:"Game speed — bring the power when you're already tired.",
+        sessions:[
+          { day:"Session 1", focus:"Explosive Combo",  exercises:["repeat-broad-jump","lateral-bound-stick","shuttle-conditioning"],
+            dose:{ "repeat-broad-jump":"4x6", "lateral-bound-stick":"3x6 each side", "shuttle-conditioning":"6x40 s" } },
+          { day:"Session 2", focus:"Power & Cut",      exercises:["depth-jump-vert","decel-cut","sl-lateral-hop"],
+            dose:{ "depth-jump-vert":"4x5", "decel-cut":"4x4 each way", "sl-lateral-hop":"2x6 each side" } },
+          { day:"Session 3", focus:"Finish Strong",    exercises:["lateral-bound-stick","repeat-broad-jump","shuttle-conditioning"],
+            dose:{ "lateral-bound-stick":"3x6 each side", "repeat-broad-jump":"4x5", "shuttle-conditioning":"6x40 s" } },
+        ]},
+    ],
+  },
 ];
 
 /* Development tier per program week — the same T1 Foundation → T2 Application → T3 Game-Speed
@@ -4612,6 +4671,7 @@ const PROGRAM_WEEK_TIERS = {
   "varsity-guard":        [3, 3, 3],
   "varsity-scorer":       [3, 3, 3],
   "varsity-stopper":      [3, 3, 3],
+  "varsity-athlete":      [3, 3, 3],
 };
 const TIER_LABELS = { 1: "Foundation", 2: "Application", 3: "Game-Speed" };
 const programWeekTier = (programId, weekNum) => PROGRAM_WEEK_TIERS[programId]?.[weekNum - 1] ?? null;
