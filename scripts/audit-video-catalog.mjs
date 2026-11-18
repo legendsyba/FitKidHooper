@@ -48,7 +48,7 @@ const AREA_WORDS = {
     "free throw","step back","stepback","pull up","pull-up","fadeaway","fade away","shot mechanics","shoot the"],
   finishing:["layup","lay up","floater","euro step","eurostep","reverse layup","around the rim","mikan","finish at the rim"],
   footwork:["footwork","pivot","jab step","triple threat","jump stop","stride stop","drop step","inside foot"],
-  passing:["passing","chest pass","bounce pass","outlet pass","no look pass","dish"],
+  passing:["pass","passing","chest pass","bounce pass","outlet pass","no look pass","dish"],
   defense:["defense","defensive","closeout","close out","defensive slide","defensive stance","on-ball defense","lockdown","deflection"],
   rebounding:["rebound","rebounding","box out","boxout","put back","putback"],
 };
