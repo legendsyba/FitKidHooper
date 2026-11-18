@@ -4,6 +4,7 @@ import { getBrandLogo } from "../lib/brandLogos.js";
 import ProgramIcon from "../components/ProgramIcon.jsx";
 import { programGearSummary } from "../lib/programGear.js";
 import { shareProgram } from "../lib/programShare.js";
+import { calcAge } from "../lib/periodStats.js";
 import { track, ANALYTICS_EVENTS } from "../lib/analytics.js";
 import {
   computeProgramProgress,
@@ -706,12 +707,29 @@ export default function ProgramsView({
     { id: "completed", label: "Completed" },
   ];
 
+  /* Varsity is an HS tier (ages 15–17). It's never age-GATED — any kid can open one — but a
+     10-year-old shouldn't have to scroll past "Varsity Guard" to find their plan, and a 16-year-old
+     should see it without hunting. So age nudges Varsity up or down in the ordering only: float it
+     for 15+, sink it for ≤12, leave 13–14 roughly neutral. Unknown age → no nudge (returns 0), so
+     a kid who never set a birthday sees the plain catalog. This is a sort key, not a filter: every
+     program stays reachable in Browse at every age. */
+  const athleteAge = calcAge(settings?.dateOfBirth);
+  const ageFit = (prog) => {
+    if (athleteAge == null || prog.tier !== "varsity") return 0;
+    if (athleteAge >= 15) return 2;
+    if (athleteAge <= 12) return -2;
+    return -1; // 13–14: not their tier yet, but close — a gentle sink
+  };
+
   /* Featured programs lead every list. This has to be applied to the whole catalog BEFORE the
      "For You" fallback slices the first three — a featured program sitting at the end of
-     PROGRAMS would otherwise never make that cut. Array.prototype.sort is stable, so
-     equal-ranked programs keep their catalog order. */
+     PROGRAMS would otherwise never make that cut. Featuring is the primary editorial key; age-fit
+     is the tiebreaker beneath it. Array.prototype.sort is stable, so equal-ranked programs keep
+     their catalog order. */
   const featuredFirst = (list) =>
-    [...list].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+    [...list].sort((a, b) =>
+      (b.featured ? 1 : 0) - (a.featured ? 1 : 0) || ageFit(b) - ageFit(a),
+    );
 
   const segmentPrograms = (() => {
     const ranked = featuredFirst(programs);
