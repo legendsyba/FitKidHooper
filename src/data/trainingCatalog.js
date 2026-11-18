@@ -1656,7 +1656,7 @@ const W_PASSING = [
     sets:"3x10 each side", rest:"25 s",
     desc:"Catch off the wall, land in a jump stop, pivot, and fire the next pass. Links footwork to passing.",
     cues:["Jump stop on the catch — establish your pivot foot","Pivot, then pass — don't drift","Stay low and balanced","Both pivot directions","🧱 Solo? A wall is your partner — aim at a target and catch it back"],
-    trainer:"HoopStudy", videoId:"jEAvb1gcbc0", videoChannel:"HoopStudy", trusted:true, videoTitle:"Pivot Footwork — HoopStudy" },
+    trainer:"Jr. NBA", videoId:"jgqdv9ySjYM", videoChannel:"Jr. NBA Jr. WNBA", trusted:true, videoTitle:"Jump Stop, Pivot, & Pass Drill — Jr. NBA" },
   { id:"pass-off-dribble", name:"Pass Off the Dribble", tag:"Game Pass", setup:"solo",
     sets:"3x12 each hand", rest:"25 s",
     desc:"Take one dribble, then snap a pass to a wall spot without picking the ball up first. The live-action pass.",
